@@ -1,0 +1,210 @@
+I"�<hr />
+<h2 id="refactoring">Refactoring</h2>
+<ul>
+  <li>Process of applying transformations to a program so as to obtain a refactored program.
+    <ul>
+      <li>Improved design but with same functionality as the original program</li>
+      <li>Semantics preserving</li>
+      <li>Goal: keep program readable, understandable, and maintainable</li>
+      <li>Key feature: behavior preserving
+        <ul>
+          <li>How can we guarantee that?</li>
+          <li>No guarantees, but you can test it!</li>
+          <li>If you have a good test suite, that helps a lot.</li>
+          <li>Remember, there are no guarantees from testing alone.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="why-refactor">Why Refactor?</h2>
+<ul>
+  <li>Requirements change
+    <ul>
+      <li>often need to change design to acommodate</li>
+    </ul>
+  </li>
+  <li>Design needs to be improved
+    <ul>
+      <li>new feature, more maintainable, etc</li>
+    </ul>
+  </li>
+  <li>Sloppiness / laziness of developers
+    <ul>
+      <li>copy/paste programming abstracted into classes or libraries</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="history-of-refactoring">History of Refactoring</h2>
+<ul>
+  <li>Refactoring is something that programmers have always done</li>
+  <li>Especially important for object-oriented languages
+    <ul>
+      <li>but useful for all languages</li>
+    </ul>
+  </li>
+  <li>Opdyke’s PhD Thesis (1990) discusses refacotring for SMALLTALK</li>
+  <li>Increasingly popular recently due to agile development adoption</li>
+  <li>Fowler’s Book - Improving the Design of Existing Code
+    <ul>
+      <li>Catalog of refactorings</li>
+      <li>List of bad smells</li>
+      <li>Guidelines on when to apply refactoring</li>
+      <li>Examples of code before and after</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="types-of-refacotring">Types of Refacotring</h2>
+<ul>
+  <li>Massive list, we will only cover a few</li>
+  <li>Collapse Hierarchy</li>
+  <li>A superclass and subclass are tgoo similar
+    <ul>
+      <li>Merge them</li>
+    </ul>
+  </li>
+  <li>Consolidate Conditional Expression
+    <ul>
+      <li>Set of conditionals with the same result</li>
+      <li>each check is different but the result is the same</li>
+      <li>Combine and extract checks
+<img src="../assets/content_images/omscs/sdp/p4l5_img1.png" alt="" /></li>
+    </ul>
+  </li>
+  <li>Decompose Conditionals
+    <ul>
+      <li>A conditional statement is particularly complex</li>
+      <li>Might be too hard to parse why something does or doesn’t happen</li>
+      <li>Extract condition to method call, leverage method name to explain what you’re trying to test for
+<img src="../assets/content_images/omscs/sdp/p4l5_img2.png" alt="" /></li>
+    </ul>
+  </li>
+  <li>Extract Class
+    <ul>
+      <li>a class may wind up doing the work of two or more, due to code evolution</li>
+      <li>creat a new class and move there the relevant fields/methods</li>
+    </ul>
+  </li>
+  <li>Inline Class
+    <ul>
+      <li>inverse of extracting a class</li>
+      <li>A class may wind up not doing much
+        <ul>
+          <li>move its features into another class and delete this one</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Extract Method
+    <ul>
+      <li>most common of the ones we’ve covered</li>
+      <li>cohesive code fragment in a large method</li>
+      <li>create a method using that fragment, and call that method where needed
+<img src="../assets/content_images/omscs/sdp/p4l5_img3.png" alt="" /></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="how-to-refactor">How to Refactor</h2>
+<ul>
+  <li>Full length demo shown here.  View video itself for refesher</li>
+  <li>Uses demo of Eclipse.  Ugh.</li>
+</ul>
+
+<h2 id="refactoring-risks">Refactoring Risks</h2>
+<ul>
+  <li>Powerful too, but…</li>
+  <li>May introduce subtle faults
+    <ul>
+      <li>aka regression errors</li>
+    </ul>
+  </li>
+  <li>Should not be abused
+    <ul>
+      <li>performed only when needed</li>
+    </ul>
+  </li>
+  <li>should be used very carefully on systems in production</li>
+</ul>
+
+<h2 id="cost-of-refactoring">Cost of Refactoring</h2>
+<ul>
+  <li>May be free with good tooling</li>
+  <li>But often requires manual work, which costs</li>
+  <li>Test development and maintenance, especially those built or added to specifically for a refactoring effort</li>
+  <li>Documentation maintenance - changes to names or interfaces must be updated in docs, and that takes effort too</li>
+</ul>
+
+<h2 id="when-not-to-refactor">When Not to Refactor</h2>
+<ul>
+  <li>When code is broken
+    <ul>
+      <li>Refactoring is not about fixing broken code, it’s about design of code</li>
+      <li>Refactoring should never change code behavior, so <strong>can’t</strong> fix broken code</li>
+    </ul>
+  </li>
+  <li>When a deadline is close
+    <ul>
+      <li>time spent on refactoring doesn’t advance features</li>
+      <li>risk of regression errors increases risk of missing a deadline</li>
+    </ul>
+  </li>
+  <li>When there is no reason to!</li>
+</ul>
+
+<h2 id="bad-smells">Bad Smells</h2>
+<ul>
+  <li>What are bad smells?
+    <ul>
+      <li>Symptoms in code that may indicate deeper problems</li>
+      <li>Usually not bugs, don’t impair function</li>
+      <li>But indicate weaknesses in design
+<img src="../assets/content_images/omscs/sdp/p4l5_img4.png" alt="" /></li>
+    </ul>
+  </li>
+  <li>Duplicated Code
+    <ul>
+      <li>Same piece of code replicated in multiple places
+        <ul>
+          <li>common from copy/paste programming</li>
+        </ul>
+      </li>
+      <li>fixed by extract method refactoring</li>
+    </ul>
+  </li>
+  <li>Long method
+    <ul>
+      <li>extract method</li>
+      <li>decompose conditional</li>
+      <li>shorten and break down method to make it more cohesive</li>
+    </ul>
+  </li>
+  <li>Large class
+    <ul>
+      <li>extract class or subclass</li>
+      <li>break down class to multiple, each with more cohesive functionality</li>
+    </ul>
+  </li>
+  <li>Shotgun surgery
+    <ul>
+      <li>every time a change is made, have to go to many classes</li>
+      <li>functionality is spread among classes,  too much coupling and too little cohesion</li>
+      <li>move method/field, inline class</li>
+      <li>bring related functionality together, remove dependencies between classes</li>
+    </ul>
+  </li>
+  <li>Feature envy
+    <ul>
+      <li>refers to a method that seems more interested in a class other than the one it belongs to</li>
+      <li>extract method, move method to class it is referencing
+        <ul>
+          <li>decreases coupling between classes</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+:ET

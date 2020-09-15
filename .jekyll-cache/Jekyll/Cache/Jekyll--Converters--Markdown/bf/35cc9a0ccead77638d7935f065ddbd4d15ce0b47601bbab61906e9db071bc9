@@ -1,0 +1,232 @@
+I"�<hr />
+<h2 id="life-cycle-models">Life Cycle Models</h2>
+
+<h4 id="phases-of-the-software-lifecycle">Phases of the software lifecycle</h4>
+<ul>
+  <li>Each of these will be covered in great depth
+    <ol>
+      <li>Requirements Engineering</li>
+    </ol>
+    <ul>
+      <li>The process of establishing th needs of stakeholders</li>
+      <li>Cost of correction climbs over time.  Cheapest to find mistakes here.</li>
+      <li>4 phases
+        <ol>
+          <li>Elicitation</li>
+          <li>Analysis</li>
+          <li>Specification</li>
+          <li>Validation</li>
+          <li>Management
+            <ul>
+              <li>Accounts for changes 
+        * Iterative process</li>
+            </ul>
+          </li>
+          <li>Design</li>
+        </ol>
+      </li>
+      <li>Consists of series of design activities</li>
+      <li>General theme is to design from high level view down to low</li>
+      <li>Result in a set of design products
+        <ol>
+          <li>Implementation</li>
+        </ol>
+      </li>
+      <li>4 pillars
+        <ol>
+          <li>Reduction of complexity</li>
+          <li>Anticipation of diversity</li>
+          <li>Structuring for validation</li>
+          <li>Use of standards</li>
+        </ol>
+        <ol>
+          <li>Verification and Validation</li>
+        </ol>
+      </li>
+      <li>Validation: did we build the right system?</li>
+      <li>Verification: did we build the system right?</li>
+      <li>Can be done at multiple levels
+        <ul>
+          <li>Unit - is each unit right?</li>
+          <li>Integration - do the units interact correctly?</li>
+          <li>System - does the system overall behave correctly?
+            <ol>
+              <li>Maintenance</li>
+            </ol>
+          </li>
+        </ul>
+      </li>
+      <li>After software is finished and deployed, might have environment 
+  changes, feature requests, or bug reports</li>
+      <li>3 kinds of maintenace
+        <ol>
+          <li>Corrective maintenance - fix bugs</li>
+          <li>Perfective maintenance - add features</li>
+          <li>Adaptive maintenance - adjust for env changes</li>
+        </ol>
+      </li>
+      <li>maintenance is expensive
+        <ul>
+          <li>regression testing is testing software after changes
+  to ensure no new bugs were added</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="software-process-model-aka-software-lifecycle-model">Software Process Model (aka Software Lifecycle Model)</h4>
+<ul>
+  <li>Main function is to determine the order of software dev activities</li>
+  <li>Also to determine transition criteria between each step</li>
+</ul>
+
+<ol>
+  <li>Waterfall Process
+    <ul>
+      <li>Performs well for products where there is a stable product definition</li>
+      <li>Progresses through orderly steps from first to alst with review before each step forward</li>
+      <li>Pro: Allows you to find errors early</li>
+      <li>Con: Very inflexible</li>
+    </ul>
+  </li>
+  <li>Spiral Process
+    <ul>
+      <li>Incremental risk-oriented model</li>
+      <li>4 main phases
+        <ol>
+          <li>Determine objectives</li>
+          <li>Identify and resolve risks</li>
+          <li>Development and Tests</li>
+          <li>Plan the next iteration</li>
+        </ol>
+      </li>
+      <li>A project iterates through all 4 phases</li>
+      <li>Pros: risk reduction advantage.  Functionality can be added later.  Software produced
+  pretty early in iterative lifecycle</li>
+      <li>Cons: requires specific expertise, lots more complexity</li>
+    </ul>
+  </li>
+  <li>
+    <p>Evolutionary prototyping
+ *4 main phases
+     1. Initial concept
+     2. Design and implement initial prototype
+     3. Refine prototype until acceptable
+     4. Complete and release prototype</p>
+
+    <ul>
+      <li>Ideal when not all requirements are well understood</li>
+      <li>Pros: Immediate feedback</li>
+      <li>Cons: Difficult to plan</li>
+    </ul>
+  </li>
+  <li>Rational Unified Process
+    <ul>
+      <li>Based on UML</li>
+      <li>Iterative</li>
+      <li>Each iteration has 4 phases
+        <ol>
+          <li>Inception</li>
+          <li>elaboration</li>
+          <li>Construction</li>
+          <li>Transition</li>
+        </ol>
+      </li>
+      <li>We do different software dev stuff in each phase.  We do more or less
+  of each thing depending on the phase</li>
+    </ul>
+  </li>
+  <li>Agile
+    <ul>
+      <li>Highly iterative and flexible</li>
+      <li>Going to focus on TDD.  Iterates through 3 phases
+        <ol>
+          <li>Write tests. Red phase, no code yet, they all fail</li>
+          <li>Green phase, write just enough code to make all tests past</li>
+          <li>Refactor, rewrite code to make it more readable and maintainable</li>
+        </ol>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<h4 id="choosing-a-model">Choosing a model</h4>
+<ul>
+  <li>How to choose a model?
+    <ul>
+      <li>Requirements understanding
+        <ul>
+          <li>Also requirements stability</li>
+        </ul>
+      </li>
+      <li>Expected lifetime</li>
+      <li>Risk</li>
+      <li>Schedule constraints</li>
+      <li>Interaction with stakeholders
+        <ul>
+          <li>Hard to iterate a lot if they don’t respond</li>
+        </ul>
+      </li>
+      <li>Level of expertise of people involved</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="lifecycle-documents">Lifecycle Documents</h4>
+<ul>
+  <li>Lots of different kinds</li>
+  <li>IEEE has official ones, very heavy</li>
+  <li>This class will use our own lightweight versions</li>
+</ul>
+
+<h4 id="classic-mistakes">Classic Mistakes</h4>
+<ul>
+  <li>People
+    <ul>
+      <li>Heroics
+        <ul>
+          <li>too much emphasis on ‘heroic efforts’</li>
+          <li>causes risk-taking and burnout</li>
+        </ul>
+      </li>
+      <li>Bad work environment
+        <ul>
+          <li>strong evidence this affects productivity (no duh)</li>
+        </ul>
+      </li>
+      <li>Poor people management
+        <ul>
+          <li>lack of leadership, poor leadership</li>
+          <li>adding people to a late project.  never works!</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Process
+    <ul>
+      <li>Scheduling issues - due to poor time estimation</li>
+      <li>Planning issues</li>
+      <li>unforeseen failures</li>
+    </ul>
+  </li>
+  <li>Product
+    <ul>
+      <li>gold plating - excessive unnecessary requirements</li>
+      <li>feature creep - adding additional (unneeded) feature creep
+        <ul>
+          <li>avg 25% creeped features on projects</li>
+        </ul>
+      </li>
+      <li>Research /= development - manage research differently</li>
+    </ul>
+  </li>
+  <li>Technology
+    <ul>
+      <li>Silver bullet syndrome - too much reliance on some (new) technology</li>
+      <li>Switching tools (or adding)</li>
+      <li>No version control</li>
+    </ul>
+  </li>
+</ul>
+:ET

@@ -1,0 +1,265 @@
+I"$<hr />
+<h2 id="software-engineering-and-uml">Software Engineering and UML</h2>
+
+<h3 id="object-orientation">Object Orientation</h3>
+<ul>
+  <li>Precedence of data over function
+    <ul>
+      <li>data is the center</li>
+    </ul>
+  </li>
+  <li>Information hiding
+    <ul>
+      <li>encapsulation of data behind interfaces</li>
+      <li>makes code more maintainable.  nobody cares how its implemented, just inputs and outputs</li>
+    </ul>
+  </li>
+  <li>Inheritance
+    <ul>
+      <li>re-use of object definitions with incremental refinement</li>
+      <li>polymorphism = sub-classes can be used wherever their parent classes can be used</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="what-is-an-object">What is an object</h4>
+<ul>
+  <li>Object is a computing unit organized around a collection of state or instance variables
+    <ul>
+      <li>associated with operators that act on such state</li>
+      <li>operations are invoked by sending a message to an object</li>
+    </ul>
+  </li>
+  <li>Class is a blueprint from which new objects can be created.  Like a blueprint</li>
+</ul>
+
+<h4 id="why-do-we-use-oo">Why do we use OO?</h4>
+<ul>
+  <li>Reduce maintenance costs by limiting the effect of chases</li>
+  <li>Can modify parts of the system without affecting the rest of the system</li>
+  <li>Improve development process</li>
+  <li>Enforce good design</li>
+</ul>
+
+<h4 id="ooad---oo-analysis-and-design">OOAD - OO Analysis and Design</h4>
+<ul>
+  <li>model a software system as a group of interacting objects
+    <ul>
+      <li>requirements analysis technique</li>
+    </ul>
+  </li>
+  <li>Rumbaugh methodology - 3 models - OMT
+    <ul>
+      <li>data</li>
+      <li>functional</li>
+      <li>control - uses state machines to describe how a system would evolve while in use</li>
+      <li>grandfather of Unified Modeling Language (UML)</li>
+    </ul>
+  </li>
+  <li>From functional orientied to data oriented view
+    <ul>
+      <li>define system first in terms of data types</li>
+      <li>Focus on real world object and how they map to requirements
+        <ol>
+          <li>obtain and prepare textual description of problem to be solved</li>
+          <li>underline nouns -&gt; classes</li>
+          <li>underline adjectives -&gt; attributes of classes</li>
+          <li>underline active verbs -&gt; operations</li>
+        </ol>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="running-example-course-management-system">Running Example: Course Management System</h3>
+<h4 id="class-diagram">Class Diagram</h4>
+
+<p><img src="../assets/content_images/omscs/sdp/p2l2_img1.png" alt="" /></p>
+<ul>
+  <li>Classes
+    <ul>
+      <li>fairly simple, go find all the nouns, those are your classes
+<img src="../assets/content_images/omscs/sdp/p2l2_img2.png" alt="" /></li>
+    </ul>
+  </li>
+  <li>Attributes represent the structure of a class
+    <ul>
+      <li>May be found by:
+        <ul>
+          <li>examining class definitions</li>
+          <li>studying requirements</li>
+          <li>applying domain knowledge</li>
+        </ul>
+      </li>
+      <li>e.g each <strong>course offering</strong> has a <strong>number</strong>, <strong>location</strong>, and <strong>time</strong></li>
+    </ul>
+  </li>
+  <li>Operations
+    <ul>
+      <li>Represent the behavior of a class</li>
+      <li>May be found by examining interations among entities</li>
+      <li>e.g. <strong>sutdents may use the system to add/drop courses</strong>
+<img src="../assets/content_images/omscs/sdp/p2l2_img3.png" alt="" /></li>
+    </ul>
+  </li>
+  <li>Relationships between classes
+    <ul>
+      <li>describe interactios between objects</li>
+      <li>3 main types
+        <ol>
+          <li>dependency: x uses y</li>
+          <li>assocations/aggregations: x has a y</li>
+          <li>generalization: x is a y</li>
+        </ol>
+      </li>
+      <li>dependency example:
+<img src="../assets/content_images/omscs/sdp/p2l2_img4.png" alt="" /></li>
+    </ul>
+  </li>
+  <li>association example
+    <ul>
+      <li>add adornments to the diagram to explain more detail about the association. e.g. what is the relationship, what direction does it go, how many y’s can x have, etc
+<img src="../assets/content_images/omscs/sdp/p2l2_img5.png" alt="" /></li>
+    </ul>
+  </li>
+  <li>aggregation example
+    <ul>
+      <li>relationship between two classes where one represents a larger class (a whole) which consists of smaller ones (parts of the whole)
+<img src="../assets/content_images/omscs/sdp/p2l2_img6.png" alt="" /></li>
+    </ul>
+  </li>
+  <li>generalization example
+    <ul>
+      <li>relationship between a general class (superclass) and a more specific class (subclass) which refines the superclass.
+<img src="../assets/content_images/omscs/sdp/p2l2_img7.png" alt="" /></li>
+    </ul>
+  </li>
+  <li>class diagram creation tips
+    <ul>
+      <li>take time to understand the problem</li>
+      <li>choose good class names</li>
+      <li>concentrate on the WHAT (remember, classes are nouns)</li>
+      <li>start with a simple diagram, then refine it</li>
+      <li>refine until you feel it is complete</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="component-diagram">Component Diagram</h4>
+<ul>
+  <li>Static view of components in the system and their relationships</li>
+  <li>Node = component
+    <ul>
+      <li>set of classes with a well-defined interface</li>
+    </ul>
+  </li>
+  <li>Edge = Relationship
+    <ul>
+      <li>“uses service of”</li>
+    </ul>
+  </li>
+  <li>can be used to represent an architecture</li>
+  <li>example:
+    <ul>
+      <li>dashed are original UML, means ‘x uses y’</li>
+      <li>lollipops are from UML 2, offer more detail
+        <ul>
+          <li>indicates a provided interface</li>
+        </ul>
+      </li>
+      <li>socket indicates a required interface</li>
+      <li>all can be annotated
+<img src="../assets/content_images/omscs/sdp/p2l2_img8.png" alt="" /></li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="deployment-diagram">Deployment Diagram</h4>
+<ul>
+  <li>provides a static deployment view of a system</li>
+  <li>physical allocation of components ot computational units (e.g. client server system)</li>
+  <li>node = computational unit</li>
+  <li>edge = communication between units</li>
+  <li>deployment example:
+<img src="../assets/content_images/omscs/sdp/p2l2_img9.png" alt="" /></li>
+</ul>
+
+<h4 id="behavioral-diagram">Behavioral Diagram</h4>
+<ul>
+  <li>Use Case Diagram
+    <ul>
+      <li>represents 2 things
+        <ol>
+          <li>sequence of interactions of outside entities (actors) with the system</li>
+          <li>system actions that yield an observable result of value to the actors</li>
+        </ol>
+      </li>
+      <li>describes the outside view of the system</li>
+      <li>aka scenarios, scripts, or user stories</li>
+      <li>notation
+<img src="../assets/content_images/omscs/sdp/p2l2_img10.png" alt="" /></li>
+    </ul>
+  </li>
+  <li>Use Case: Actor
+    <ul>
+      <li>entity: human or device</li>
+      <li>plays a role
+        <ul>
+          <li>an entity can play more than role</li>
+          <li>more than one entity can play the same role</li>
+        </ul>
+      </li>
+      <li>may appear in more than one use case</li>
+    </ul>
+  </li>
+  <li>the behavior of a use case can be specified by describing its flow of events (formal or informal)
+    <ul>
+      <li>how the use case starts and ends</li>
+      <li>normal flow of events</li>
+      <li>possible alternative flow of events</li>
+      <li>exceptional flow of events</li>
+    </ul>
+  </li>
+  <li>Role of use cases
+    <ul>
+      <li>requirements elicitation</li>
+      <li>architectural analysis</li>
+      <li>user prioritization</li>
+      <li>planning</li>
+      <li>testing</li>
+    </ul>
+  </li>
+  <li>creation tips
+    <ul>
+      <li>use a name that communicates purpose</li>
+      <li>define one atomic behavior per use case</li>
+      <li>define flow of events clearly</li>
+      <li>provide only essential details</li>
+      <li>factor common behaviors and variants (see additional UML documentation for details on how to do this)</li>
+    </ul>
+  </li>
+  <li>Sequence Diagram
+    <ul>
+      <li>interaction diagram that emphasizes the time ordering of messages</li>
+      <li>place objects that initiate interaction on the left, and place increasingly more subordinate objects to the right.  this should reflec the way that events will typically flow.</li>
+      <li>add object lifeline with vertical lines from each object</li>
+      <li>add messages to these lifelines in order from top to bottom, linked from sending object on left to receiving object on right</li>
+      <li>add focus of control.  tall thin bar showing where each object is active during its lifetime.
+<img src="../assets/content_images/omscs/sdp/p2l2_img11.png" alt="" /></li>
+    </ul>
+  </li>
+  <li>State Transition Diagram
+    <ul>
+      <li>For each relevant class - shows life history of that object
+        <ul>
+          <li>possible states of the class</li>
+          <li>events that cause a transition from one state to another</li>
+          <li>actions that result from a state change</li>
+        </ul>
+      </li>
+      <li>course offering example
+<img src="../assets/content_images/omscs/sdp/p2l2_img12.png" alt="" /></li>
+    </ul>
+  </li>
+</ul>
+:ET

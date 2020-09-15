@@ -1,0 +1,179 @@
+I"�<hr />
+<h2 id="unified-software-process">Unified Software Process</h2>
+
+<h3 id="history-of-rational-unified-process-rup">History of Rational Unified Process (RUP)</h3>
+<ul>
+  <li>In 1997, Rational defined six best practices for modern software engineering:
+    <ul>
+      <li>Develop iteratively, focusing on risk</li>
+      <li>Manage requirements</li>
+      <li>Employ a component-based architecture</li>
+      <li>Model software visually</li>
+      <li>Continuously verify quality</li>
+      <li>Control changes</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="key-features-of-rup">Key Features of RUP</h3>
+<ul>
+  <li>Software process model
+    <ul>
+      <li>Defines order of phases to be followed</li>
+      <li>Prescribes transition criteria</li>
+    </ul>
+  </li>
+  <li>Component-based
+    <ul>
+      <li>Software components are building blocks of software system</li>
+      <li>Well-defined interfaces between these components</li>
+    </ul>
+  </li>
+  <li>Tightly related to UML
+    <ul>
+      <li>relies extensively on UML for notation and basic principles</li>
+    </ul>
+  </li>
+  <li>Use-Case Driven</li>
+  <li>Architecture-centric
+    <ul>
+      <li>good way to understand - “use cases define the function of the system, while architecture defines the form”
+        <ol>
+          <li>create rough outline of system</li>
+          <li>key use cases -&gt; subsystems</li>
+          <li>Refine architecture using addtional use cases</li>
+        </ol>
+      </li>
+    </ul>
+  </li>
+  <li>Iterative and incremental
+    <ul>
+      <li>each cycle/increment results in a product release
+        <ul>
+          <li>including documents, training, etc.  all of it</li>
+        </ul>
+      </li>
+      <li>each cycle further divided into 4 phases
+        <ol>
+          <li>Inception
+            <ul>
+              <li>From idea to vision of end product</li>
+              <li>Delimit project scope</li>
+              <li>Business case for the product presented</li>
+              <li>What are the major users and what will the system do for them?  Simplified use case model</li>
+              <li>What could be an architecture for the system?  Tentative architecture</li>
+              <li>What is the plan and how much will it cost?  Main risks identified, rough planning</li>
+              <li>Deliverables
+                <ul>
+                  <li>Vision document with general vision of the core project’s requirements, key features, and main cconstraints</li>
+                  <li>Initial use-case model</li>
+                  <li>Initial project glossary</li>
+                  <li>Initial business case</li>
+                  <li>Initial project plan and risk assessment</li>
+                  <li>Optionally, one or more prototypes</li>
+                </ul>
+              </li>
+              <li>Evaluation Criteria
+                <ul>
+                  <li>Stakeholder concurrence on scope, definition, and cost/schedule estimates</li>
+                  <li>Requirements understanding as evidenced by the fidelity of the primary use cases</li>
+                  <li>Credibility of the cost/schedule estimates, priorities, risks, and development process</li>
+                  <li>Depth and breadth of any prototype that was developed</li>
+                  <li>Project may be cancelled or considerably re-thought if it fails to pass this milestone</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>Elaboration
+            <ul>
+              <li>Analyze problem domain</li>
+              <li>Establish architectural foundation</li>
+              <li>Eliminate highest risk elements (address most critical use cases)</li>
+              <li>Refine plan of activites and estimate</li>
+              <li>Deliverables
+                <ul>
+                  <li>Almost complete use-case model</li>
+                  <li>Supplementary requirements, including non-functional requirements</li>
+                  <li>Software architecture</li>
+                  <li>Design model, test cases, executable prototype</li>
+                  <li>Revised project plan and risk assessment</li>
+                  <li>Preliminary user manual</li>
+                </ul>
+              </li>
+              <li>Evaluation Criteria
+                <ul>
+                  <li>Are vision and architecture stable?</li>
+                  <li>Does the protytpe show that the major risks have been addressed/resolved?</li>
+                  <li>Is the plan sufficiently detailed/accurate?</li>
+                  <li>Do all stakeholders agree that the vision can be achieved with the current plan?</li>
+                  <li>Is the actual resource expenditure versus planned expenditure acceptable?</li>
+                  <li>Project may be cancelled or considerably re-though if it fails to pass this milestone.</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>Construction
+            <ul>
+              <li>All features considered developed</li>
+              <li>All features thoroughly tested</li>
+              <li>Shift in emphasis from IP development to product development</li>
+              <li>Deliverables
+                <ul>
+                  <li>All use cases realized, with traceability information</li>
+                  <li>Software product integrated on adequate platforms</li>
+                  <li>Complete system test results</li>
+                  <li>User manual</li>
+                  <li>Complete set of artifacts: desigtn, code, test cases, etc.</li>
+                </ul>
+              </li>
+              <li>Evaluation Criteria
+                <ul>
+                  <li>Is the product stable/mature enough to be deployed to users?</li>
+                  <li>Are the stakeholders ready for the transition into the user community?</li>
+                  <li>Are actual resource expenditures versus planned expenditures still acceptable?</li>
+                  <li>Transition may be postponed by one release if the project fails to pass this milestone.</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>Transition
+            <ul>
+              <li>Issues after deployment -&gt; new release</li>
+              <li>Training customer service and providing help-line assistance</li>
+              <li>A new cycle may start</li>
+              <li>Deliverables
+                <ul>
+                  <li>Project completed</li>
+                  <li>Product in use</li>
+                  <li>Lessons learned</li>
+                  <li>Plan for next release</li>
+                </ul>
+              </li>
+              <li>Evaluation Criteria
+                <ul>
+                  <li>Is the user satisfied?</li>
+                  <li>Are actual resource expenditures versus planned expenditures still acceptable?
+    * inside each phase there may be multiple iterations.  each iteration corresponds to a set of use cases (aka set of features).</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ol>
+      </li>
+      <li>Example:
+<img src="../assets/content_images/omscs/sdp/p3l4_img1.png" alt="" /></li>
+      <li>Work is distributed across each phase within a cycle
+<img src="../assets/content_images/omscs/sdp/p3l4_img2.png" alt="" /></li>
+      <li>Within each iteration, multiple steps are taken
+        <ul>
+          <li>Identify relevant use cases</li>
+          <li>Create a design</li>
+          <li>Implement the design</li>
+          <li>Verify code against use cases</li>
+          <li>Release a product</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+:ET

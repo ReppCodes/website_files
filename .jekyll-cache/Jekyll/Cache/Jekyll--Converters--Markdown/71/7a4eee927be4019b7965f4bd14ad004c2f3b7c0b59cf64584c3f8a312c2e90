@@ -1,0 +1,470 @@
+I"7C<hr />
+<h2 id="general-concepts">General concepts</h2>
+<ul>
+  <li>Software is buggy, estimated $60B per year cost
+    <ul>
+      <li>Contains on average 1-5 bugs per 1k LoC</li>
+      <li>solution is to verify software as much as possible.  Most common kind of verification is software testing</li>
+    </ul>
+  </li>
+  <li>Failure
+    <ul>
+      <li>Observable incorrect behavior of the software</li>
+    </ul>
+  </li>
+  <li>Fault
+    <ul>
+      <li>aka bug</li>
+      <li>incorrect piece of code</li>
+      <li>necessary but not sufficient component of failure</li>
+    </ul>
+  </li>
+  <li>Error
+    <ul>
+      <li>cause of a fault</li>
+      <li>usually a human error</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="verification-approaches">Verification Approaches</h2>
+<ul>
+  <li>testing put last as it has the most detail and add-on sections.  other approaches briefly covered first</li>
+</ul>
+
+<h3 id="static-verifications">Static Verifications</h3>
+<ul>
+  <li>tries to identify specific classes of problems</li>
+  <li>unlike testing it does not just consider individual inputs, instead considers all possible inputs</li>
+  <li>Pros
+    <ul>
+      <li>considers all program behaviors, is complete</li>
+    </ul>
+  </li>
+  <li>Cons
+    <ul>
+      <li>because it includes impossible inputs, can result in false positives / false alarms</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="inspections">Inspections</h3>
+<ul>
+  <li>also called reviews or walkthroughs</li>
+  <li>manual group activity in which several people from the org look at code and artifacts and try to identify defects</li>
+  <li>very effective, this is a code review!</li>
+  <li>Pros
+    <ul>
+      <li>when done rigorously, they are systematic and thorough</li>
+    </ul>
+  </li>
+  <li>Cons
+    <ul>
+      <li>they are manual, take a lot of time</li>
+      <li>they are informal and subjective, rely on reviewers to see and know things</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="formal-proofs-of-correctness">Formal proofs of correctness</h3>
+<ul>
+  <li>a specification is a document that formally defines behavior of the software</li>
+  <li>a formal proof is a program that formally proves that the program being verified actually implements the specification</li>
+  <li>Pros
+    <ul>
+      <li>provide strongest guarantees</li>
+    </ul>
+  </li>
+  <li>Cons
+    <ul>
+      <li>need formal specification.  these are rarely available</li>
+      <li>complex and expensive to perform, require specialized skills</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="testing">Testing</h3>
+<ul>
+  <li>Exercising the system to try to make it fail</li>
+  <li>a test case consists of input from input domain and an output from the output domain</li>
+  <li>a test suite is a set of test cases</li>
+  <li>Pros
+    <ul>
+      <li>no false positives, no false alarms</li>
+    </ul>
+  </li>
+  <li>Cons
+    <ul>
+      <li>highly incomplete, code coverage is always low</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="introducction">Introducction</h4>
+<ul>
+  <li>Executing a program on a tiny sample of  the input domain</li>
+  <li>Dynamic technique - program must be executed to perform</li>
+  <li>Optimistic approximation - program under test is exercised on only subset of inputs, under assumption that behavior under other inputs will be the same as the behavior under tested inputs</li>
+  <li>Successful Tests
+    <ul>
+      <li>A test is successful if the program fails</li>
+      <li>Testing cannot prove absence of errors, only reveal their existence</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="testing-granularity-levels">Testing Granularity Levels</h4>
+<ul>
+  <li>Unit testing - test individual modules of system to see that each does what it should</li>
+  <li>Integration testing - test groups of modules to see that they perform together as expected</li>
+  <li>System Testing - test all modules of system at once</li>
+  <li>Acceptance Testing - validation of softare against customer requirements</li>
+  <li>Regression Testing - testing performed whenever system is changed to ensure changed code does not break things
+    <ul>
+      <li>this part in particular is automatable and should be automated</li>
+      <li>Continuous Integration tooling sits here</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="alpha-and-beta-testing">Alpha and Beta Testing</h4>
+<ul>
+  <li>Alpha testing is performed by distributing software to internal users as guinea pigs.  Done to avoid exposing substantial problems outside the organization</li>
+  <li>Beta testing is the same, but to external users.  Done preceding official product release</li>
+</ul>
+
+<h4 id="black-box-testing">Black Box Testing</h4>
+<ul>
+  <li>Black box considers software as closed box, looking only at description of software (specification).
+    <ul>
+      <li>Cover as much specified behavior as possible</li>
+      <li>cannot reveal errors due to implementation detail</li>
+      <li>Example
+<img src="../assets/content_images/omscs/sdp/p4l1l2l3_img1.png" alt="" /></li>
+    </ul>
+  </li>
+  <li>Advantages
+    <ul>
+      <li>focus on only the appropriate input domain</li>
+      <li>don’t need the code to do it
+        <ul>
+          <li>allows for early design of tests</li>
+        </ul>
+      </li>
+      <li>catches logic defects</li>
+      <li>applicable at all granularity levels (unit, integration, and system)</li>
+    </ul>
+  </li>
+  <li>Begins with functional specification, ends with test cases
+      * should be traversed systematically with steps
+      1. identify independently testable features
+      2. identify relevant inputs
+          * this is a harder problem than it seems, as you cannot just test all possible inputs
+          * random input selection?  why not?
+              * uniform input selection precludes designer bias
+              * but you’ll miss a lot just by looking in the wrong places.  not efficient enough
+          * partition testing
+              * bugs tend to be sparse overall, but dense in specific areas.
+              * partition the domain, select tested inputs from each partition
+                  * for example, for a string split function using a chunk size input, you might test behavior for chunk sizes &lt;0, =0, &gt;0.  You might also test strings with lengths less than input chunk size, etc.
+              * errors tend to occur at the boundary of a subdomain.  partitioning and selecting inputs within those paritions should reflect that fact.
+                  * for example, -1, 1, MAXINT are common integer boundary values
+                  * important to remove meaningless cases when generating tests, though
+      3. derive test case specifications (descriptions of test cases)
+      4. generate test cases</li>
+  <li>The Category-Partition Method
+    <ul>
+      <li>Developed in 1988.  Uses prescribed 6 steps for going from spec to test cases
+        <ol>
+          <li>Identify independently testable features</li>
+        </ol>
+        <ul>
+          <li>discussed above, will not be covered again here
+      2. Identify categories</li>
+          <li>characteristics of each input element</li>
+          <li>in example from above: split(string str, int size)
+            <ul>
+              <li>two input elements, str and size</li>
+              <li>str
+                <ul>
+                  <li>length</li>
+                  <li>content</li>
+                </ul>
+              </li>
+              <li>size
+                <ul>
+                  <li>value
+                    <ol>
+                      <li>Partition categories into choices</li>
+                    </ol>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>str
+            <ul>
+              <li>length
+                <ul>
+                  <li>0, -1, etc…</li>
+                </ul>
+              </li>
+              <li>content
+                <ul>
+                  <li>spaces, special characters, etc…</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>size
+            <ul>
+              <li>value
+                <ul>
+                  <li>0, &gt;0, &lt;0, MAXINT, etc…
+                    <ol>
+                      <li>Identify constraints among choices</li>
+                    </ol>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>to eliminate meaningless combinations of inputs</li>
+          <li>to reduce the number of test cases</li>
+          <li>three types
+            <ul>
+              <li>properties: if, error, single</li>
+              <li>str
+                <ul>
+                  <li>length
+                    <ul>
+                      <li>0 - property zerovalue</li>
+                    </ul>
+                  </li>
+                  <li>content
+                    <ul>
+                      <li>special characters - if !zerovalue</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li>size
+                <ul>
+                  <li>value
+                    <ul>
+                      <li>&lt;0 - error, so test only once</li>
+                      <li>MAXINT - single, so test only once
+      5. Produce/evaluate test case specifications</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>can be automated</li>
+          <li>produces test frames (specification of a test)</li>
+          <li>because it is automated, if too many frames are produced additional constraints can be added and one-click regeneration will produce fewer frames
+      6. Generate test cases from test case specifications</li>
+          <li>simple instantiation of test frames</li>
+          <li>final result: set of concrete tests</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Model-Based Testing
+    <ul>
+      <li>focuses on model of the software, builds tests around that</li>
+      <li>Example: Finite State Machine
+        <ul>
+          <li>Nodes = states</li>
+          <li>Edges = transitions between states</li>
+          <li>Edge labels = events/actions</li>
+          <li>Identify system’s boundaries, and input and output</li>
+          <li>Identify relevant states and transitions</li>
+          <li>Decide which states and transitions you want to develop test coverage for</li>
+        </ul>
+      </li>
+      <li>Some Considerations
+        <ul>
+          <li>Applicability
+            <ul>
+              <li>very general approach</li>
+              <li>in UML, state machine are readily available</li>
+            </ul>
+          </li>
+          <li>Abstraction is key
+            <ul>
+              <li>bigger system means you need more abstraction</li>
+              <li>more abstraction means less coverage but also less cost</li>
+            </ul>
+          </li>
+          <li>many other approaches exist
+            <ul>
+              <li>decision tables</li>
+              <li>flow graphs</li>
+              <li>historical models</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="white-box-testing">White Box Testing</h4>
+<ul>
+  <li>White box looks inside the software at the code itself
+    <ul>
+      <li>Cover as much coded behavior as possible</li>
+      <li>Cannotg reveal errors due to missing paths (if it isn’t implemented at all then you’ll never find errors in it)</li>
+      <li>Example
+<img src="../assets/content_images/omscs/sdp/p4l1l2l3_img2.png" alt="" /></li>
+    </ul>
+  </li>
+  <li>Basic assumption of white box testing - executing the faulty statement is a necessary condition for revealing a fault</li>
+  <li>Advantages
+    <ul>
+      <li>based on the code
+        <ul>
+          <li>quality of testing can be measured objectively</li>
+        </ul>
+      </li>
+      <li>Can be used to compare test suites</li>
+      <li>Allows for covering the coded behavior (as distinct from the specified behavior)</li>
+    </ul>
+  </li>
+  <li>Different kinds (many variations of each)
+    <ul>
+      <li>control-flow based (will focus mostly on this one)</li>
+      <li>data-flow based</li>
+      <li>fault based</li>
+    </ul>
+  </li>
+  <li>Coverage criteria
+    <ul>
+      <li>defined in terms of test requirements</li>
+      <li>Result in test specifications, test cases</li>
+    </ul>
+  </li>
+  <li>Statement Coverage
+    <ul>
+      <li>Test requirements: statements in the program</li>
+      <li>Coverage measure: number of executed statements / total number of statements</li>
+      <li>Most used coverage metric in industry</li>
+      <li>Typical coverage target in industry is 80-90%</li>
+    </ul>
+  </li>
+  <li>Control Flow Graphs
+    <ul>
+      <li>Important to recognize implicit branches, “else do nothing” is frequently not typed out but still is present, for example</li>
+      <li>Tool for visually depicting control flow branches of a program</li>
+    </ul>
+  </li>
+  <li>Branch Coverage
+    <ul>
+      <li>Test requirements: branches in the program</li>
+      <li>Coverage measure: number of branches executed / total number of branches</li>
+      <li>considers all branches even if not explicitly stated in code</li>
+      <li>even 100% coverage does not guarantee all bugs will be found</li>
+      <li>Test Criteria Subsumption
+        <ul>
+          <li>100% branch coverage by definition means 100% statement coverage, but the inverse does not hold true</li>
+          <li>branch coverage is therefore stronger than statement coverage, but also correspondingly more expensive</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Condition Coverage
+<img src="../assets/content_images/omscs/sdp/p4l1l2l3_img3.png" alt="" />
+    <ul>
+      <li>Test requirements: individual conditions in the program
+        <ul>
+          <li>condition here takes the form of True or False
+            <ul>
+              <li>distinction arises in screenshot above, where two conditions gate the same branch in an OR configuration, and branch coverage does not require that you exercise both of them.  this is relevant for white box testing assignment’</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Coverage measure: number of conditions that are both T and F / total number of conditions
+        <ul>
+          <li>thus a complete test suite would test all conditions gating all branches</li>
+          <li>however, this does not guarantee branch coverage, they are orthogonal to each other
+<img src="../assets/content_images/omscs/sdp/p4l1l2l3_img4.png" alt="" /></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Branch and Condition Coverage
+    <ul>
+      <li>Test requirements: branches and individual conditions in the program</li>
+      <li>Coverage measure: computed considering both branch and conditional coverage measures</li>
+    </ul>
+  </li>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>Modified Condition/Decision Coverage (MC</td>
+          <td>DC)</td>
+        </tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>key idea: test important combinations of conditions instead of all of them to limit testing costs</li>
+      <li>extends branch and decision coverage witgh the requirement that each condition should affect the decision outcome independently
+<img src="../assets/content_images/omscs/sdp/p4l1l2l3_img5.png" alt="" /></li>
+      <li>stronger than branch and condition coverage, therefore subsumes all of them, despite offering capability of reducing number of test cases as seen in above screenshot</li>
+    </ul>
+  </li>
+  <li>Other Criteria
+    <ul>
+      <li>Path coverage
+        <ul>
+          <li>Test requirement: all paths in program
+            <ul>
+              <li>very expensive</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>data-flow coverage
+        <ul>
+          <li>shifts emphasis from statements to pairs of statements, and particularly statements where memory objects are modified</li>
+        </ul>
+      </li>
+      <li>mutation coverage
+        <ul>
+          <li>new idea</li>
+          <li>evaluate goodness of our tests by modifying our code, see how good tests are at distinguishing between real code and mutants
+            <ul>
+              <li>this one has grown legs, would be good to study more</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>Subsumption Redux
+<img src="../assets/content_images/omscs/sdp/p4l1l2l3_img6.png" alt="" /></p>
+  </li>
+  <li>White Box Summary
+    <ul>
+      <li>Works on a formal model.  No subjective interpretation needed, everything about it can be quantified</li>
+      <li>As a result of point 1, this means you can objectively compare test suites to see how they perform</li>
+      <li>There are two broad classes of tests criteria: practical and theoretical
+        <ul>
+          <li>Note, mutation testing is called theoretical here.  Excellent lesson on how ‘practical’ things can get with a few years of advancement</li>
+        </ul>
+      </li>
+      <li>Fully automatable
+        <ul>
+          <li>write the tests once at most, run whenever you push a branch!</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+:ET

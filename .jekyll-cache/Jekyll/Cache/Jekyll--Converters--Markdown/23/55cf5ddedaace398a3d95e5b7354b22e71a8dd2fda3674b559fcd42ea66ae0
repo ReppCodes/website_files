@@ -1,0 +1,58 @@
+I"m<hr />
+<h3 id="starting-from-the-bottom">Starting from the bottom…</h3>
+
+<ul>
+  <li>Class draws distinction between programming (smaller projects, single programmer)
+  and software engineering/development (larger projects, team coordination)</li>
+  <li>Central idea is that in the 60s amount of software needed far outstripped output
+  capacity of individual programmers (teeing up idea that you need formal discipline to close that gap)</li>
+  <li>Defines sfotware development as going from abstract idea to concrete, functioning software
+    <ul>
+      <li>Software development process is used to break up the path from A to B into digestible chunks
+        <ul>
+          <li>Systematic</li>
+          <li>Formal</li>
+          <li>Four main process types exist (will be covered in depth throughout class)
+            <ul>
+              <li>Watefall</li>
+              <li>Evolutionary prototyping</li>
+              <li>Rational unified process (aka Unified Software Process)
+                <ul>
+                  <li>This is where UML comes in</li>
+                </ul>
+              </li>
+              <li>Agile</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Software Development Phases
+    <ul>
+      <li>Requirements Engineering</li>
+      <li>Design</li>
+      <li>Implementation</li>
+      <li>Verification and Validation</li>
+      <li>Maintenance (including feature adds)</li>
+    </ul>
+  </li>
+  <li>Tooling
+    <ul>
+      <li>Better tooling helps close the gap between the growth curves of 
+  developers productivity and software size and complexity
+        <ul>
+          <li>Includes improvement in IDEs, language, debugging, etc</li>
+        </ul>
+      </li>
+      <li>Tools
+        <ul>
+          <li>IDEs</li>
+          <li>VCS</li>
+          <li>Coverage and Verification Tools</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+:ET

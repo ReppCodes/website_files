@@ -1,0 +1,316 @@
+I"�'<hr />
+<h2 id="agile-development-method">Agile Development Method</h2>
+<ul>
+  <li>Equated here with TDD.  Not sure those are tightly coupled, personally</li>
+</ul>
+
+<h2 id="cost-of-change---enter-agile">Cost of Change - Enter Agile</h2>
+<ul>
+  <li>Cost of change grows exponentially with time
+    <ul>
+      <li>Later changes are way more expensive</li>
+    </ul>
+  </li>
+  <li>Discover errors early… requires upfront planning</li>
+  <li>Thus, make large upfront investments in modeling?
+    <ul>
+      <li>This is the core value proposition of waterfall</li>
+    </ul>
+  </li>
+  <li>In the last 30 years, the equation has changed.  Compiling takes seconds instead of days, testing can be re-run automatically, etc etc.
+    <ul>
+      <li>As a result, costs of change are just lower, and doesn’t scale up with time as badly as it used to</li>
+      <li>This is only true, obviously, if modern tools and practices are used</li>
+    </ul>
+  </li>
+  <li>If cost vs time is flat now:
+    <ul>
+      <li>upfront work is a liability</li>
+      <li>ambiguity, volatility -&gt; good to delay</li>
+      <li>Only pay in time/money for what you use.  There is value in waiting</li>
+    </ul>
+  </li>
+  <li>Enter Agile!
+    <ul>
+      <li>17 Devs signed Agile Manifesto in 2001</li>
+      <li>They aim at flat cost growth over time, via decreased overhead</li>
+      <li>Focus on the code instead of planning</li>
+      <li>Focus on people over process.  Reward people.</li>
+      <li>Emphasize iterative approaches.  Deliver fast, evolve fast.</li>
+      <li>Customer involvement</li>
+      <li>Expectation that requirements will change.</li>
+      <li>Focus on simplicity, both in design and code.  Be as simple as possible, but no more so.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="extreme-programming-xp">Extreme Programming (XP)</h3>
+<ul>
+  <li>XP is a lightweight methodology for small to medium sized teams developing softgware in the face of vague or rapidly changing requiremtns.  –Kent Beck</li>
+  <li>What is XP
+    <ul>
+      <li>Lightweight
+        <ul>
+          <li>Does not overburden developers with process</li>
+        </ul>
+      </li>
+      <li>Humanistic
+        <ul>
+          <li>Centered on people.  Notably developers and customers.</li>
+        </ul>
+      </li>
+      <li>Discipline
+        <ul>
+          <li>Has tangible practices that must be followed</li>
+        </ul>
+      </li>
+      <li>Software Development</li>
+    </ul>
+  </li>
+  <li>Mentality of sufficiency
+    <ul>
+      <li>How would you program if you had all the time in the world?
+        <ul>
+          <li>Write tests</li>
+          <li>Restructure often</li>
+          <li>Talk with fellow programmers and with the customer often</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>XP Value and Principles
+    <ul>
+      <li>Communication - no good project without communication
+        <ul>
+          <li>Pair Programming</li>
+          <li>User Stories</li>
+          <li>Customer Involvement</li>
+        </ul>
+      </li>
+      <li>Simplicity - use the simplest thing that works</li>
+      <li>Feedback - get some.  Use it.
+        <ul>
+          <li>Test cases</li>
+          <li>Estimate new user stories right away</li>
+        </ul>
+      </li>
+      <li>Courage
+        <ul>
+          <li>Throw away what doesn’t work</li>
+          <li>Try new things</li>
+          <li>Fix what’s broken</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>XP Practices
+    <ul>
+      <li>Incremental Planning
+        <ul>
+          <li>Based on the idea that requirements are written on story cards
+            <ol>
+              <li>Select user stories for this release</li>
+            </ol>
+            <ul>
+              <li>Based on time available and priority
+      2. Break stories into tasks
+      3. Plan Release
+      4. Develop, integrate, and test our code</li>
+              <li>obviously an iterative step
+      5. Release software
+      6. Evaluate system and iteration</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Small Releases
+        <ul>
+          <li>Try to release very often</li>
+          <li>Advantages
+            <ul>
+              <li>Deliver real business value on very short cycle</li>
+              <li>Rapid feedback</li>
+              <li>Produces sense of accomplishment for developers</li>
+              <li>Reduces risk of going off course or having a big miss</li>
+              <li>Quickly adapt to changing requirements</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Simple Design
+        <ul>
+          <li>Avoid creating huge complicated design</li>
+          <li>Just enough to meet the requirements</li>
+          <li>No duplicated functionality</li>
+          <li>Fewest possible classes and methods</li>
+        </ul>
+      </li>
+      <li>Test-First Development
+        <ul>
+          <li>Any feature that does not have an automated test does not exist</li>
+          <li>Create unit tests before implementation</li>
+        </ul>
+      </li>
+      <li>Refactoring
+        <ul>
+          <li>Refactor as soon as opportunities for improvement are found</li>
+          <li>Often when new code is to be added</li>
+        </ul>
+      </li>
+      <li>Pair Programming
+        <ul>
+          <li>All production code is written with two people looking at one machine</li>
+          <li>One keyboard and one mouse</li>
+          <li>Alternate roles between programming and strategizing</li>
+          <li>Somewhat controversial practice
+            <ul>
+              <li>Prof is clearly in favor.  Suggests that studies show that you still get 2 devs worth of output</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Continuous Integration
+        <ul>
+          <li>Don’t allow problems to pile up and be discovered too late</li>
+          <li>Instead have a cycle
+            <ul>
+              <li>programming</li>
+              <li>local tests
+                <ul>
+                  <li>repeat as needed</li>
+                </ul>
+              </li>
+              <li>integrate</li>
+              <li>system tests
+                <ul>
+                  <li>repeat as needed
+  <img src="../assets/content_images/omscs/sdp/p4l4_img1.png" alt="" /></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>On-site Customer
+        <ul>
+          <li>The customer is an actual member of the team
+            <ul>
+              <li>sits with the team</li>
+              <li>brings requirements to the team</li>
+            </ul>
+          </li>
+          <li>Frequent objections that this is impractical in the real world
+            <ul>
+              <li>If the system isn’t worth the salary of one member for X months, maybe it isn’t worth building at all?  You’re investing a lot more into that system than one salaray anyway.</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Requirements Engineering in XP
+    <ul>
+      <li>Requirements expressed as user stories</li>
+      <li>Written by clients on story cards</li>
+      <li>Taken by developers and broken down into tasks</li>
+      <li>Tasks are used as basis for scheduling and cost estimates</li>
+      <li>Given these estimates and based on their priorities, customer will choose which stories to be included in upcoming release</li>
+      <li>Selected tasks will then be completed</li>
+    </ul>
+  </li>
+  <li>Testing Strategy
+    <ul>
+      <li>Testing is coded confidence</li>
+      <li>Isolated and automated</li>
+      <li>2 kinds of tests
+        <ul>
+          <li>Unit tests
+            <ul>
+              <li>test every meaningful feature</li>
+            </ul>
+          </li>
+          <li>System Tests
+            <ul>
+              <li>aka Acceptance Tests, Integration Tests</li>
+              <li>Involves customer-provided test cases</li>
+              <li>run longer and lest frequently</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="scrum">Scrum</h3>
+<ul>
+  <li>Actors
+    <ul>
+      <li>Product Owner
+        <ul>
+          <li>Manages the product backlog.</li>
+        </ul>
+      </li>
+      <li>Team
+        <ul>
+          <li>responsible for making and delivering.  usually 4-9 people</li>
+        </ul>
+      </li>
+      <li>Scrum master
+        <ul>
+          <li>responsible for overall scrum process.  facilitator.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>High level process
+    <ul>
+      <li>Product backlog
+        <ul>
+          <li>single source of requirements</li>
+          <li>ordered by priority</li>
+          <li>sometimes called WIP queue</li>
+        </ul>
+      </li>
+      <li>Sprint planning
+        <ul>
+          <li>next increment is defined</li>
+          <li>backlog items of interest are selected, converted into tasks, estimated</li>
+        </ul>
+      </li>
+      <li>sprint backlog
+        <ul>
+          <li>set of backlog items to be completed during next sprint</li>
+        </ul>
+      </li>
+      <li>sprint
+        <ul>
+          <li>actual iteration of scrum development process</li>
+          <li>main part lasts 2-4 weeks</li>
+          <li>within main part are many daily scrums that last 24 hours</li>
+        </ul>
+      </li>
+      <li>daily scrum
+        <ul>
+          <li>starts with scrum meeting.  15 minutes, early, for team to sync.  discussion of accomplishments since last meeting, to-do list before next meeting, and obstacle analysis</li>
+        </ul>
+      </li>
+      <li>sprint review
+        <ul>
+          <li>end of a main sprint cycle</li>
+          <li>4 hour meeting</li>
+          <li>demo</li>
+          <li>discuss problems encountered and resolved</li>
+          <li>in retrospective there’s a stronger focus on process and potential process improvements</li>
+        </ul>
+      </li>
+      <li>potentially shippable product increments
+        <ul>
+          <li>if something shippable is made, results in a release
+  <img src="../assets/content_images/omscs/sdp/p4l4_img2.png" alt="" /></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+:ET

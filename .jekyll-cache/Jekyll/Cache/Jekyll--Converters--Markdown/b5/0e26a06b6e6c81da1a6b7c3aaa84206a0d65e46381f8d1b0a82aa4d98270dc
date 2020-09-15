@@ -1,0 +1,293 @@
+I"�+<hr />
+<h2 id="requirements-gathering">Requirements Gathering</h2>
+
+<ul>
+  <li>Very difficult task.  Business people don’t wanna.</li>
+  <li>Brainstorming tasks.  example requirement, user wants tool to find average length of sentences in an essay
+    <ul>
+      <li>good example questions would be
+        <ol>
+          <li>What OSes should it run on?</li>
+          <li>How will the user specify input?</li>
+        </ol>
+      </li>
+    </ul>
+  </li>
+  <li>avoid implementation-specific questions</li>
+  <li>avoid OS-specific code where possible (platform independent is better)</li>
+  <li>Example questions from interview
+    <ul>
+      <li>How many students?
+        <ul>
+          <li>40-45 per class, 3 classes</li>
+        </ul>
+      </li>
+      <li>What kind of computers are students using?
+        <ul>
+          <li>Doesn’t know, probably several.</li>
+        </ul>
+      </li>
+      <li>How tech savvy are the students?
+        <ul>
+          <li>Wide range</li>
+        </ul>
+      </li>
+      <li>What are the students submitting?
+        <ul>
+          <li>Raw text files via email</li>
+        </ul>
+      </li>
+      <li>What constitutes a word?
+        <ul>
+          <li>Only wants larger words, guesses 3 letters?</li>
+          <li>Need flexibility here</li>
+        </ul>
+      </li>
+      <li>What do you consider a sentence?
+        <ul>
+          <li>Ends in period, exl point, etc.</li>
+          <li>Seems to be unsure, e.g. about commas counting</li>
+          <li>Need flexibility here</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Concludes CLI java-based tool with good documentation.  Lots of little error messages to help less tech savvy students with CLI usage
+    <ul>
+      <li>Core metric is avg number of words per sentence</li>
+      <li>Configurability about threshold word length</li>
+      <li>Configurability about what counts as a sentence</li>
+      <li>Results are avg number of words per sentence</li>
+      <li>Help messages if tool used incorrectly</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="assignment-3-requirements">Assignment 3 Requirements</h4>
+<ul>
+  <li>must use vanilla Java 1.6 or later, no libraries</li>
+  <li>must compile with javac, no options</li>
+  <li>executable from command line</li>
+  <li>user specifies file path</li>
+  <li>user specifies delimiters with -d</li>
+  <li>user specifies word length lower limit with -l</li>
+  <li>output must be average sentence length in words, rounded to two decimal places
+<em>**</em></li>
+</ul>
+
+<h2 id="requirements-engineering">Requirements Engineering</h2>
+<ul>
+  <li>What are software requirements?
+    <ul>
+      <li>A description of what a system has to do.
+        <ul>
+          <li>Functionalty and features</li>
+        </ul>
+      </li>
+      <li>Represented formally as text / shall statements</li>
+      <li>Represented non-textually as user stories or diagrams, etc.</li>
+    </ul>
+  </li>
+  <li>What is requirements engineering?
+    <ul>
+      <li>Working with stakeholders to elicit their requirements for the system</li>
+      <li>Analyzing those requirements to understand tradeoffs</li>
+      <li>Specification</li>
+      <li>Validation</li>
+      <li>Requirements management
+        <ul>
+          <li>Change management, feature adds, etc.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Why is it important?
+    <ul>
+      <li>Failed projects if you screw this up.</li>
+      <li>If you don’t understand requirements, you’re going to build the wrong system</li>
+      <li>Need to ask all the right stakeholders.</li>
+      <li>Gets the project off on the right foot.</li>
+    </ul>
+  </li>
+  <li>The process of establishing the services that the customer requires of the system, and the constraints under which the system operates</li>
+  <li>Focus on what the system needs to do, not how it will do so</li>
+  <li>Software intensive system = softare + hardware + context</li>
+  <li>Software quality is not just a function of the software, but of the combination of the software and its purpose.
+    <ul>
+      <li>Software can be of low quality not only because it doesn’t work well, but also because it does not fulfill its needed purpose.</li>
+    </ul>
+  </li>
+  <li>Completeness and Pertinence
+    <ul>
+      <li>Very difficult to gain a complete picture of the purpose of the softare.  Often incomplete requirements are gathered</li>
+      <li>Pertinance = relevance.  Often include unneeded functionality.  Can also rake in conflicting requirements</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="best-practices">Best Practices</h3>
+
+<h5 id="typical-bad-practice">Typical bad practice</h5>
+<ul>
+  <li>Devs list off requirements, stakeholders review/edit/approve</li>
+  <li>Often stakeholders don’t bother / can’t make time, so just skip to approving</li>
+  <li>SOUND FAMILIAR?</li>
+</ul>
+
+<h4 id="how-to-avoid">How to avoid?</h4>
+<ul>
+  <li>RE is a <strong>set of activities</strong> concerned with <strong>identifying and communicating</strong> the <strong>purpose</strong> of a software-intensive system, and the <strong>context</strong> in which it will be used.  Hence, RE acts as the bridge between the <strong>real-world needs</strong> of users, customers, and other <strong>constituencies</strong> affected by a software system, and the <strong>capabilities and opportunities</strong> afforded by software-intensive technologies</li>
+  <li>
+    <p>Requirements are: 
+<img src="../assets/content_images/omscs/sdp/p1l5p2l1_img1.png" alt="" /></p>
+  </li>
+  <li>Functional and non-functional requirements
+    <ul>
+      <li>functional = well-defined, system shall do X</li>
+      <li>non-functional = system’s qualities e.g. security, re-usability, speed, etc.  squishier.
+        <ul>
+          <li>non-functional must be refined to be verifiable</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>User vs System Requirements
+    <ul>
+      <li>user requirements are written for customers. often in natural language, no technical details</li>
+      <li>system requirements are written for developers, contain detailed functional and non-functional requirements.  clearly and more rigorously specified</li>
+    </ul>
+  </li>
+  <li>Where do requirements come from?
+    <ul>
+      <li>Stakeholders - users want stuff</li>
+      <li>Application Domain - constraints applied here.  E.G. regulations for banking software</li>
+      <li>Documentation</li>
+    </ul>
+  </li>
+  <li>Elicitation Problems
+    <ul>
+      <li>Thin spread of domain knowledge.  Hard to run down all the people who know what all you need to know.</li>
+      <li>Knowledge is tacit.  Stuff as actually done rarely matches exactly to what people describe.</li>
+      <li>Limited observability - hard to shadow enough to get clear requirements.</li>
+      <li>Bias.  People may not want to, or be able to, accurately relay to you the way things actually work.</li>
+    </ul>
+  </li>
+  <li>Traditional techniques for requirement elicitation
+    <ul>
+      <li>Background reading - collecting information by reading existing documents.  Especially good when not familiar with the org.  Saves time spent interviewing actual people.  However docs are often bad or out of date.</li>
+      <li>Hard data and samples</li>
+      <li>Interviews - this is very common.  Structured or open-ended.  Can collect rich set of information.  However, require special skills to do well.</li>
+      <li>Surveys - very useful and allow casting a broader net.  However, only good at capturing expected information of certain types.</li>
+      <li>Meetings - fundamental that clear agenda is set.</li>
+      <li>Other techniques
+        <ul>
+          <li>collaborative techniques - brainstorming,</li>
+          <li>social approaches,</li>
+          <li>ethnographic techniques (observe stakeholders in original environment)</li>
+          <li>cognitive techniques</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Modeling requirements
+    <ul>
+      <li>modeling enterprises
+        <ul>
+          <li>goals and objecticves</li>
+          <li>organizational structure</li>
+          <li>tasks and dependencies</li>
+          <li>agents, roles, intentionality</li>
+        </ul>
+      </li>
+      <li>modeling information and behaviors
+        <ul>
+          <li>information structure</li>
+          <li>behavioral view
+            <ul>
+              <li>scenarios and use cases</li>
+              <li>state machine models</li>
+              <li>sequence diagrams</li>
+              <li>information flow</li>
+            </ul>
+          </li>
+          <li>time/sequencing requirements</li>
+        </ul>
+      </li>
+      <li>modeling system qualities (NFRS)
+        <ul>
+          <li>robustness, reliability, etc</li>
+          <li></li>
+        </ul>
+      </li>
+      <li>after deciding what to model, must decide how you want to model it
+        <ul>
+          <li>there are tons of different models you can choose for each different thing you want to model.  frequently they’re complementary, they can reinforce and aid each other</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>For this course, we’ll use either natural language or UML diagrams for our requirements
+    <ul>
+      <li>goal modeling is very popular.  start with main goal of system, then refine by decomposing into nested subgoals until you get to units of functionality</li>
+    </ul>
+  </li>
+  <li>Analyzing requirements
+    <ul>
+      <li>Verification
+        <ul>
+          <li>check whether they’re correct, complete, and pertinent, consistent, testable, etc.</li>
+        </ul>
+      </li>
+      <li>Validation
+        <ul>
+          <li>assess whether collected requirements describe the system the stakeholders actually want</li>
+          <li>sometimes done by allowing stakeholders to interact with a prototype</li>
+        </ul>
+      </li>
+      <li>Risk analysis
+        <ul>
+          <li>aims to identify and analyze main risks involved with development of the system being built</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Requirements prioritization
+    <ul>
+      <li>how to handle limited resources?</li>
+      <li>prioritize by classifying
+        <ul>
+          <li>mandatory</li>
+          <li>nice to have</li>
+          <li>superfluous</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="recap">Recap</h4>
+<ul>
+  <li>3 main steps
+    <ul>
+      <li>elicitation</li>
+      <li>modeling</li>
+      <li>analysis</li>
+    </ul>
+  </li>
+  <li>4th kinda step - negotiation between stakeholders and devs</li>
+  <li>Iterative process between all 4 stages until you are happy, then you stop.</li>
+  <li>Requirements shoudl be simple, not compount</li>
+  <li>Requirements should be testable</li>
+  <li>Requirements should be organized, grouped, nested, prioritized</li>
+  <li>
+    <p>Requirements should be numbered (for traceability)</p>
+  </li>
+  <li>Software requirement specification (SRS) (document)
+    <ul>
+      <li>way to communicate requirements to others - common ground between analysts and stakeholders</li>
+      <li>different projects require different SRS</li>
+      <li>For this class we’ll use modified version of the IEEE standard SRS document</li>
+    </ul>
+  </li>
+</ul>
+:ET
