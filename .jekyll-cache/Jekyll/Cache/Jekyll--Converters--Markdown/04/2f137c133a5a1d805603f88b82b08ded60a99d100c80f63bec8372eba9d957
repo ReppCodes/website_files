@@ -1,4 +1,4 @@
-I"I<hr />
+I"‚<hr />
 <h2 id="software-design-patterns">Software Design Patterns</h2>
 
 <h3 id="history-of-patterns">History of Patterns</h3>
@@ -37,7 +37,7 @@
     </ul>
   </li>
   <li>Sample Code
-    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class ImageReaderFactory {
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class ImageReaderFactory {
   public static ImageReader createImageReader(InputStream is) {
       int imageType = getImageType(is);
       switch (imageType) {
@@ -145,7 +145,7 @@ class All implements CheckStrategy {
 <p>class Context {
     private CheckStrategy strategy;</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public Context() {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public Context() {
     this.strategy = new All();
 }
 
@@ -170,7 +170,7 @@ public void filter(String filename) throws IOException {
 
 <p>public class StrategyPattern {</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public static void main(String[] args) throws IOException {
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public static void main(String[] args) throws IOException {
     Context context = new Context();
     String filename = "foo.txt";
 

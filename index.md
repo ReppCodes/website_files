@@ -21,6 +21,6 @@ If you're interested in checking out the rest of my online footprint, you can fi
 
 ![](../assets/Linkedin_1.png) [LinkedIn](https://www.linkedin.com/in/andrew-repp-31776393/)
 
-![](../assets/Github_1.png) [Github](https://github.com/REPPCS)
+![](../assets/Github_1.png) [Github](https://github.com/ReppCodes)
 
 ![](../assets/Twitter_1.png) [Twitter](https://twitter.com/Slagar)

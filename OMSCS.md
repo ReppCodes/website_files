@@ -8,7 +8,13 @@ notes about my lectures and projects.  This is mostly for my own benefit, but ho
 the program.
 
 <section>
-<h3>Summer 2020</h3>
+<h3>2020</h3>
+<li>
+<a href="{{ "/omscs_classes/GIOS" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    CS6200: Graduate Introduction to Operating Systems
+</a>
+</li>
+
 <li>
 <a href="{{ "/omscs_classes/SDP" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
     CS6300: Software Dev Process

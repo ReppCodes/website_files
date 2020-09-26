@@ -1,4 +1,4 @@
-I"I4<hr />
+I"o4<hr />
 <h2 id="medication-adherence">Medication Adherence</h2>
 <p>Medication adherence is a pretty big deal in healthcare.  It turns out if you don’t take your medicine, it probably won’t do you much good.  It also turns out that many people won’t take their medicine, for a variety of reasons.  <a href="https://link.springer.com/article/10.1007/s11606-010-1253-9">Primary non-adherence</a> is one of the biggest unsolved problems in medicine, for which I offer no further solution here.  But, you know, VC disruptor types take note.</p>
 
@@ -60,12 +60,12 @@
 <p>The biggest challenges are sharing data between processes, and the overhead of starting up and tearing down an entire Python process for each worker you want to spawn.  The overhead is somewhat unavoidable, the only solution here is to load multiple steps into each parallelized component, so that you don’t pay the overhead multiple times.  This results in somewhat overloaded functions, but does save significant run time.  This is probably the clearest argument I’ve found for moving to another language for tasks where speed really matters.  If you can’t get that shiny new 32-core Threadripper out of first gear without paying this kind of penalty you’re probably not a happy developer.</p>
 
 <p>Sharing data between parallel processes isn’t a problem unique to Python, any time you want to hand off data to worker processes or threads you need to think about how.  In my case my input dataframe can be several million records, sometimes upwards of a GB of data.  Obviously I don’t want to duplicate that into each process, so I wrote a helper function to efficiently chop up the input dataframe into smaller dataframes, one per member.</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># parse each patient's data into a list of separate dataframes
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># parse each patient's data into a list of separate dataframes
 mbr_data = [x for i, x in indata.groupby(["P_ID"], sort=False)]
 </code></pre></div></div>
 
 <p>Now, the syntactic sugar that Python’s multiprocessing module offers, pool.map().  This little gem means that I can call a subfunction holding all the actual PDC logic, and either map() it across all those little member-level dataframes I just made using a pool of worker processes, or directly in the traditional single-threaded paradigm, in exactly the same way!  No futzing around with wait()ing and join()ing.  In either case I can concatenate the resulting dataframes back into a single output dataframe and return that from the parent function.  It honestly feels a bit like cheating.</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if mprocmode == "Y":
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if mprocmode == "Y":
     # paralellizable subfunction for calculating PDC for each member
     with multiprocessing.Pool(processes=workers) as pool:
         pdc_ratios = pd.concat(pool.map(_covdayspart, mbr_data))

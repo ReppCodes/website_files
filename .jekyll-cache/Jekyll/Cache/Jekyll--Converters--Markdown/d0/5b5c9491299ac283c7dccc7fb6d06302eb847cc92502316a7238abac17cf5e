@@ -1,4 +1,4 @@
-I"á<hr />
+I"ô<hr />
 <h2 id="software-architecture">Software Architecture</h2>
 
 <h3 id="what-is-software-architecture">What is Software Architecture</h3>
@@ -83,7 +83,7 @@
 </ul>
 
 <h3 id="architectural-recovery">Architectural Recovery</h3>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>* Drift and erosion -&gt; degraded architecture
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>* Drift and erosion -&gt; degraded architecture
 * Options
 	* Keep tweaking the code (bad idea)
 	* Architectural recovery: determine SWA from implementation and fix it
