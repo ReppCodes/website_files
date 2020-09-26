@@ -30,13 +30,13 @@ The practical coverage is augmented with rather large and complex projects in C 
 </li>
 
 <li>
-<a href="{{ "/sdp_lec_P2L2" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
-    Part 2 Lesson 2 - UML
+<a href="{{ "/gios_lec_P2L3" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    Part 2 Lesson 3 - PThreads Case Study
 </a>
 </li>
 <li>
-<a href="{{ "/sdp_lec_P2L3" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
-    Part 2 Lesson 3 - Android
+<a href="{{ "/gios_lec_P2L4" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    Part 2 Lesson 4 - Thread Design Considerations
 </a>
 </li>
 <li>
