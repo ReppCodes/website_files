@@ -34,41 +34,11 @@ The practical coverage is augmented with rather large and complex projects in C 
     Part 2 Lesson 3 - PThreads Case Study
 </a>
 </li>
+
 <li>
 <a href="{{ "/gios_lec_P2L4" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
     Part 2 Lesson 4 - Thread Design Considerations
 </a>
 </li>
-<li>
-<a href="{{ "/sdp_lec_P3L1" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
-    Part 3 Lesson 1 - Software Architecture
-</a>
-</li>
-<li>
-<a href="{{ "/sdp_lec_P3L3" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
-    Part 3 Lesson 3 - Design Patterns
-</a>
-</li>
-<li>
-<a href="{{ "/sdp_lec_P3L4" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
-    Part 3 Lesson 4 - Unified Software Process
-</a>
-</li>
-<li>
-<a href="{{ "/sdp_lec_P4L1L2L3" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
-    Part 4 Lesson 1,2,3 - Verification and Testing
-</a>
-</li>
-<li>
-<a href="{{ "/sdp_lec_P4L4" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
-    Part 4 Lesson 4 - Agile Development Methods
-</a>
-</li>
-<li>
-<a href="{{ "/sdp_lec_P4L5" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
-    Part 4 Lesson 5 - Software Refactoring
-</a>
-</li>
-
 
 </section>
