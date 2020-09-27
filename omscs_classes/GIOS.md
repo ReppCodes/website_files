@@ -41,4 +41,10 @@ The practical coverage is augmented with rather large and complex projects in C 
 </a>
 </li>
 
+<li>
+<a href="{{ "/gios_lec_P2L5" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    Part 2 Lesson 5 - Thread Performance Considerations
+</a>
+</li>
+
 </section>

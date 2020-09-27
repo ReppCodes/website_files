@@ -1,4 +1,4 @@
-I"Y<hr />
+I"X<hr />
 <h2 id="what-is-an-operating-system">What is an Operating System?</h2>
 <ul>
   <li>A special piece of software that abstracts and arbitrates the use of a computer system</li>
@@ -11,9 +11,9 @@
   </li>
   <li>Formal definition: An operating systems is a layer of systems software that:
     <ul>
-      <li>Directly has privliged access to the underlying hardware</li>
+      <li>Directly has privileged access to the underlying hardware</li>
       <li>Hides hardware complexity</li>
-      <li>Manages hardware on behalf of one ofor more applications according to some predefined policies</li>
+      <li>Manages hardware on behalf of one or more applications according to some predefined policies</li>
       <li>In addition, it ensures that applications are isolated and protected fro mone another</li>
     </ul>
   </li>
