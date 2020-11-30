@@ -1,0 +1,552 @@
+I"�N<hr />
+<h2 id="distributed-file-systems">Distributed File Systems</h2>
+<ul>
+  <li>Modern OS’s hide the implementation details of individual file systems and storage devices using a Virtual File System (VFS) interface
+    <ul>
+      <li>This can also hide the complete lack of any local storage, and everything is being stored in a remote machine</li>
+      <li>This is the basis of a distributed file system (DFS)</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/gios/p4l2_img1.png" alt="" /></p>
+
+<h3 id="dfs-models">DFS Models</h3>
+<ul>
+  <li>DFS == A filesystem that can be organized in any of the following ways</li>
+  <li>client/server are on different machines</li>
+  <li>file server distributed on multiple machines
+    <ul>
+      <li>replicated – each server has all files
+        <ul>
+          <li>helps with failure resilience</li>
+          <li>helps with availability, as all requests coming in can be split across different servers</li>
+        </ul>
+      </li>
+      <li>partitioned – each server has only some of the files
+        <ul>
+          <li>more scalable.  if you need to store more files just add more machines</li>
+        </ul>
+      </li>
+      <li>both/combo – files partitioned, each partition replicated across multiple machines</li>
+    </ul>
+  </li>
+  <li>files stored and served from all machines (peers)
+    <ul>
+      <li>blurs the distinction between clients and servers</li>
+      <li>p2p architecture baby</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="remote-file-service-extremes">Remote File Service: Extremes</h3>
+<ul>
+  <li>Extreme 1: Upload/Download Model
+    <ul>
+      <li>Like FTP, SVN, etc</li>
+      <li>Pros
+        <ul>
+          <li>local reads/writes at client – faster/simpler</li>
+        </ul>
+      </li>
+      <li>Cons
+        <ul>
+          <li>client must download and upload the entire file, even for small accesses</li>
+          <li>server gives up control and visibility into what’s done with the files
+<img src="../assets/content_images/omscs/gios/p4l2_img2.png" alt="" /></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Extreme 2: True Remote File Access
+    <ul>
+      <li>Every access is done to remote file.  nothing is done locally on client</li>
+      <li>Pros
+        <ul>
+          <li>file accesses centralized to server</li>
+          <li>easy to reason about consistency</li>
+        </ul>
+      </li>
+      <li>Cons
+        <ul>
+          <li>every single file operation incurs the cost of traversing the network</li>
+          <li>limits server scalability
+<img src="../assets/content_images/omscs/gios/p4l2_img3.png" alt="" /></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="remote-file-service-a-compromise">Remote File Service: A Compromise</h3>
+<ul>
+  <li>The above models are obviously suboptimal.  A compromise is better.  Should include caching</li>
+  <li>Allow clients to store parts of files locally (blocks)
+    <ul>
+      <li>prefetching techniques likely worhtwhile here</li>
+      <li>Pros
+        <ul>
+          <li>lower latency on file operations</li>
+          <li>server load reduced =&gt; more scalable</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Force clients to interact with the server (frequently)
+    <ul>
+      <li>clients must notify server of any modifications they have made</li>
+      <li>clients must find out from server if any files they have cached locally have been modified by someone else</li>
+      <li>Pros
+        <ul>
+          <li>server has insights into what clients are doing</li>
+          <li>server has control over which accesses can be permitted, making it easier to maintain consistency</li>
+        </ul>
+      </li>
+      <li>Cons
+        <ul>
+          <li>server more complex (additional tasks and state to provide consistency guarantees)</li>
+          <li>requires different file sharing semantic than are needed in a traditional local file system</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="stateless-vs-stateful-file-server">Stateless vs Stateful File Server</h3>
+<ul>
+  <li>Stateless == keeps no staate
+    <ul>
+      <li>no information about which clients access which files, how many clients, etc</li>
+      <li>every request has to be completely self-contained</li>
+      <li>Pros
+        <ul>
+          <li>No state being kept means resources are used to keep state on server side (CPU/MMU)</li>
+          <li>On failure, just restart.  No state means no state to lose on failure.
+            <ul>
+              <li>clients would need to reissue failed requests, is all</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Cons
+        <ul>
+          <li>Ok with extreme models, but cannot support “practical” model
+            <ul>
+              <li>cannot support caching and consistency management</li>
+            </ul>
+          </li>
+          <li>Every request being self-contained also means more bits must be transferred to describe the request</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Stateful == keeps client state
+    <ul>
+      <li>Needed for ‘practical’ model to track what is cached/accessed</li>
+      <li>Pros
+        <ul>
+          <li>Can support locking, caching, incremental operations</li>
+        </ul>
+      </li>
+      <li>Cons
+        <ul>
+          <li>On failure all state is lost and must be recovered somehow
+            <ul>
+              <li>Need checkpointing and recovery mechanisms</li>
+            </ul>
+          </li>
+          <li>Overheads to maintain state and consistency
+            <ul>
+              <li>The amount and kind of overhead depends on caching mechanism and consistency protocol</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="caching-state-in-a-dfs--optimization">Caching State in a DFS – Optimization</h3>
+<ul>
+  <li>Clients maintain some portion of state locally (e.g. file blocks)</li>
+  <li>Client performs operations on cached state locally (e.g. open/read/write/etc)</li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/gios/p4l2_img4.png" alt="" /></p>
+
+<ul>
+  <li>Requires coherence mechanisms
+    <ul>
+      <li>clients 1 and 2 both cache a portion of file F</li>
+      <li>client 2 has updated its cached copy of file F</li>
+      <li>client 2 has notified the file server of these changes, and they are now synced</li>
+      <li>the question then is how and when will client 1 find out about this?
+        <ul>
+          <li>This problem is similar to maintaining cache coherence in shared-memory multiprocessors (SMPs)
+            <ul>
+              <li>How
+                <ul>
+                  <li>SMP =&gt; write-update/write-invalidate</li>
+                </ul>
+              </li>
+              <li>When
+                <ul>
+                  <li>SMP =&gt; on write</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>This would mean that whenever client 2 made changes to its file F that will be propagated to client 1 as wiether WU or WI message</li>
+          <li>But given the network costs of distributed systems, this is likely impractical and maybe unneccessary
+            <ul>
+              <li>How
+                <ul>
+                  <li>DFS =&gt; client-driven OR server-driven</li>
+                </ul>
+              </li>
+              <li>When
+                <ul>
+                  <li>on demand</li>
+                  <li>OR periodically</li>
+                  <li>OR on file open</li>
+                </ul>
+              </li>
+              <li>details depend on file sharing semantics
+                <ul>
+                  <li>IT DEPENDS.  AGAIN.</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="file-sharing-semantics-on-a-dfs">File Sharing Semantics on a DFS</h3>
+<p><img src="../assets/content_images/omscs/gios/p4l2_img5.png" alt="" /></p>
+<ul>
+  <li>On a local filesystem, changes are immediately visible.  Any “write” function effects will be immediately in buffer cache and visible to any “read” function effects
+    <ul>
+      <li>Obviously for DFS reads and writes are done locally, and will not be propagated to the server immediately, so it will function differently</li>
+      <li>Given that message latencies will vary, we don’t know what delay would be appropriate to ensure reads will capture such changes</li>
+      <li>Therefore, to maintain usable performance, DFS are forced to sacrifice some strictness in consistency requirements</li>
+      <li>To handle these different constraints, new semantics are needed</li>
+    </ul>
+  </li>
+  <li>UNIX semantics =&gt; every write visible immediately</li>
+  <li>Session semantics
+    <ul>
+      <li>write-back changes to server on file close(), update changes from server on file open()</li>
+      <li>period between open and close on a given client is a “session”</li>
+      <li>easy to reason about but may be insufficient level of consistency
+        <ul>
+          <li>particularly in use cases with long “sessions”</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Periodic updates
+    <ul>
+      <li>client writes-back periodically
+        <ul>
+          <li>clients have a “lease” on cached data (not necessarily exclusive lease)</li>
+        </ul>
+      </li>
+      <li>server invalidates periodically
+        <ul>
+          <li>provides time bounds on “inconsistency”</li>
+        </ul>
+      </li>
+      <li>augment with flush()/sync() API
+        <ul>
+          <li>client doesn’t have any idea about start/end times of periods, provide a mechanism to force a “reset” to a consistent state on demand</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Immutable Files
+    <ul>
+      <li>never actually modify a file</li>
+      <li>just delete or create files</li>
+    </ul>
+  </li>
+  <li>Transactions
+    <ul>
+      <li>all changes are atomic</li>
+      <li>filesystem must export an API so that clients can specify collection of files/operations that must be treated as a single transaction</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="file-vs-directory-service">File vs Directory Service</h3>
+<ul>
+  <li>Knowing the access patterns/workload for the expected use case
+    <ul>
+      <li>sharing frequency</li>
+      <li>write frequency</li>
+      <li>importance of a consistent view</li>
+      <li>Optimize for the common case!</li>
+    </ul>
+  </li>
+  <li>One problems that most FS’s have two different types of files with very different use cases.
+    <ul>
+      <li>Regular Files</li>
+      <li>Directories</li>
+      <li>Choose different policies for each
+        <ul>
+          <li>e.g. session-semantics for files, UNIX for directories</li>
+          <li>e.g. less frequent periodic write-back for files than directories</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="replication-and-partitioning">Replication and Partitioning</h3>
+<ul>
+  <li>Replication
+    <ul>
+      <li>each machine holds all files</li>
+      <li>Pros
+        <ul>
+          <li>load balancing (performance)</li>
+          <li>availability</li>
+          <li>fault tolerance</li>
+        </ul>
+      </li>
+      <li>Cons
+        <ul>
+          <li>writes become more complex – not only do we have to worry about consistency among clients, now we need to sync between replicated servers too
+            <ul>
+              <li>solution might be to write synchronously to all replicas
+                <ul>
+                  <li>this would slow down all writes</li>
+                </ul>
+              </li>
+              <li>or, write to one then propagate to all others</li>
+            </ul>
+          </li>
+          <li>replicas must be reconciled with each other
+            <ul>
+              <li>e.g. voting – votes on “true” state taken from all servers and the majority wins</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Partitioning
+    <ul>
+      <li>each machine has a subset of the files
+        <ul>
+          <li>lots of options for deciding how best to apportion files</li>
+        </ul>
+      </li>
+      <li>Pros
+        <ul>
+          <li>availability vs single server DFS</li>
+          <li>scalability with file system size</li>
+          <li>single file writes are simpler</li>
+        </ul>
+      </li>
+      <li>Cons
+        <ul>
+          <li>on failure, lose portion of data</li>
+          <li>load balancing is harder
+            <ul>
+              <li>if you don’t load balance, hot spots and bottlenecks are possible</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Can combine both techniques
+    <ul>
+      <li>files are partitioned into groups</li>
+      <li>groups are then replicated</li>
+      <li>lots of algorithms and options for how this might be done as well
+        <ul>
+          <li>overall goal is to ensure sufficient fault tolerance while not overspending on storage</li>
+          <li>also must balance partitions to ensure even load of size and access frequency</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="networking-file-system-nfs-design">Networking File System (NFS) Design</h3>
+<p><img src="../assets/content_images/omscs/gios/p4l2_img6.png" alt="" /></p>
+<ul>
+  <li>A very popular commercial DFS by Sun</li>
+  <li>Using file handle from NFS server if file is deleted or server goes down will result in an error.  This is a “stale” handle.</li>
+</ul>
+
+<h4 id="nfs-versions">NFS Versions</h4>
+<ul>
+  <li>Been around since the 80s.  Currently on NFSv3 and NFSv4
+    <ul>
+      <li>Key differeince is that NFSv3 is stateless, while NFSv4 is stateful</li>
+    </ul>
+  </li>
+  <li>caching
+    <ul>
+      <li>session-based for files not accessed concurrently.  On close() changes are flushed to disk</li>
+      <li>periodic updates
+        <ul>
+          <li>default: 3sec for files, 30sec for directories</li>
+        </ul>
+      </li>
+      <li>NFSv4 =&gt; delegation to client of all rights to manage a file for a period of time
+        <ul>
+          <li>avoids ‘update checks’</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>locking
+    <ul>
+      <li>lease-based
+        <ul>
+          <li>when a client acquires a lock the server acquires a time period for which the lock is valid</li>
+          <li>it is the client’s responsibility to ensure that after this amount of time it either releases the lock or explicitly extends the lock duration</li>
+          <li>helps address instances of client failure.  lock will just time out. if returning, client will know that the lock expired and any changes must be re-done</li>
+        </ul>
+      </li>
+      <li>NSFv4 =&gt; also “share reservation” - reader/writer lock
+        <ul>
+          <li>along with mechanisms for upgrading from reader to writer and vice-versa</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="sprite-distributed-file-system">Sprite Distributed File System</h3>
+<ul>
+  <li>Based on the Nelson et al paper - “Cashing in the Sprite Network File System”
+    <ul>
+      <li>Sprite is a research system, but was used a bit</li>
+      <li>great value in the explanation of the design process</li>
+      <li>the authors used trace data on usage/file access patterns to analyze DFS design requirements and justify decisions</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="access-pattern-analysis">Access Pattern Analysis</h4>
+<ul>
+  <li>33% of all file accesses are writes
+    <ul>
+      <li>This is too much to just ignore</li>
+      <li>Caching is OK, but write-through is not sufficient</li>
+    </ul>
+  </li>
+  <li>75% of files are open less than 0.5sec</li>
+  <li>90% of files are open less than 10sec
+    <ul>
+      <li>This means that session semantics will have too much overhead, won’t work here</li>
+    </ul>
+  </li>
+  <li>20-30% of new data deleted within 30sec</li>
+  <li>50% of new data deleted within 5 minutes</li>
+  <li>File sharing is rare!
+    <ul>
+      <li>write-back on close not really necessary</li>
+      <li>no need to optimize for concurrent access, but must support it</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="from-analysis-to-design">From Analysis to Design</h4>
+<ul>
+  <li>Based on the above analysis, Sprite went with the following design decisions</li>
+  <li>Use cache with write-back policy
+    <ul>
+      <li>every 30sec a client will write-back all the blocks that have NOT been modified for the last 30sec
+        <ul>
+          <li>The logic is that anything currently being modified will continue beint modified, so it’s waste to do a write-back on those now.  Instead wait a bit until it’s done.</li>
+          <li>Related to the 20-30% delation rate in a 30 second window above</li>
+        </ul>
+      </li>
+      <li>when another client opens a file currently being written, the server will query the writer client and collect/serve dirty blocks to the opener client
+        <ul>
+          <li>it is possible writing was completed, there is no write-back on close policy</li>
+        </ul>
+      </li>
+      <li>All open ops go to server.  This means directories are not cached on client</li>
+      <li>on “concurrent writes” sprite disables caching for that file.  all writes serialized on server side</li>
+    </ul>
+  </li>
+  <li>Sprite sharing semantics
+    <ul>
+      <li>sequential write sharing == caching and sequential semantic</li>
+      <li>concurrent write sharing == no caching
+        <ul>
+          <li>this is infrequent, so the overall performance penalty is not significant</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="file-access-operations-in-sprite">File Access Operations in Sprite</h4>
+<ul>
+  <li>N clients access files for reading, 1 writer client
+    <ul>
+      <li>all open() calls go through server</li>
+      <li>server will allow all accesses</li>
+      <li>all clients cache blocks of the file</li>
+      <li>writer client keeps timestamps for each modified block
+        <ul>
+          <li>this is to enforce the write-back policy on any blocks not modified in the last 30sec</li>
+        </ul>
+      </li>
+      <li>sprite writer could close and re-open the file to continue editing an arbitrary number of times
+        <ul>
+          <li>when it does this, the contents of the file are cached locally, but the open() still has to go to the server</li>
+          <li>writer must compare cached value with the server.  done with a version number</li>
+          <li>client must keep track of some info for each file
+            <ul>
+              <li>status (cached{y, n})</li>
+              <li>cached blocks</li>
+              <li>timer for each dirty block</li>
+              <li>version</li>
+              <li>status (cacheable{y, n})
+                <ul>
+                  <li>changed when/if caching is disabled for a given file</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>server also keeps state for each file
+            <ul>
+              <li>readers</li>
+              <li>writer</li>
+              <li>version</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>at some point after writer1 (w1) has closed file, writer2 (w2) wants to write file
+        <ul>
+          <li>referred to as sequential sharing</li>
+          <li>server contacts last writer for dirty blocks</li>
+          <li>if w1 has closed server should update version and writer state</li>
+          <li>w2 can now cache file</li>
+        </ul>
+      </li>
+      <li>while w2 is stil writing to the file, w3 also wants to write to it
+        <ul>
+          <li>referred to as concurrent sharing</li>
+          <li>server contacts last writer (w2) for dirty blocks</li>
+          <li>since w2 hasn’t closed the file, DISABLE CACHING for that file for all clients</li>
+          <li>all subsequent file accesses must go to server</li>
+          <li>now the server sees all accesses, so when the server sees that all but one client has closed the file, it can RE-ENABLE CACHING for that file</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+:ET

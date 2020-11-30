@@ -2,7 +2,7 @@ title: Probability as a Service
 description: "A parking space for my notes, thoughts, and projects"
 author:
   name: "Andrew Repp"
-  email: "Andrew@andrewrepp.com"
+  email: "andrew@andrewrepp.com"
   url: "https://www.andrewrepp.com"
 
 baseurl: /
@@ -10,8 +10,6 @@ baseurl: /
 source: .
 destination: ./_site
 permalink: /:title
-# paginate: 5
-# paginate_path: /page/:num/
 
 # adding custom support for categories (or trying)
 collections:
@@ -33,7 +31,6 @@ defaults:
 
 future: true
 plugins:
-  # - jekyll-paginate
   - jekyll-sitemap
 
 # Custom variables

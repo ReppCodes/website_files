@@ -1,0 +1,537 @@
+I"O<hr />
+<h2 id="virtualization">Virtualization</h2>
+<h3 id="what-is-virtualization">What is Virtualization?</h3>
+<ul>
+  <li>Originated at IBM in the 60s to support mult-user server environments</li>
+  <li>Virtualization allows concurrent execution of multiple OSs (and their applications) on the same physical machine</li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/gios/p3l6_img1.png" alt="" /></p>
+
+<ul>
+  <li>Virtual resources == each OS thinks it “owns” hardware resources</li>
+  <li>Virtual machine (VM) == OS + applications + virtual resources (aka guest domain)</li>
+  <li>Virtualization layer == management of physical hardware (virtual machine monitor, aka hypervisor)</li>
+  <li>Defintition (from Popek and Goldberf) == A virtual machine is an efficient, isolated duplicate of the real machine
+    <ul>
+      <li>Supported by a virtual machine monitor (VMM)
+        <ul>
+          <li>provides environment essentially identical with the orignal machine.  aka “fidelity”</li>
+          <li>programs show at worst only minor decrease in speed.  aka “performance”</li>
+          <li>VMM is in complete control of system resources.  aka “safety and isolation”
+            <ul>
+              <li>doesn’t mean VMM has to inspect every sinle hardware access.  Instead it means vmm must determine if/when a given VM is to be allowed hardware access</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="benefits-of-virtualization">Benefits of Virtualization</h3>
+<ul>
+  <li>Pros
+    <ul>
+      <li>consolidation – ability to run multiple VMs, with their various OS’s and applications, on a single physical platform
+        <ul>
+          <li>decreases cost, improves manageability</li>
+        </ul>
+      </li>
+      <li>migration – from one physical machine to another.  or even to clone
+        <ul>
+          <li>availability, reliability</li>
+        </ul>
+      </li>
+      <li>security
+        <ul>
+          <li>isolation makes it easy to contain bugs or malware to just one VM</li>
+        </ul>
+      </li>
+      <li>debugging
+        <ul>
+          <li>lets researchers quickly introuce features to test</li>
+        </ul>
+      </li>
+      <li>support for legacy OS environments
+        <ul>
+          <li>no longer necessary to designate hardware resources to legacy apps or OSs to run a single use case.  e.g. “only runs on python2/IE/etc”</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="virtualization-models">Virtualization Models</h3>
+<h4 id="bare-metal">Bare Metal</h4>
+<ul>
+  <li>aka hypervisor-based (type 1)</li>
+  <li>VMM (hypervisor) manages all hardware resources and supports execution of VMs</li>
+  <li>One issue with this model is devices
+    <ul>
+      <li>according to the model, VMM must manage all devices</li>
+      <li>however, this would require manafacturers to provide driver support not just for all OSs but also for all hypervisors</li>
+      <li>to eliminate this, hypervisor includes service (privileged VM) that has full hardware access.  This VM deals with devices (and other configuration and management tasks)</li>
+    </ul>
+  </li>
+  <li>Used by
+    <ul>
+      <li>Xen (open source or Citrix Sen Server)
+        <ul>
+          <li>VMs referred to as domains</li>
+          <li>privileged VM is referred to as dom0</li>
+          <li>guest VMs are referred to as domU’s</li>
+          <li>drivers all in dom 0</li>
+        </ul>
+      </li>
+      <li>ESX (VMware)
+        <ul>
+          <li>first to market, still has lots of market share</li>
+          <li>many open APIs
+            <ul>
+              <li>to support community developers and users</li>
+            </ul>
+          </li>
+          <li>drivers in VMM – provided by manufacturers due to market share
+            <ul>
+              <li>less painful because VMware targets server markets where there are fewer devices in general</li>
+            </ul>
+          </li>
+          <li>used to use Linux-based control core for configuration tasks, now uses remote APIs instead</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/gios/p3l6_img2.png" alt="" /></p>
+
+<h4 id="hosted">Hosted</h4>
+<ul>
+  <li>aka type 2</li>
+  <li>Host OS owns all hardware</li>
+  <li>Special VMM module provides hardware interfaces to FMs and deals with VM context switching</li>
+  <li>One benefit of this model is that it can leverage all the services and mechanisms already developed for the host OS</li>
+  <li>Can also run native applications on host OS, alongside the guest VMs</li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/gios/p3l6_img3.png" alt="" /></p>
+
+<ul>
+  <li>One example of this model is KVM
+    <ul>
+      <li>kernel-based VM</li>
+      <li>based on linux</li>
+      <li>KVM kernel module + QEMU for hardware virtualization
+        <ul>
+          <li>QEMU runs in “virtualizer mode”, which means that the hardware visible to the guest VM is actually identical to the physical hardware, except that the virtualizer will intervene in certain specific critical operations or instructions
+            <ul>
+              <li>e.g. I/O management because all device drivers are handled by host OS</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>leverages Linux open-source community
+        <ul>
+          <li>KVM model was actually originally developed as a Linux module to allow Linux apps to take advantage of some of the virtualization-related hardware that started appearing in some commodity platforms</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/gios/p3l6_img4.png" alt="" /></p>
+
+<h3 id="hardware-protection-levels">Hardware Protection Levels</h3>
+<ul>
+  <li>Commodity hardware has more than 2 protection levels
+    <ul>
+      <li>e.g. x86 has 4 protection levels (rings)</li>
+      <li>ring 3: lowest privilege (apps)</li>
+      <li>ring 0: highest privilege (OS)</li>
+      <li>One way this can be altered for virtualization
+        <ul>
+          <li>Ring 3: Apps</li>
+          <li>Ring 1: OS (guest)</li>
+          <li>Ring 0: hyperfisor</li>
+        </ul>
+      </li>
+      <li>More recent x86 implementations also have 2 protection modes (root &amp; non-root)
+        <ul>
+          <li>non-root: VMs
+            <ul>
+              <li>Ring 3: Apps</li>
+              <li>Ring 0: OS</li>
+            </ul>
+          </li>
+          <li>root
+            <ul>
+              <li>ring 0: hypervisor</li>
+            </ul>
+          </li>
+          <li>privileged ops by apps will trigger VMexit traps out to the root hypervisor, which will execute as needed and then pass back with a VMentry instruction</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="processor-virtualization">Processor Virtualization</h3>
+<ul>
+  <li>Guest instructions
+    <ul>
+      <li>executed directly by the hardware
+        <ul>
+          <li>VMM does not interfere with every single instruction executed by the guest OS and its apps</li>
+          <li>so long as the guest processes operate within the resources allocated to them by the VMM</li>
+        </ul>
+      </li>
+      <li>for non-priviliged operations: hardware speeds =&gt; efficiency</li>
+      <li>for privileged operations: trap to hypervisor
+        <ul>
+          <li>hypervisor determines what needs to be done:
+            <ul>
+              <li>if illegal op: terminate VM…</li>
+              <li>if legal op: emulate the behavior the guest OS was expecting from the hardware
+                <ul>
+                  <li>guest should just see that hardware did whatever it expected, doens’t need to know about hypervisor intervention</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="x86-virtualization-in-the-past">x86 Virtualization in the Past</h3>
+<ul>
+  <li>Problems with trap and emulate
+    <ul>
+      <li>worked fine on mainframes, but in the 90s on x86 it fell apart</li>
+    </ul>
+  </li>
+  <li>x86 pre 2005
+    <ul>
+      <li>4 rings, no root/non-root modes yet</li>
+      <li>hypervisor in ring 0, guest OS in ring 1</li>
+      <li>BUT
+        <ul>
+          <li>17 privileged instructions that must be run from ring 0, but wouldn’t trap, just fail silently</li>
+          <li>e.g. interrupt enable/disable bit in privileged register
+            <ul>
+              <li>POPF/PUSHF instructions that access it from ring 1 fail silently</li>
+            </ul>
+          </li>
+          <li>Hypervisor doesn’t know, so it doesn’t try to change settings</li>
+          <li>OS doesn’t know, so assumes change was successful</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="binary-translation">Binary Translation</h3>
+<ul>
+  <li>One approach to fix the 17 problem instructions was to re-write the binary of the guest VM to never issue those 17 instructions
+    <ul>
+      <li>this is called binary translation</li>
+      <li>commercialized as VMware</li>
+      <li>very successful, both commercially and with industry acclaim</li>
+    </ul>
+  </li>
+  <li>Binary translation:
+    <ul>
+      <li>goal: full virtualization == guest OS not modified
+        <ul>
+          <li>no special drivers or policies needed to run</li>
+        </ul>
+      </li>
+      <li>approach: dynamic binary translation
+        <ol>
+          <li>instruction sequences about to be executed are dynamically captured from the VM binary.
+            <ul>
+              <li>done at low-level granularity</li>
+              <li>must be done dynamically because often instruction parameters will be input-dependent and so only available at runtime</li>
+            </ul>
+          </li>
+          <li>inspect code blocks to be executed
+            <ul>
+              <li>see if any of the 17 problem instructions are to be executed</li>
+            </ul>
+          </li>
+          <li>if needed, translate to alternate instruction sequence
+            <ul>
+              <li>e.g. to emulate desired behavior, possibly even avoiding a trap</li>
+            </ul>
+          </li>
+          <li>otherwise, run at hardware speeds</li>
+        </ol>
+      </li>
+      <li>some optimizations are available to help speed this up and reduce overhead
+        <ul>
+          <li>cache translated blocks to amortize translation costs</li>
+          <li>distinguish which portions of the guest OS binary should be analyzed, only analyzing relevant portions</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="paravirtualization">Paravirtualization</h3>
+<ul>
+  <li>goal: performance
+    <ul>
+      <li>give up on unmodified guests</li>
+    </ul>
+  </li>
+  <li>approach: paravirtualization == modify guest so that:
+    <ul>
+      <li>it knows it’s running virtualized</li>
+      <li>it makes explicit calls to the hypervisor (hypercalls)</li>
+      <li>hyperfall (behave similarly to system calls)
+        <ul>
+          <li>package context info</li>
+          <li>specify desired hypercall</li>
+          <li>trap to VMM</li>
+          <li>pass control back to guest after hypercall completes</li>
+        </ul>
+      </li>
+      <li>Originally adopted and popularized by the Xen hypervisor
+        <ul>
+          <li>open source hypervisor</li>
+          <li>XenSource is a closed Citrix implementation.  may have diverged substantially at this point.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="memory-virtualization">Memory Virtualization</h3>
+<ul>
+  <li>Full virtualization
+    <ul>
+      <li>all guests expect contiguous physical memory starting at 0
+        <ul>
+          <li>same as native</li>
+        </ul>
+      </li>
+      <li>virtual vs physical vs machine addresses and page frame numbers distinction is also same as native</li>
+      <li>still leverages hardware MMU, TLB, etc. for address translation process
+        <ul>
+          <li>Option 1
+            <ul>
+              <li>guest page table: VA =&gt; PA</li>
+              <li>hypervisor: PA =&gt; MA</li>
+              <li>two page tables, one maintained by guest OS and another maintained by hypervisor.</li>
+              <li>Two sets of address translation every time.  Too expensive!</li>
+            </ul>
+          </li>
+          <li>Option 2
+            <ul>
+              <li>guest page tables: VA=&gt;PA</li>
+              <li>hypervidor shadow page table: VA=&gt;MA</li>
+              <li>only hypervisor page table is actually used for address translation</li>
+              <li>hypervisor maintains consistence between two page tables
+                <ul>
+                  <li>e.g. invalidate on context switch, write-protect guest PT to track new mappings, etc.</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Paravirtualization
+    <ul>
+      <li>OS knows its executing in a virtualized environment</li>
+      <li>so, there is no longer a strict requirement on contiguous physical memory starting at 0</li>
+      <li>guest OS explicitly registers page tables with hypervisor</li>
+      <li>guest OS still wont have write permissions to the page tables, though.
+        <ul>
+          <li>every update to page table will cause a trap and pass control to the hypervisor.  lots of overhead</li>
+          <li>can “batch” page table updates to reduce VM exits</li>
+          <li>other optimizations too</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Virtualization overheads, for both full virtualization and paravirtualization, have been substantially reduced or even eliminated on newer platforms
+    <ul>
+      <li>Details will be discussed in later section</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="device-virtualization">Device Virtualization</h3>
+<ul>
+  <li>For CPUs and memory
+    <ul>
+      <li>less diversity to handle for.</li>
+      <li>largely due to ISA-level ‘standardization’ of interface</li>
+    </ul>
+  </li>
+  <li>For devices
+    <ul>
+      <li>high diversity</li>
+      <li>lack of standard specification of device interface and behavior</li>
+      <li>3 key models for device virtualization
+        <ul>
+          <li>these models were designed before virtualization-friendly hardware changes became common</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Passthrough Model
+    <ul>
+      <li>Approach: VMM-level driver configures device access permisions</li>
+      <li>Pros
+        <ul>
+          <li>VM provided with exclusive access to the device</li>
+          <li>VM can directly access the device (VMM-bypass)</li>
+        </ul>
+      </li>
+      <li>Cons
+        <ul>
+          <li>Device sharing is difficult
+            <ul>
+              <li>must continuously reassign which particular VM has bypass access</li>
+            </ul>
+          </li>
+          <li>VMM must have exact type of device that the VM expects
+            <ul>
+              <li>not so bad for servers, but not really practical for consumer hardware</li>
+            </ul>
+          </li>
+          <li>VM migration is difficult
+            <ul>
+              <li>particularly if there is device-specific state, or even state residing on the device itself, that would not be migrated with the VM</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/gios/p3l6_img5.png" alt="" /></p>
+
+<ul>
+  <li>Hypervisor-Direct Model
+    <ul>
+      <li>Approach: VMM intercepts all device accesses</li>
+      <li>emulate device operation:
+        <ul>
+          <li>translate to generic I/O op</li>
+          <li>traverse VMM-resident I/O stack</li>
+          <li>invoke VMM-resident driver</li>
+        </ul>
+      </li>
+      <li>Pros
+        <ul>
+          <li>VM decoupled from physical device</li>
+          <li>sharing, migration, dealing with device specifics are all simpler and housed in VMM</li>
+        </ul>
+      </li>
+      <li>Cons
+        <ul>
+          <li>latency of device operations due to emulation steps</li>
+          <li>device driver ecosystem complexities still exist, we just moved them to the hypervisor</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/gios/p3l6_img6.png" alt="" /></p>
+
+<ul>
+  <li>Split Device Driver Model
+    <ul>
+      <li>Approach: device access control split between
+        <ul>
+          <li>front-end driver in guest VM (device API)</li>
+          <li>back-end driver in service VM (or host if there is no service VM, as in type 2 virtualization)
+            <ul>
+              <li>this should really just be the regular device driver that the host OS would use in a non-virtualized scenario</li>
+            </ul>
+          </li>
+          <li>modified guest drivers for front-end
+            <ul>
+              <li>has to take application inputs to device and combine/transform them into inputs that the back-end driver can consume</li>
+              <li>this means it is limited to paravirtualized guests</li>
+              <li>basically serve as wrappers for the device API</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Pros
+        <ul>
+          <li>eliminate emulation overheads from hypervisor-direct model</li>
+          <li>allow for better management of shared services
+            <ul>
+              <li>the back-end service VM can coordinate shared usage of the physical hardware requested from the front-end drivers</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Cons
+        <ul>
+          <li>as mentioned above, paravirtualized environments only</li>
+          <li>as mentioned above, modified guest drivers required</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/gios/p3l6_img7.png" alt="" /></p>
+
+<h3 id="hardware-virtualization">Hardware Virtualization</h3>
+<ul>
+  <li>Given all the above, and the smashing success of software virtualization both commercially and with industry acknowledgement, hardware companies responded. Specifically by changing their hardware architectures in ways that made them better suited to virtualization
+    <ul>
+      <li>AMD Pacifica * Intel Vanderpool Technology (~2005)
+        <ul>
+          <li>close holes in x86 ISA (17 instructions now trap properly)</li>
+          <li>modes: root/non-root (or “host” and “guest” mode)</li>
+          <li>VM Control Structure
+            <ul>
+              <li>per VCPU (aka VM Control Block) – ‘walked’ by hardware</li>
+              <li>allows hardware processor to understand and interpret information about the state of the virtual processors</li>
+              <li>allows hypervisor to know whether a specific system call should trap into root mode or not</li>
+            </ul>
+          </li>
+          <li>Extended page tables and tagged TLB with VM IDs
+            <ul>
+              <li>for context switch between VMs (aka world switch) we no longer have to TLB flush entries belonging to previous VM.  This is because MMU will match both VA and VM ID when doing translations from VA to PA.</li>
+            </ul>
+          </li>
+          <li>Multiqueue devices and interrupt routing
+            <ul>
+              <li>device has multiple logical interfaces where each one can be used by a separate VM</li>
+              <li>when device has to deliver an interrupt to a specific VM, it interrupts the core where the VM is executing and not other CPUs</li>
+            </ul>
+          </li>
+          <li>Security and management support
+            <ul>
+              <li>allows cleaner and easier isolation</li>
+              <li>allows more efficient execution of management ops</li>
+            </ul>
+          </li>
+          <li>Also additional instructions to exercise the above features</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="x86-vt-revolution">x86 VT Revolution</h3>
+<p><img src="../assets/content_images/omscs/gios/p3l6_img8.png" alt="" /></p>
+
+<ul>
+  <li>Intel’s roadmap for multi-pronged effort on improving VT-friendly hardware.  Annotated with “generation names” for each technology.</li>
+</ul>
+:ET

@@ -1,0 +1,234 @@
+I"�#<hr />
+<h2 id="what-is-a-process">What is a Process</h2>
+<ul>
+  <li>Simple definition - an instance of an executing program.  Sometimes called a task or a job.</li>
+  <li>OS manages hardware on behalf of applications
+    <ul>
+      <li>Application == program on disk, flash memory, etc.  A static entity.</li>
+      <li>Process == state of a program when executing loaded in memory.  An active entity
+        <ul>
+          <li>Execution state of an application</li>
+        </ul>
+      </li>
+      <li>Same application can be run multiple times, each as its own process</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="what-does-does-a-process-look-like">What does Does a Process Look Like</h2>
+<ul>
+  <li>A process encapsulates all of the state of a running application</li>
+  <li>Address space is an OS abstraction to capture all of this state.</li>
+  <li>Types of state:
+    <ul>
+      <li>text and data
+        <ul>
+          <li>static state when process first loads</li>
+        </ul>
+      </li>
+      <li>heap
+        <ul>
+          <li>dynamically created during execution</li>
+        </ul>
+      </li>
+      <li>stack
+        <ul>
+          <li>grows and shrinks</li>
+          <li>LIFO queue</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="process-address-space">Process Address Space</h3>
+<ul>
+  <li>Address space == ‘in memory’ representation of a process</li>
+  <li>V0 to Vmax represent the range of virtual addresses used by process
+    <ul>
+      <li>Called virtual because it does not necessarily need to correspond to physical memory locations</li>
+    </ul>
+  </li>
+  <li>Physical addresses are locations in physical memory (DRAM)
+    <ul>
+      <li>Hardware and OS maintain a mapping from physical memory to virtual memory</li>
+      <li>Page tables == mapping of virtual to physical addresses</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="address-space-and-memory-management">Address Space and Memory Management</h3>
+<ul>
+  <li>Not all processes require all address space from V0 to VMax
+    <ul>
+      <li>Parts of virtual address space may not be allocated</li>
+      <li>May not be enough physical memory for all state</li>
+    </ul>
+  </li>
+  <li>OS dynamically decides which portion of which address space will be stored in physical memory, and where.
+    <ul>
+      <li>Multiple processes may share physical memory</li>
+      <li>All such process may have portions of their state swapped out to hard disk, to be brought in if and when needed</li>
+    </ul>
+  </li>
+  <li>OS may also perform memory access validity checks to ensure that a process has permission to access the specific memory it is trying to</li>
+</ul>
+
+<h3 id="process-execution-state">Process Execution State</h3>
+<ul>
+  <li>How does the OS know what a process is doing?</li>
+  <li>Before a process can execute it must be compiled into binary</li>
+  <li>OS must know where in a process’ binary instructions it is.  This is done with a program counter (PC)
+    <ul>
+      <li>Kept in a CPU register</li>
+      <li>Other registers keep other information about other pieces of state</li>
+      <li>Also need a stack pointer, keep track of where the top of the stack is, to track that component of state</li>
+    </ul>
+  </li>
+  <li>OS maintains a process control block (PCB) to track miscellaneous other peices of state.</li>
+</ul>
+
+<h3 id="what-is-a-process-control-block">What is a Process Control Block</h3>
+<ul>
+  <li>A PCB is maintained for every process being managed by OS
+<img src="../assets/content_images/omscs/gios/p2l1_img1.png" alt="" /></li>
+  <li>PCB is created and initialized when process is created</li>
+  <li>Certain fields are updated as relevant peices of state change</li>
+  <li>Other fields change too frequently for that, so CPU keeps dedicated register for those, such as PC register.</li>
+  <li>OS must collect and save PCB for every process whenever that process is no longer running on the CPU</li>
+</ul>
+
+<h3 id="how-is-a-pcb-used">How is a PCB Used?</h3>
+<ul>
+  <li>Whenever there is a context switch between processes, state is saved from and loaded to the PCB
+<img src="../assets/content_images/omscs/gios/p2l1_img2.png" alt="" /></li>
+</ul>
+
+<h3 id="what-is-a-context-switch">What is a Context Switch</h3>
+<ul>
+  <li>Context switch == switching the CPU from the context of one process to the context of another</li>
+  <li>Expensive
+    <ul>
+      <li>Direct costs: number of cycles for load and store instructions</li>
+      <li>Indirect costs: Cold cache and cache misses.  Reading multiple levels of cache down, and maybe even out of memory.</li>
+      <li>As a result we want to limit frequency of context switching!</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="process-lifecycle">Process Lifecycle</h3>
+<ul>
+  <li>Processes can be in any of a number of states
+<img src="../assets/content_images/omscs/gios/p2l1_img3.png" alt="" /></li>
+  <li>Process Creation
+    <ul>
+      <li>Processes can create new processes, and all processes forked off from the same original parent – init(1) on Unix, ZYGOTE for Android apps</li>
+      <li>Some processes will be privileged, boot processes.  When a user logs in, a user shell process is created, and new processes are spawned from that shell.</li>
+      <li>Two main mechanisms for process creation
+        <ul>
+          <li>Fork
+            <ul>
+              <li>copies the parent PCB into new child PCB</li>
+              <li>child continues execution at instruction after fork – same PCB means same program counter, so keep counting forward from same spot</li>
+            </ul>
+          </li>
+          <li>Exec
+            <ul>
+              <li>replace child image, loads new PCB</li>
+              <li>load new program and start from first instruction in that program’s counter</li>
+            </ul>
+          </li>
+          <li>Often used in combination, to create new child program with fork and then tee up something completely different than parent with exec</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="role-of-the-cpu-scheduler">Role of the CPU Scheduler</h3>
+<ul>
+  <li>For CPU to start executing a process, it must be ready</li>
+  <li>However, there will often be multiple process in the ready queue.  Need to pick the right one to give to CPU next</li>
+  <li>A CPU Scheduler determines which one of the currently ready processes will be dispatched to the CPU to start running, and how long it should run for.</li>
+  <li>OS must:
+    <ul>
+      <li>preempt == interrupt currently executing process and save its context</li>
+      <li>schedule == run scheduler to choose next process</li>
+      <li>dispatch == dispatch process onto CPU and switch into its context</li>
+      <li>BE EFFICIENT ABOUT ALL THIS</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="length-of-process">Length of Process</h3>
+<ul>
+  <li>How long should a process run for?</li>
+  <li>How frequently should we run the scheduler?
+    <ul>
+      <li>More often we run it, more time we spend dinking around with scheduling instead of doing work
+<img src="../assets/content_images/omscs/gios/p2l1_img4.png" alt="" />
+<img src="../assets/content_images/omscs/gios/p2l1_img5.png" alt="" /></li>
+    </ul>
+  </li>
+  <li>timesliece == time since Tp allocated to a process on the CPU</li>
+  <li>Scheduling Design Decisions
+    <ul>
+      <li>What are appropriate timeslice values?</li>
+      <li>Metrics to choose next process to run?</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="what-about-io">What about I/O?</h3>
+<p><img src="../assets/content_images/omscs/gios/p2l1_img6.png" alt="" /></p>
+
+<h3 id="inter-process-communication">Inter Process Communication</h3>
+<ul>
+  <li>Can processes interact?  - Yes!  OS Must provide</li>
+  <li>These days more and more applications are actually multiple processes
+    <ul>
+      <li>e.g. web server front end and database backend</li>
+    </ul>
+  </li>
+  <li>OS goes to great lengths to protect and isolate processes from each other.  IPC has to be built around these protections.</li>
+  <li>Inter-Process Communication (IPC) Mechanisms:
+    <ul>
+      <li>Transfer data/info between address spaces</li>
+      <li>Maintain protection and isolation</li>
+      <li>Provide flexibility and performance</li>
+    </ul>
+  </li>
+  <li>Message-passing IPC:
+    <ul>
+      <li>OS provides communication channel, like shared buffer</li>
+      <li>Processes write/read messages to/from channel</li>
+      <li>Pros
+        <ul>
+          <li>OS manages the channel and provides APIs</li>
+        </ul>
+      </li>
+      <li>Cons
+        <ul>
+          <li>Overhead.  Lots of extra reads/writes for communication</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Shared memory IPC:
+    <ul>
+      <li>OS establishes a shared channel and maps it into each process address space</li>
+      <li>Processes directly read/write from this memory</li>
+      <li>Pros
+        <ul>
+          <li>OS is out of the way!</li>
+        </ul>
+      </li>
+      <li>Cons
+        <ul>
+          <li>Reimplement code to handle all the safe reading/writing from shared memory</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+:ET
