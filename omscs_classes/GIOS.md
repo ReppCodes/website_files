@@ -48,6 +48,12 @@ The practical coverage is augmented with rather large and complex projects in C 
 </li>
 
 <li>
+<a href="{{ "/gios_lec_midt_prep" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    Midterm Practice Questions
+</a>
+</li>
+
+<li>
 <a href="{{ "/gios_lec_P3L1" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
     Part 3 Lesson 1 - Scheduling
 </a>
@@ -92,6 +98,24 @@ The practical coverage is augmented with rather large and complex projects in C 
 <li>
 <a href="{{ "/gios_lec_P4L2" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
     Part 4 Lesson 2 - Distributed File Systems
+</a>
+</li>
+
+<li>
+<a href="{{ "/gios_lec_P4L3" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    Part 4 Lesson 3 - Distributed Shared Memory
+</a>
+</li>
+
+<li>
+<a href="{{ "/gios_lec_P4L4" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    Part 4 Lesson 4 - Datacenter Technologies
+</a>
+</li>
+
+<li>
+<a href="{{ "/gios_lec_fnl_prep" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    Final Exam Practice Questions
 </a>
 </li>
 
