@@ -1,8 +1,8 @@
-I"O<hr />
+I"O<hr />
 <h2 id="virtualization">Virtualization</h2>
 <h3 id="what-is-virtualization">What is Virtualization?</h3>
 <ul>
-  <li>Originated at IBM in the 60s to support mult-user server environments</li>
+  <li>Originated at IBM in the 60s to support multi-user server environments</li>
   <li>Virtualization allows concurrent execution of multiple OSs (and their applications) on the same physical machine</li>
 </ul>
 
@@ -12,7 +12,7 @@
   <li>Virtual resources == each OS thinks it “owns” hardware resources</li>
   <li>Virtual machine (VM) == OS + applications + virtual resources (aka guest domain)</li>
   <li>Virtualization layer == management of physical hardware (virtual machine monitor, aka hypervisor)</li>
-  <li>Defintition (from Popek and Goldberf) == A virtual machine is an efficient, isolated duplicate of the real machine
+  <li>Definition (from Popek and Goldberf) == A virtual machine is an efficient, isolated duplicate of the real machine
     <ul>
       <li>Supported by a virtual machine monitor (VMM)
         <ul>
@@ -110,7 +110,7 @@
 <ul>
   <li>aka type 2</li>
   <li>Host OS owns all hardware</li>
-  <li>Special VMM module provides hardware interfaces to FMs and deals with VM context switching</li>
+  <li>Special VMM module provides hardware interfaces to VMs and deals with VM context switching</li>
   <li>One benefit of this model is that it can leverage all the services and mechanisms already developed for the host OS</li>
   <li>Can also run native applications on host OS, alongside the guest VMs</li>
 </ul>
@@ -194,7 +194,7 @@
               <li>if illegal op: terminate VM…</li>
               <li>if legal op: emulate the behavior the guest OS was expecting from the hardware
                 <ul>
-                  <li>guest should just see that hardware did whatever it expected, doens’t need to know about hypervisor intervention</li>
+                  <li>guest should just see that hardware did whatever it expected, doesn’t need to know about hypervisor intervention</li>
                 </ul>
               </li>
             </ul>
@@ -272,7 +272,7 @@
       <li>some optimizations are available to help speed this up and reduce overhead
         <ul>
           <li>cache translated blocks to amortize translation costs</li>
-          <li>distinguish which portions of the guest OS binary should be analyzed, only analyzing relevant portions</li>
+          <li>distinguish which portions of the guest OS binary should be analyzed, only analyze relevant portions</li>
         </ul>
       </li>
     </ul>
@@ -290,7 +290,7 @@
     <ul>
       <li>it knows it’s running virtualized</li>
       <li>it makes explicit calls to the hypervisor (hypercalls)</li>
-      <li>hyperfall (behave similarly to system calls)
+      <li>hypercall (behave similarly to system calls)
         <ul>
           <li>package context info</li>
           <li>specify desired hypercall</li>
@@ -331,7 +331,7 @@
           <li>Option 2
             <ul>
               <li>guest page tables: VA=&gt;PA</li>
-              <li>hypervidor shadow page table: VA=&gt;MA</li>
+              <li>hypervisor shadow page table: VA=&gt;MA</li>
               <li>only hypervisor page table is actually used for address translation</li>
               <li>hypervisor maintains consistence between two page tables
                 <ul>
@@ -386,7 +386,7 @@
   </li>
   <li>Passthrough Model
     <ul>
-      <li>Approach: VMM-level driver configures device access permisions</li>
+      <li>Approach: VMM-level driver configures device access permissions</li>
       <li>Pros
         <ul>
           <li>VM provided with exclusive access to the device</li>
@@ -493,7 +493,7 @@
 <ul>
   <li>Given all the above, and the smashing success of software virtualization both commercially and with industry acknowledgement, hardware companies responded. Specifically by changing their hardware architectures in ways that made them better suited to virtualization
     <ul>
-      <li>AMD Pacifica * Intel Vanderpool Technology (~2005)
+      <li>AMD Pacifica &amp; Intel Vanderpool Technology (~2005)
         <ul>
           <li>close holes in x86 ISA (17 instructions now trap properly)</li>
           <li>modes: root/non-root (or “host” and “guest” mode)</li>

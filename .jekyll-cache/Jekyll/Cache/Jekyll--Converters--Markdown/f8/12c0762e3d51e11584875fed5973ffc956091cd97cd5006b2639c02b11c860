@@ -1,0 +1,32 @@
+I"m<p>For Spring 2021, my fifth semester, I chose to take CS6210: Advanced Operating Systems.  This class addresses a broad range of topics in operating system design and implementation, including:</p>
+<ul>
+  <li>Operating system structuring</li>
+  <li>Synchronization, communication and scheduling in parallel systems</li>
+  <li>Distributed systems, their communication mechanisms, distributed objects and middleware</li>
+  <li>Failures and recovery management</li>
+  <li>System support for Internet-scale computing</li>
+</ul>
+
+<p>I chose to take this class due to my ongoing interest in systems programming, low-level design, and optimization.  It also followed quite well on having taken the Intro to OS course immediately prior, which will (hopefully) help reduce some of the remedial catch-up work I frequently need to do given my non-traditional background in CS.</p>
+
+<p>The theoretical material in the lectures and exams is augmented with rather large and complex projects in C and C++.  There are four of these projects:</p>
+<ul>
+  <li>Project 1: Virtual Machine Scheduling in KVM</li>
+  <li>Project 2: Barrier Synchronization</li>
+  <li>Project 3: Distributed Service using GRPC</li>
+  <li>
+    <p>Project 4: Implement MapReduce Framework using GRPC</p>
+  </li>
+  <li>The screenshot images in these lecture notes are property of Georgia Tech.  You can find the originals in the publicly available <a href="https://omscs.gatech.edu/cs-6210-advanced-operating-systems-course-videos">Kaltura videos</a>.</li>
+</ul>
+
+<section>
+<h3>Lecture Notes</h3>
+<li>
+<a href="/aos_lec_L01.html">
+    Lesson 1 - Introduction to AOS
+</a>
+</li>
+
+</section>
+:ET

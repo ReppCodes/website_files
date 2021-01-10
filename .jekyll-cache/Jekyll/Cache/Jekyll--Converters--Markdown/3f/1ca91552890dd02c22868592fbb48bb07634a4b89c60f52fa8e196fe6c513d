@@ -1,4 +1,4 @@
-I"­E<hr />
+I"¿E<hr />
 <h2 id="remote-procedure-calls-rpc">Remote Procedure Calls (RPC)</h2>
 <h3 id="why-rpc">Why RPC?</h3>
 <ul>
@@ -30,7 +30,7 @@
       </li>
     </ul>
   </li>
-  <li>It become obvious in the 80s that a lot of the boilerplate for distributed apps was being rewritten every time</li>
+  <li>It became obvious in the 80s that a lot of the boilerplate for distributed apps was being rewritten every time</li>
   <li>Common steps relates to remote IPC were then abstracted to Remote Procedure Calls (RPC)</li>
 </ul>
 
@@ -52,7 +52,7 @@
   </li>
   <li>Procedure call interface
     <ul>
-      <li>synchronouse call semantics
+      <li>synchronous call semantics
         <ul>
           <li>this means client will make call to server, then block until call completes and returns.  same as a procedure call locally.</li>
         </ul>
@@ -187,7 +187,7 @@
   <li>Registry
     <ul>
       <li>database of available services</li>
-      <li>search for service name to find wervice and contact details</li>
+      <li>search for service name to find service and contact details</li>
       <li>Could be distributed
         <ul>
           <li>Any RPC service could register here</li>
@@ -461,8 +461,11 @@
 <ul>
   <li>Pioneered by Sun as a form of client-server communication among address spaces in the JVM</li>
   <li>mataches Java OO semantics</li>
-  <li>IDL == Java (language-specific
-<img src="../assets/content_images/omscs/gios/p4l1_img9.png" alt="" /></li>
+  <li>IDL == Java (language-specific</li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/gios/p4l1_img9.png" alt="" /></p>
+<ul>
   <li>RMI Runtime
     <ul>
       <li>Remote reference layer

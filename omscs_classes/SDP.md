@@ -10,7 +10,7 @@ The material is taught in the context of both group and individual projects requ
 * The screenshot images in these lecture notes are property of Georgia Tech.  You can find the originals in the publicly available Udacity and Kaltura videos.
 
 <section>
- 
+<h3>Lecture Notes</h3>
 <li>
 <a href="{{ "/sdp_lec_P1L1" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
     Part 1 Lesson 1 - Introduction

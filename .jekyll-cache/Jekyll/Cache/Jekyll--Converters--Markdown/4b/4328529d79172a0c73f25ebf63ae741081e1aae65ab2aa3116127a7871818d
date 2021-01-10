@@ -1,4 +1,4 @@
-I"�G<hr />
+I"�G<hr />
 <h2 id="synchronization-constructs">Synchronization Constructs</h2>
 
 <h3 id="limitation-of-mutexes-and-condition-variables">Limitation of mutexes and condition variables</h3>
@@ -56,7 +56,7 @@
       <li>assigned a max value (positive int)</li>
       <li>on try (wait)
         <ul>
-          <li>if non-zerio -&gt; decrement and proceed</li>
+          <li>if non-zero -&gt; decrement and proceed</li>
           <li>if zero, block and wait</li>
           <li>number of threads allowed to proceed is the maximum value (counting semaphore)</li>
         </ul>
@@ -145,7 +145,7 @@
       <li>included in MESA by XEROX PARC</li>
       <li>Java
         <ul>
-          <li>syncrhonized methods generate monitor code</li>
+          <li>synchronized methods generate monitor code</li>
           <li>when compiled the resulting code will include all appropriate locking and checking.  only notify() must be done explicitly</li>
         </ul>
       </li>
@@ -315,8 +315,8 @@
   <li>Cache Coherence and Atomics
     <ul>
       <li>atomics always issued to the memory controller.</li>
-      <li>this allows central entroy point where everything can be ordered and synchronized</li>
-      <li>however, imposes sever performance penalties</li>
+      <li>this allows central entry point where everything can be ordered and synchronized</li>
+      <li>however, imposes severe performance penalties</li>
       <li>also, generates coherence traffic to update/invalidate all cached copies of a memory reference, even if no changes were made to value, to guarantee correctness</li>
       <li>Atomics on SMP systems are expensive!
         <ul>
@@ -379,8 +379,8 @@
         <ul>
           <li>NCC architectures there’s literally no difference</li>
           <li>CC-WU it’s ok, but when lock is freed all CPUs looking at it will see it at once, and all will execute the atomic, going to memory and spiking traffic</li>
-          <li>CC-WI – very bad.  Same probley as WU, but every single attempt to acquire the lock will not only generate contention, but will also generate invalidation traffic.
-<img src="../assets/content_images/omscs/gios/p3l4_img4.png" alt="" /></li>
+          <li>CC-WI – very bad.  Same problem as WU, but every single attempt to acquire the lock will not only generate contention, but will also generate invalidation traffic.
+<img src="../assets/content_images/omscs/gios/p3l4_img5.png" alt="" /></li>
         </ul>
       </li>
     </ul>
@@ -433,10 +433,10 @@
           <li>backoff-based</li>
           <li>random delay in a range that increases with percieved contention
             <ul>
-              <li>sound similar to CN content on network flow control algorithms</li>
+              <li>sounds similar to CN content on network flow control algorithms</li>
             </ul>
           </li>
-          <li>percieved == failed test_and_set() operations</li>
+          <li>perceived == failed test_and_set() operations</li>
           <li>delay after each reference will keep growing based on contention OR length of critical section.  noisy signal</li>
         </ul>
       </li>
@@ -447,7 +447,7 @@
 <h3 id="queuing-lock">Queuing Lock</h3>
 <p><img src="../assets/content_images/omscs/gios/p3l4_img8.png" alt="" /></p>
 <ul>
-  <li>Common problem in spinlock implementations
+  <li>Common problems in spinlock implementations:
     <ul>
       <li>everyone tries to acquire a lock at the same time once lock is freed
         <ul>
@@ -465,7 +465,7 @@
     <ul>
       <li>every flag has one of two values
         <ul>
-          <li>has-jock (hl)</li>
+          <li>has-lock (hl)</li>
           <li>must-wait (mw)</li>
         </ul>
       </li>
@@ -479,7 +479,7 @@
   </li>
   <li>when a new thread arrives at the lock it recieves a unique ticket, that is the current position of the thread in the lock
     <ul>
-      <li>increment queue-last value is incremented</li>
+      <li>queue-last value is incremented</li>
       <li>thread is assigned the next position in the queue</li>
       <li>the read and increment of the queue-last pointer must be atomic</li>
     </ul>

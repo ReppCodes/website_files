@@ -1,4 +1,4 @@
-I"k<hr />
+I"Jk<hr />
 <h2 id="cpu-scheduling">CPU Scheduling</h2>
 <ul>
   <li>CPU Scheduler:
@@ -344,8 +344,8 @@
   <li>Timeslice value
     <ul>
       <li>depends on priority</li>
-      <li>smallest for low priority</li>
-      <li>highest for high priority</li>
+      <li>smallest for low priority (lowest priority is 139)</li>
+      <li>highest for high priority (highest priority is 0)</li>
     </ul>
   </li>
   <li>Feedback

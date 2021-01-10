@@ -1,13 +1,23 @@
-I"ê5<hr />
+I"¯5<hr />
 <h2 id="provided-resources">Provided Resources</h2>
-<p><a href="http://www.tldp.org/LDP/lpg/node21.html">SysV IPC Tutorials</a>
-<a href="http://man7.org/linux/man-pages/man3/mq_notify.3.html">mg_notify() man page</a>
-<a href="http://man7.org/linux/man-pages/man3/sem_wait.3.html">sem_wait() man page</a>
-<a href="http://man7.org/linux/man-pages/man7/shm_overview.7.html">shm_overview man page</a></p>
+<ul>
+  <li>
+    <p><a href="http://www.tldp.org/LDP/lpg/node21.html">SysV IPC Tutorials</a></p>
+  </li>
+  <li>
+    <p><a href="http://man7.org/linux/man-pages/man3/mq_notify.3.html">mg_notify() man page</a></p>
+  </li>
+  <li>
+    <p><a href="http://man7.org/linux/man-pages/man3/sem_wait.3.html">sem_wait() man page</a></p>
+  </li>
+  <li>
+    <p><a href="http://man7.org/linux/man-pages/man7/shm_overview.7.html">shm_overview man page</a></p>
+  </li>
+</ul>
 
 <h2 id="inter-process-communication">Inter-Process Communication</h2>
 <ul>
-  <li>IPC == Os-supported mechanisms for interaction among processes (coordination and communiucation)
+  <li>IPC == Os-supported mechanisms for interaction among processes (coordination and communication)
     <ul>
       <li>message passing IPC
         <ul>
@@ -27,7 +37,7 @@
           <li>cover this more later</li>
         </ul>
       </li>
-      <li>syncrhonization primitives
+      <li>synchronization primitives
         <ul>
           <li>communication implies synchronization, and vice versa</li>
         </ul>
@@ -114,7 +124,7 @@
       <li>OS abstraction of ports</li>
       <li>send(), recv() == pass message buffers</li>
       <li>socket() == create kernel-level socket buffer</li>
-      <li>associate necessary kernel6level processing (TCP/IP, etc.)</li>
+      <li>associate necessary kernel-level processing (TCP/IP, etc.)</li>
       <li>can be used for different machines, as a channel between process and network device
         <ul>
           <li>if on the same machine, bypass full protocol stack</li>
@@ -155,7 +165,7 @@
       <li>explicit synchronization needed</li>
       <li>Communication protocol must be built and implemented by the developer
         <ul>
-          <li>Distto management of the shared buffer</li>
+          <li>Also management of the shared buffer</li>
         </ul>
       </li>
     </ul>
@@ -390,7 +400,7 @@
       </li>
       <li>Segment size &lt; data size
         <ul>
-          <li>Transfter data in rounds</li>
+          <li>Transfer data in rounds</li>
           <li>include protocol to track progress</li>
           <li>Probably cast shmem as data structure
             <ul>

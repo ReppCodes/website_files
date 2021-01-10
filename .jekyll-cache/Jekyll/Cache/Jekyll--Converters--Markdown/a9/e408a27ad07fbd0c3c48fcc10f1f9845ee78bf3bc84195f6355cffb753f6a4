@@ -1,4 +1,4 @@
-I"�F<hr />
+I"�F<hr />
 <h2 id="distributed-shared-memory-dsm">Distributed Shared Memory (DSM)</h2>
 <h3 id="reviewing-dfss">Reviewing DFS’s</h3>
 <ul>
@@ -29,7 +29,7 @@
 <h3 id="peer-distributed-applications">Peer Distributed Applications</h3>
 <p><img src="../assets/content_images/omscs/gios/p4l3_img1.png" alt="" /></p>
 <ul>
-  <li>For modern big data app, state is distributed across many/all nodes</li>
+  <li>For modern big data apps, state is distributed across many/all nodes</li>
   <li>CPUs on these nodes perform tasks, accessing state from all nodes</li>
   <li>Each node
     <ul>
@@ -82,7 +82,7 @@
   </li>
   <li>Software-supported DSM
     <ul>
-      <li>everything odne by software</li>
+      <li>everything done by software</li>
       <li>Done by OS or a language runtime</li>
     </ul>
   </li>
@@ -154,7 +154,7 @@
       <li>Multiple readers/multiple writers (MRMW)</li>
       <li>Multiple readers/single writer (MRSW)
         <ul>
-          <li>This is considered a special (simpler case of MRMW</li>
+          <li>This is considered a special (simpler case of MRMW)</li>
         </ul>
       </li>
       <li>For the above 2, must ensure:
@@ -287,7 +287,7 @@
       </li>
       <li>Curerent “owner”:
         <ul>
-          <li>when a page is repeatedly or exclusively access from a node that isn’t its home it would be too expensive to always contact the home node</li>
+          <li>when a page is repeatedly or exclusively accessed from a node that isn’t its home it would be too expensive to always contact the home node</li>
           <li>So separate notion of home node from “owner”</li>
           <li>“owner”: the node that currently owns the page, controls the state updates and drives consistency operations for the page</li>
           <li>owner may change if use patterns change</li>
@@ -312,7 +312,7 @@
     <ul>
       <li>each page (object) has
         <ul>
-          <li>adress == node ID + page frramen umber</li>
+          <li>adress == node ID + page frame number</li>
           <li>node ID == “home” node</li>
         </ul>
       </li>
@@ -407,7 +407,7 @@
 
 <h3 id="strict-consistency">Strict Consistency</h3>
 <ul>
-  <li>Strict consistency == updates visible to eeverywhere immediately
+  <li>Strict consistency == updates visible to everywhere immediately
     <ul>
       <li>Absolute ordering and immediate visibility of any state update and access</li>
       <li>In the exact same manner as those updates were performed in real time</li>
@@ -463,7 +463,7 @@
 <ul>
   <li>Synchronization points == operations that are available to the upper layers of the software (R, W, Sync)
     <ul>
-      <li>all updates prior to a syns point will be visible to all processors</li>
+      <li>all updates prior to a sync point will be visible to all processors</li>
       <li>no guarantee what happens in between after the last sync point</li>
     </ul>
   </li>

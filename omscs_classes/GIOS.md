@@ -10,7 +10,7 @@ The practical coverage is augmented with rather large and complex projects in C 
 * The screenshot images in these lecture notes are property of Georgia Tech.  You can find the originals in the publicly available [Kaltura videos](https://omscs.gatech.edu/cs-6200-introduction-operating-systems-course-videos).
 
 <section>
- 
+ <h3>Lecture Notes</h3>
 <li>
 <a href="{{ "/gios_lec_P1L2" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
     Part 1 Lesson 1 - Introduction to Operating Systems

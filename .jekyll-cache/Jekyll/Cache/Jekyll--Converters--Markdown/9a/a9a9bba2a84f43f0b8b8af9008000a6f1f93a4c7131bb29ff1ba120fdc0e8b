@@ -1,4 +1,4 @@
-I"GJ<hr />
+I"PJ<hr />
 <h2 id="io-management">I/O Management</h2>
 <ul>
   <li>Focus on the mechanisms that OS’s use to represent and manage I/O hardware devices</li>
@@ -64,7 +64,7 @@
       <li>per each device type</li>
       <li>Responsible for device access,  management, and control
         <ul>
-          <li>includes how instructions can be passed from higher level systems like the kernal or applications to the actual device</li>
+          <li>includes how instructions can be passed from higher level systems like the kernel or applications to the actual device</li>
           <li>includes how the system should respond to device-level events like errors or notifications</li>
         </ul>
       </li>
@@ -83,7 +83,7 @@
 
 <h3 id="types-of-devices">Types of Devices</h3>
 <ul>
-  <li>To deal with such device diversity, devyces are usually grouped into types</li>
+  <li>To deal with such device diversity, devices are usually grouped into types</li>
   <li>Block: Disk
     <ul>
       <li>read/write blocks of data</li>
@@ -193,7 +193,7 @@
     <ul>
       <li>write command to request packet transmission</li>
       <li>copy packet to data registers</li>
-      <li>repeat until packet set
+      <li>repeat until packet sent
         <ul>
           <li>e.g. 1500b packet; 8byte regs or bus
             <ul>
@@ -222,9 +222,9 @@
       <li>configure DMA controller with in-memory address and size of packet buffer
         <ul>
           <li>e.g. 1500B w/ 8 byte regs or bus =&gt; 1 store instruction + 1 DMA configure</li>
-          <li>less steps, but DMA config is morec complex
+          <li>less steps, but DMA config is more complex
             <ul>
-              <li>therefore, for smaller transfer PIO is better than DMA, as DMA configu takes many cycles</li>
+              <li>therefore, for smaller transfer PIO is better than DMA, as DMA configuration takes many cycles</li>
             </ul>
           </li>
         </ul>
@@ -300,12 +300,12 @@
 
 <h3 id="sync-vs-async-access">Sync vs Async Access</h3>
 <ul>
-  <li>When an I/O request is made, usually the user process need a response from the device, even just an acknowledgement</li>
+  <li>When an I/O request is made, usually the user process needs a response from the device, even just an acknowledgement</li>
   <li>What happens to the user process while waiting on that response?
     <ul>
       <li>Synchronous
         <ul>
-          <li>user process blocks, placed on wait queueu</li>
+          <li>user process blocks, placed on wait queue</li>
         </ul>
       </li>
       <li>Asynchronous
@@ -329,7 +329,7 @@
 <h3 id="block-device-stack">Block Device Stack</h3>
 <ul>
   <li>Block device are typically used as storage for files</li>
-  <li>Processe use files as a logical storage unit
+  <li>Processes use files as a logical storage unit
     <ul>
       <li>Applications dont think about disks, they think about files and request operations to be performed on files</li>
     </ul>
@@ -449,7 +449,7 @@
 
 <h3 id="inodes">inodes</h3>
 <ul>
-  <li>are an index of al disk blocks corresponding to a file</li>
+  <li>are an index of all disk blocks corresponding to a file</li>
   <li>file =&gt; uniquely identified by its inode</li>
   <li>inode =&gt; list of all blocks and other metadata.  uniquely numbered.
     <ul>
@@ -478,7 +478,7 @@
 
 <h4 id="inodes-with-indirect-pointers">inodes with indirect pointers</h4>
 <ul>
-  <li>are an index of alldisk blocks corresponding to a file</li>
+  <li>are an index of all disk blocks corresponding to a file</li>
   <li>inodes contain
     <ul>
       <li>metadata</li>
@@ -518,7 +518,7 @@
     <ul>
       <li>buffer cache in main memory</li>
       <li>read/write from cache</li>
-      <li>periodically fluxh cache to disk - fsync()</li>
+      <li>periodically flush cache to disk - fsync()</li>
     </ul>
   </li>
   <li>I/O scheduling =&gt; reduce disk head movement

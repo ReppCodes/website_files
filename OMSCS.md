@@ -8,6 +8,15 @@ notes about my lectures and projects.  This is mostly for my own benefit, but ho
 the program.
 
 <section>
+<h3>2021</h3>
+<li>
+<a href="{{ "/omscs_classes/AOS" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    CS6210: Advanced Operating Systems
+</a>
+</li>
+</section>
+
+<section>
 <h3>2020</h3>
 <li>
 <a href="{{ "/omscs_classes/GIOS" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
