@@ -7,6 +7,8 @@ For Fall 2020, my fourth semester, I chose to take CS6200: Graduate Introduction
 
 The practical coverage is augmented with rather large and complex projects in C and C++.  Comfort with these languages is suggested as a prerequisite for the class, though I chose to jump in and try to pick that up as I went.  This may have contributed to my assessment of the projects, honestly.  The first project is to implement a socket-based file transfer protocol, complete with header parsing and support for multi-threading.  The second project is to implement a proxy server and cache server, which communicate via shared memory.  The third project is to leverage the gRPC framework and C++ language to implement a distributed file system with basic multi-client/server synchronization.
 
+***
+
 * The screenshot images in these lecture notes are property of Georgia Tech.  You can find the originals in the publicly available [Kaltura videos](https://omscs.gatech.edu/cs-6200-introduction-operating-systems-course-videos).
 
 <section>

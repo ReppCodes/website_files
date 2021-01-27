@@ -1,0 +1,833 @@
+I")�<h1 id="os-structure-overview">OS Structure Overview</h1>
+<ul>
+  <li>OS Structure Definition: The way the OS software is organized with respect to the applications that it serves and the underlying hardware that it manages</li>
+  <li>OS must protect integrity of resources it manages</li>
+  <li>However, some things do <strong>have</strong> to run in privileged mode.  OS must permit this, flexibly.</li>
+  <li>Goals of OS Structure:
+    <ul>
+      <li>Protection: within and across users and the OS itself</li>
+      <li>Performance: time taken to perform the required services</li>
+      <li>Flexibility: extensibility.  not one size fits all, but the ability to add or adapt to what a given use case needs</li>
+      <li>Scalability: performance improves as hardware resources improve.</li>
+      <li>Agility: adapting to changes in application needs and/or resource availability</li>
+      <li>Responsiveness: reacting to external events quickly (e.g. peripheral inputs, network inputs, etc)</li>
+    </ul>
+  </li>
+  <li>Some of the above goals seem to conflict with each other.  e.g. performance and protection
+    <ul>
+      <li>we will explore ways in which OS researchers satisfy these seemingly conflicting goals</li>
+    </ul>
+  </li>
+  <li>Commercial Operating Systems
+    <ul>
+      <li>Linux</li>
+      <li>MacOS</li>
+      <li>Windows</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="monolithic-structure">Monolithic Structure</h2>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L02_img1.png" alt="img" /></li>
+  <li>Hardware all managed by the OS</li>
+  <li>Each App in its own hardware address space
+    <ul>
+      <li>allows protection between applications</li>
+    </ul>
+  </li>
+  <li>OS in its own hardware address space
+    <ul>
+      <li>all of it: filesystem, scheduler, memory management unit, network, etc.</li>
+    </ul>
+  </li>
+  <li>when an app needs any OS-provided service, must context switch between address spaces</li>
+</ul>
+
+<h3 id="dos-like-structure">DOS-like structure</h3>
+
+<ul>
+  <li>DOS looks, at first glance, very similar to a monolith</li>
+  <li>Key difference is that line dividing apps from OS is dotted, instead of solid
+    <ul>
+      <li>Main difference is no protection between the application and the OS.</li>
+    </ul>
+  </li>
+  <li>Pros
+    <ul>
+      <li>performance =&gt; access to system services like a procedure call</li>
+      <li>no context switching!</li>
+    </ul>
+  </li>
+  <li>Cons
+    <ul>
+      <li>an errant application can corrupt the OS</li>
+      <li>trampling the OS address space is very easy</li>
+    </ul>
+  </li>
+  <li>This was a single-user approach, really designed for running a single app at a time.  Protection was seen as less important.</li>
+  <li>Loss of protection in DOS-like structure is simply unacceptable for a modern OS.</li>
+  <li>Monolithic structure reduces performance loss by consolidation all services into one structure, preventing the need for context switching to multiple address spaces for different services required.</li>
+  <li>But, monolithic structure limits ability to customize the OS for different needs.
+    <ul>
+      <li>Some examples make this limitation more visible.  Provided example is video games, which have very strict and unique requirements.  Computing prime numbers would have very different requirements than an interactive video game.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="opportunities-for-customization">Opportunities for Customization</h3>
+
+<ul>
+  <li>Memory Management – how should an OS handle page faults
+    <ul>
+      <li>OS actions
+        <ol>
+          <li>find a free page frame
+            <ul>
+              <li>page replacement algorithm would run to free up page frames to have them ready for this point</li>
+              <li>the OS over-commits available physical memory, similar to an airline overbooking</li>
+              <li>this cleanup is a general fit, the optimal memory cleanup would be custom-fit to the memory use patterns of a given app. a This presents an opportunity for customization.</li>
+            </ul>
+          </li>
+          <li>OS initiates disk IO to move page from virtual memory to free page frame</li>
+          <li>update page table for faulting process</li>
+          <li>resume process</li>
+        </ol>
+      </li>
+    </ul>
+  </li>
+  <li>The above is one example of opportunity for optimization, but there are many others, such as CPU scheduling, filesystem, etc.</li>
+</ul>
+
+<h2 id="microkernel-structure">Microkernel Structure</h2>
+
+<ul>
+  <li>The missed opportunities for customization prompted OS designers to consider alternative structures that would more easily allow the OS to be tweaked to various use cases.</li>
+  <li><img src="../assets/content_images/omscs/aos/L02_img2.png" alt="img" /></li>
+  <li>As with a monolith, each app goes in its own address space</li>
+  <li>The microkernel runs in a privileged mode and provides only very simple abstractions
+    <ul>
+      <li>threads, address space, IPC</li>
+      <li>mechanisms provided, <strong>not policies</strong></li>
+    </ul>
+  </li>
+  <li>Each service then goes in its own address space, sitting on top of the microkernel as server processes.
+    <ul>
+      <li>execute with the same privilege as the apps themselves. in principle there is no distinction between apps and services</li>
+      <li>this protects the services from each other, and the microkernel from the services.</li>
+    </ul>
+  </li>
+  <li>The microkernel must provide IPC abstraction to allow the apps to request services from the server processes, and the server processes to communicate between each other</li>
+  <li>Pros
+    <ul>
+      <li>Extensibility.  Because OS services are implemented as server processes, these server processes can be replicated with different characteristics.  FS1 and FS2 can run alongside each other, and an app can request from whichever one is better suited to its use case.</li>
+    </ul>
+  </li>
+  <li>Cons
+    <ul>
+      <li>Potential for performance loss</li>
+      <li>In monolithic structure, app calls for a service, one context switch to OS privileged mode.  All needed services can now be accessed at normal procedure call speed
+        <ul>
+          <li>In a microkernel structure, app must make IPC call to contact filesystem.  App must go to microkernel, microkernel calls filesystem server process, and then two hops back the other way.</li>
+          <li>may have to context switch far more often than otherwise needed</li>
+          <li><img src="../assets/content_images/omscs/aos/L02_img3.png" alt="img" /></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="why-performance-loss">Why performance Loss?</h3>
+
+<ul>
+  <li>Border crossings – the sheer time spent in context switches</li>
+  <li>Change in locality – cold caches everywhere</li>
+  <li>User space&lt;-&gt;system space copying of data (required for protection of separate address spaces)</li>
+  <li>We will later discuss an example of a microkernel that was carefully designed to minimize this performance loss</li>
+</ul>
+
+<p><a id="org5c8bea2"></a></p>
+
+<h2 id="so-what-do-we-want">So what do we want?</h2>
+
+<ul>
+  <li>Performance</li>
+  <li>Extensibility</li>
+  <li>Protection</li>
+  <li>These three are conflicting goals, that various designs balance against each other to try and achieve best overall experience.  Throughout this course we will discuss approaches that try to accomplish this</li>
+  <li><img src="../assets/content_images/omscs/aos/L02_img4.png" alt="img" /></li>
+</ul>
+
+<h1 id="the-spin-approach">The SPIN Approach</h1>
+
+<ul>
+  <li>Trying to resolve the opposing weaknesses of microkernel and monolith OS designs</li>
+  <li>What are we trying to achieve
+    <ul>
+      <li>OS structure should be thin (like a microkernel), having only <strong>**mechanisms</strong>** and not <strong>**policies</strong>**</li>
+      <li>OS should allow fine-grained access to resources without border crossing (like DOS)</li>
+      <li>flexibility for resource management to suit needs of the application (like microkernel) without sacrificing protection and performance (like monolithic)</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="approaches-to-extensibility">Approaches to Extensibility</h2>
+
+<ul>
+  <li>capability-based [Hydra OS (Wulf ’81)]
+    <ul>
+      <li>kernel mechanisms for resource allocation (not policies)</li>
+      <li>capability-based resource access
+        <ul>
+          <li>lots of abstraction and context loaded into the term ’capability’ in the OS world</li>
+          <li>capability is a very heavyweight abstraction</li>
+        </ul>
+      </li>
+      <li>resource managed as course-grained objects to reduce border crossing overhead
+        <ul>
+          <li>heavyweight capability means context switching would be extra expensive</li>
+          <li>this approach reduced flexibility and extensibility</li>
+          <li>the coarser you make these objects, the less opportunity you have for customizing the services</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Microkernel-based (e.g. Mack from CMU in 90’s)
+    <ul>
+      <li>Mach focused on extensibility and portability</li>
+      <li>implemented all services as server processes that run as normal user-level processes above kernel</li>
+      <li>achieved its goals, but performance was sacrificed too much</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="spin-approach-to-extensibility">SPIN Approach to Extensibility</h2>
+
+<ul>
+  <li>Co-location of kernel and extensions in same address space
+    <ul>
+      <li>avoids border crossing</li>
+      <li>this raises DOS-style concerns about protection of the kernel</li>
+      <li>Make extensions as cheap as a procedure call
+        <ul>
+          <li>because we have co-located the kernel and extensions in the same address space</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Compiler-enforced modularity
+    <ul>
+      <li>this addresses protection by relying on the characteristics of a strongly-typed programming language to guarantee protection</li>
+      <li>Done in MODULA 3, more on this later</li>
+      <li>Kernel provides well-defined interfaces, similar in principle to function prototypes in a header file</li>
+      <li>Data abstractions provided by the programming language, such as an object, serve as containers for logical protection domains
+        <ul>
+          <li>removes reliance on hardware address spaces for protection</li>
+          <li>kernel provides only interfaces, these logical protection domains implement the functionality that is enshrined in the interfaces</li>
+        </ul>
+      </li>
+      <li>Dynamic call bindings
+        <ul>
+          <li>provide multiple implementations of the interface functions</li>
+          <li>applications can dynamically bind to the different implementations, whichever one suits them best</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="logical-protection-domains">Logical Protection Domains</h2>
+
+<ul>
+  <li>Modula-3 Safety and Encapsulation Mechanisms
+    <ul>
+      <li>a strongly typed language
+        <ul>
+          <li>type safety, encapsulation</li>
+        </ul>
+      </li>
+      <li>automatic storage management</li>
+      <li>objects
+        <ul>
+          <li>good encapsulation. only the entry points are visible outside the object, not the implementation</li>
+          <li>enforces good practices, does not allow “cheating” as is possible with e.g. C</li>
+        </ul>
+      </li>
+      <li>threads</li>
+      <li>exceptions</li>
+      <li>generic interfaces</li>
+      <li>All of these serve well in implementing system protections as objects
+        <ul>
+          <li>the entry points serving as gates to what can be done allows protection of the object, in this case the kernel components</li>
+          <li>Generic interface mechanism allows multiple implementations of the same service, allowing apps to use whichever is best for them</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Fine-grained protection via capabilities
+    <ul>
+      <li>you can conceptualize various granularities of service/capability as objects or hierarchical objects
+        <ul>
+          <li>hardware resources (e.g. page frame)</li>
+          <li>interfaces (e.g. page allocation module)</li>
+          <li>collection of interfaces (e.g. entire VM)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Capabilities as language-supported pointers
+    <ul>
+      <li>as noted above, the term ’capabilities’ in OS research refers to a heavyweight mechanism</li>
+      <li>however, because we are dealing here with a strongly-typed language bent to serve as an OS, capabilities to objects can be supported as pointers.</li>
+      <li>Thus, access to the resources (entry points to an object that is representing a specific resource) is provided via capabilities that are simply language-supported pointers</li>
+      <li>Therefore, these capabilities are much cheaper than those used by the Hydra OS</li>
+    </ul>
+  </li>
+  <li>Note (Quiz):
+    <ul>
+      <li>the difference between pointers in C and in Modula-3 is that Modula-3 pointers are type-specific</li>
+      <li>Modula-3 pointers cannot be forged.  The only way you can use a pointer is to point to the same type of thing it was originally constructed with.  No casting.</li>
+      <li>This is what provides the logical protection in the SPIN OS described above</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="spin-mechanisms-for-protection-domains">SPIN Mechanisms for Protection Domains</h2>
+
+<ul>
+  <li>create
+    <ul>
+      <li>init with object file contents and export names contained as entry point methods inside the object to be visible outside
+        <ul>
+          <li>example: memory management service can be created and names for it exported out to the rest of the OS</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Resolve
+    <ul>
+      <li>resolve names between source and target domains
+        <ul>
+          <li>very similar to linking two separately compiled files together, so they can access the names/symbols used in each other</li>
+          <li>Once resolved, resource sharing can be done at memory speeds.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Combine
+    <ul>
+      <li>to create an aggregate domain from two smaller protection domains.  union of all entry points of component domains.</li>
+    </ul>
+  </li>
+  <li>All the SPIN secret sauce comes from the compile-time checking of the MODULA-3 language allowing the enforcement of the protection of these domains and mechanisms.</li>
+</ul>
+
+<h2 id="customized-os-with-spin">Customized OS with SPIN</h2>
+
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L02_img5.png" alt="img" /></li>
+  <li>The upshot of the logical protection domain is the ability to extend SPIN to include OS services and make it all part of the same hardware address space
+    <ul>
+      <li>no border crossing between the services or the mechanisms provided by SPIN</li>
+    </ul>
+  </li>
+  <li>Above image shows example of multiple OS’s with different service selections implementing the same functionality differently, but using some shared extensions</li>
+</ul>
+
+<h2 id="example-extensions">Example Extensions</h2>
+
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L02_img6.png" alt="img" /></li>
+  <li>UNIX Server implemented as an app on top of a normal UNIX OS on top of a SPIN extension</li>
+  <li><img src="../assets/content_images/omscs/aos/L02 img7.png" alt="img" /></li>
+  <li>A client-server application implemented directly on top of SPIN with extension interfaces to provide only functionality actually needed for client or server to function</li>
+</ul>
+
+<h2 id="spin-mechanisms-for-events">SPIN Mechanisms for Events</h2>
+
+<ul>
+  <li>An OS has to field external events
+    <ul>
+      <li>e.g. interrupts or a process incurring exceptions</li>
+    </ul>
+  </li>
+  <li>SPIN supports events using an event-based communication model</li>
+  <li>Services register ’event handlers’ with the SPIN event dispatcher
+    <ul>
+      <li>SPIN supports both 1:1, 1:many, and many:1 mappings between events and handlers</li>
+    </ul>
+  </li>
+  <li>Walkthrough example of packet handling from ethernet or ATM via IP protocol, and may be passed to various paths (ICMP, TCP, UDP) and from there on out to various places as needed
+    <ul>
+      <li>these subsequent destinations may cause events themselves, and be passed on to their own handlers</li>
+    </ul>
+  </li>
+  <li>Order of handlers being scheduled is not reliable, in the case of multiple handlers for a given event (similar to POSIX thread ordering not being reliable)</li>
+</ul>
+
+<h2 id="default-core-services-in-spin">Default Core Services in SPIN</h2>
+<h3 id="memory-management">Memory Management</h3>
+
+<ul>
+  <li>SPIN wants to allow extension to handle memory, and allocates it to them to do so</li>
+  <li>Physical address
+    <ul>
+      <li>allocate, de-allocate, reclaim</li>
+    </ul>
+  </li>
+  <li>Virtual address
+    <ul>
+      <li>allocate, de-allocate</li>
+    </ul>
+  </li>
+  <li>Translation
+    <ul>
+      <li>create/destroy address spaces, add/remove mapping</li>
+    </ul>
+  </li>
+  <li>Event handlers
+    <ul>
+      <li>page fault, access fault, bad address</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="cpu-scheduling">CPU Scheduling</h3>
+
+<ul>
+  <li>SPIN global scheduler
+    <ul>
+      <li>SPIN only decides at a macro level the amount of time that is given to a particular extension</li>
+      <li>interacts with application threads package</li>
+    </ul>
+  </li>
+  <li>SPIN abstraction: strand
+    <ul>
+      <li>actual OS that extend SPIN map their threads to strands</li>
+      <li>unit of scheduling</li>
+      <li>semantics defined by extension</li>
+    </ul>
+  </li>
+  <li>event handlers
+    <ul>
+      <li>block, unblock, checkpoint resume</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="overall">Overall</h3>
+
+<ul>
+  <li>Each of the above should be instantiated as a logical protection domain, allowing address space sharing and the optimization that brings</li>
+  <li>These functions are defined by core OS, but implemented by extensions.  As in “header file” analogy above, where the extensions are the actual code, SPIN only provides the definitions</li>
+  <li>Final note, somewhat unrelated: core services implemented as extensions are obviously high-risk and their applications must trust them, but one additional protection offered is that this trust must only be given to the specific extensions an app relies upon.  Problems in other extensions do not affect that app.</li>
+</ul>
+
+<h1 id="the-exokernel-approach">The Exokernel Approach</h1>
+<h2 id="exokernel-approach-to-extensibility">Exokernel Approach to Extensibility</h2>
+
+<ul>
+  <li>The name “Exokernel” comes from the fact that the kernel exposes hardware explicitly to the OS extensions living on top of it.</li>
+  <li><img src="../assets/content_images/omscs/aos/L02_img8.png" alt="img" /></li>
+  <li>The core principle is to decouple authorization to use the hardware from its actual use</li>
+  <li>Exokernel validates requests for resources, then binds the request to the resource in question</li>
+  <li>Semantics of use by a given library OS is up to the library itself.  Conventions may apply, of course.</li>
+  <li>Once a library OS has asked for a resource and the kernel has created the binding for the resource to the requester, then the library is ready to use the resource.
+    <ul>
+      <li>Library OS will present the encrypted key to the exokernel to validate usage but otherwise stay out of the way.  “Doorman” sort of activity here.</li>
+    </ul>
+  </li>
+  <li>Establishing the secure binding is the heavy duty operation. Validation after that is quite fast, improving overall performance as you amortize the cost of the initial binding</li>
+</ul>
+
+<h3 id="examples-of-candidate-resources">Examples of Candidate Resources</h3>
+
+<ul>
+  <li>TLB entry
+    <ul>
+      <li>virtual to physical mapping done by library OS</li>
+      <li>binding presented to exokernel</li>
+      <li>exokernel validates access and puts it into hardware TLB
+        <ul>
+          <li>this is a privileged operation so library OS cannot do it by itself</li>
+        </ul>
+      </li>
+      <li>Process in library OS OS uses multiple times without exokernel intervention
+        <ul>
+          <li>this is, therefore, quite fast</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Packet Filter
+    <ul>
+      <li>to be executed every time a packet arrives</li>
+      <li>predicates are loaded into kernel by library OS
+        <ul>
+          <li>this is the heavy duty operation, needs kernel and library OS to communicate</li>
+        </ul>
+      </li>
+      <li>checked on packet arrival by exokernel
+        <ul>
+          <li>very fast, no communication needed back to library OS</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Both of these are examples of “initial binding expensive and slow, subsequent use cheap and fast”</li>
+</ul>
+
+<h2 id="implementing-secure-bindings">Implementing Secure Bindings</h2>
+
+<ul>
+  <li>Three methods
+    <ul>
+      <li>Hardware mechanisms (e.g. TLB entry above)
+        <ul>
+          <li>physical page frames, portion of frame buffer.  All examples of hardware resources that can be requested by library OS and can be bound to it by exokernel.</li>
+        </ul>
+      </li>
+      <li>Software caching
+        <ul>
+          <li>“shadow” TLB in software for each library OS (aka caching hardware TLB into a software cache)
+            <ul>
+              <li>avoid context switch penalty for switching between library OS’s</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Downloading code into kernel
+        <ul>
+          <li>avoid border crossing by inserting specific code an OS wants executed.  example of packet filter above would fall into this implementation method.</li>
+          <li>functionally equivalent to SPIN extensions</li>
+          <li>A close comparison can be made between this implementation method and SPIN’s “extend logical protection domains”.  This one compromises protection more, as the code added to kernel is arbitrary, whereas with SPIN benefits from the compile time enforcement and runtime verification</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="memory-management-in-exokernel">Memory Management in Exokernel</h2>
+
+<ul>
+  <li>Given example: a page fault handled by library OS from an app running in threads on exokernel
+    <ul>
+      <li>exokernel passes fault up to library OS through registered handler</li>
+      <li>library OS knows about processes while exokernel does not.  library OS services page fault.  may require requesting resources such as page frame from exokernel</li>
+      <li>library OS does address mapping, and presents to exokernel along with TLB entry where mapping should be stored
+        <ul>
+          <li>presented along with encrypted key, as usual</li>
+        </ul>
+      </li>
+      <li>exokernel will store mappings into TLB (privileged op)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="software-tlb">Software TLB</h3>
+
+<ul>
+  <li>During context switch, a big source of performance loss is losing locality for newly scheduled process</li>
+  <li>address spaces for separate library OS’s are necessarily different, require full TLB flush, huge source of overhead</li>
+  <li>S-TLB is a snapshot of the hardware TLB for each of the different library OS’s</li>
+  <li>If exokernel switches from library OS1 to OS2:
+    <ul>
+      <li>dump TLB into S-TLB for Library OS1 (really only a subset, discussed more later)</li>
+      <li>preload TLB with S-TLB for OS2</li>
+      <li>OS2 will then have its mappings available in TLB when it goes to look for them</li>
+    </ul>
+  </li>
+  <li>if TLB miss happens anyway, page fault sequence happens as normal</li>
+</ul>
+
+<h2 id="code-execution-in-exokernel">Code execution in Exokernel</h2>
+
+<ul>
+  <li>library OS is given permission to run arbitrary code in the kernel</li>
+  <li>this is done to avoid the performance costs associated with context switching into/out of kernel space</li>
+  <li>this presents a huge security risk to the kernel.</li>
+  <li>while both SPIN and Exokernel favor extensibility, some restrictions must be considered for security’s sake</li>
+</ul>
+
+<h2 id="cpu-scheduling-in-exokernel">CPU Scheduling in Exokernel</h2>
+
+<ul>
+  <li>Exokernel maintains linear vector of time slots</li>
+  <li>Every time slot/quantum has a beginning and an end</li>
+  <li>Time quanta represent time that is allocated to the library OS’s that live on top of exokernel
+    <ul>
+      <li>Each library OS gets to mark its slots on startup</li>
+    </ul>
+  </li>
+  <li>Control is passed to exokernel as each time slot expires, and then reassigned over to next slot owner.
+    <ul>
+      <li>This allows saving and such for context</li>
+      <li>Not actual preemption, OS will own the processor.</li>
+      <li>A misbehaving OS that does not relinquish processor will be penalized by removing time from future slots to make up the difference</li>
+    </ul>
+  </li>
+  <li>Processor kernel will only be handed back to exokernel on time slot expiration or in case of things like page faults where the exokernel needs to do some of the work</li>
+</ul>
+
+<h2 id="revocation-of-resources">Revocation of Resources</h2>
+
+<ul>
+  <li>Exokernel supports no abstractions, only mechanisms for giving over control to library OS’s (such as space, memory, hardware, etc)</li>
+  <li>Therefore exokernel needs a means of revoking or reclaiming resources
+    <ul>
+      <li>Exokernel keeps track of what resources have been given out</li>
+      <li>However, exokernel has no means of knowing what the resources are actually being used for</li>
+    </ul>
+  </li>
+  <li>mechanism is revoke(repossession vector) passed to library OS
+    <ul>
+      <li>library OS is responsible for cleanup and corrective action
+        <ul>
+          <li>e.g. if page frame is being reclaimed, library OS must stash contents to disk</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>library can “seed” exokernel for “autosave”
+    <ul>
+      <li>library OS can tell exokernel to save any reclaimed page frames to disk in advance</li>
+      <li>provides speedup, less back and forth with library OS</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="exokernel-summary">Exokernel Summary</h2>
+
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L02_img9.png" alt="img" /></li>
+  <li>Under “normal” operation, library OS passes execution threads down to exokernel, which passes down to the hardware, and runs until its done or the timeslice expires</li>
+  <li>any discontinuities in thread running on hardware are kicked back up to exokernel, which must then pass up to library OS to handle as desired</li>
+  <li>exokernel maintains state for each library OS to help handle these discontinuities properly</li>
+</ul>
+
+<h3 id="state-maintained-by-exokernel">State Maintained by Exokernel</h3>
+
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L02_img10.png" alt="img" /></li>
+  <li>maintains PE data structure on behalf of each library OS
+    <ul>
+      <li>PE contains entry points for each library OS for dealing with the different kinds of program discontinuities0</li>
+      <li>similar to event handler mechanism from SPIN section</li>
+    </ul>
+  </li>
+  <li>Also maintains S-TLB for each library OS</li>
+</ul>
+
+<h2 id="comparison-of-exokernel-and-spin">Comparison of Exokernel and SPIN</h2>
+
+<ul>
+  <li>must always remember not to compare using absolutes.  Instead compare trends, and compare against like competitors</li>
+  <li>The comparison for Exokernel and SPIN (early to mid 90s) was monolithic (UNIX) and microkernel (Mach).</li>
+  <li>Comparative metrics were space and time.
+    <ul>
+      <li>probably also security and extensibility, but those are harder to quantify?</li>
+    </ul>
+  </li>
+  <li>SPIN and Exokernel do much better than Mach for protected procedure calls
+    <ul>
+      <li>also both do as well as UNIX for dealing with system calls</li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="the-l3-microkernel-approach">The L3 Microkernel Approach</h1>
+
+<ul>
+  <li>Both SPIN and Exokernel begin with the assumption that microkernel must have poor performance
+    <ul>
+      <li>assumption based on Mach, but portability was a key goal for mach.</li>
+      <li>if performance was the only goal, would it be possible?  L3 will provide us the answer</li>
+    </ul>
+  </li>
+  <li>Core idea of a microkernel is that microkernel provides small number of simple abstractions.  all system services are each in their own address space.  only microkernel runs as privileged as covered in prior section</li>
+</ul>
+
+<h2 id="potentials-for-performance-loss">Potentials for Performance Loss</h2>
+
+<ul>
+  <li>Border crossings
+    <ul>
+      <li>implicit and explicit costs
+        <ul>
+          <li>explicit cost is the context switch required for an app to trap into the microkernel.  many extra border crossings going from app to kernel to services and back</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Protected procedure calls
+    <ul>
+      <li>run at 100x the time cost of normal procedure calls because they are going across address spaces</li>
+      <li>implicit cost of border crossings is the fact that crossing address spaces completely loses locality in TLB and cache</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="l3-microkernel-goal">L3 Microkernel Goal</h2>
+
+<ul>
+  <li>Proof by construction to debunk myths about microkernel-based OS structure</li>
+  <li>Still has minimal services provided
+    <ul>
+      <li>Address space</li>
+      <li>Threads</li>
+      <li>IPC</li>
+      <li>Generate Unique IDs</li>
+    </ul>
+  </li>
+  <li>System services are still distinct protection domains, protected from each other and applications, and separate from the kernel.</li>
+  <li>What’s different about L3 is that each services is in their own protection domain, not necessarily distinct address spaces.
+    <ul>
+      <li>There are ways to construct system efficiently, knowing the features of the hardware platform</li>
+      <li>Key thesis for L3 is that it’s all about efficient implementation</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="strikes-against-microkernel-design">Strikes Against Microkernel Design</h2>
+
+<ul>
+  <li>Kernel-user switches
+    <ul>
+      <li>border crossing cost</li>
+      <li>required for every syscall</li>
+    </ul>
+  </li>
+  <li>Address space switches
+    <ul>
+      <li>basis for Protected Procedure Calls for cross protection domain calls</li>
+      <li>a result of each system service living in its own address space</li>
+      <li>minimally involves flushing TLB, which is costly</li>
+    </ul>
+  </li>
+  <li>Thread switches and IPC
+    <ul>
+      <li>thread switches + IPC must be mediated by kernel</li>
+      <li>system services must talk to each other through kernel, requiring many extra border crossings, which is very costly</li>
+    </ul>
+  </li>
+  <li>All the above are explicit costs tied to microkernel design</li>
+  <li>Memory Effects
+    <ul>
+      <li>locality loss in cache and TLB</li>
+      <li>an additional implicit cost, driven by separate address spaces for services</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="l3-debunking-myths-about-microkernel-slowness">L3 Debunking Myths about Microkernel Slowness</h2>
+<h3 id="debunking-user-kernel-border-crossing-myth">Debunking user-kernel border crossing myth</h3>
+
+<ul>
+  <li>L3 accomplishes user-kernel border crossing in 123 processor cycles
+    <ul>
+      <li>this includes TLB and cache misses</li>
+    </ul>
+  </li>
+  <li>Also counts the minimal cost involved in a border crossing, show that theoretical minimum is 107.  123 is therefore pretty close to optimal</li>
+  <li>Mach took 900 cycles for the same, making it a very unfavorable point of comparison.  This weakens the argument that SPIN and exokernel used.</li>
+</ul>
+
+<h3 id="debunking-address-space-switches-myth">Debunking address space switches myth</h3>
+
+<ul>
+  <li>Going across address spaces is expensive?  Explicit costs addressed as myth</li>
+  <li>Review of address space switch:
+    <ul>
+      <li>Virtual address consists of tag and index
+        <ul>
+          <li>Index is used to look up in TLB</li>
+          <li>tag is used to match against tag in TLB.  match == hit</li>
+        </ul>
+      </li>
+      <li>retrieve PFN from TLB</li>
+    </ul>
+  </li>
+  <li>On context switch, VA -&gt; PA mapping will obviously change
+    <ul>
+      <li>so all stored translations are useless and must be cleared?  It depends!</li>
+      <li>if the TLB has a way of recognizing that VA-&gt;PA mapping is valid for currently used VA, maybe not?</li>
+      <li>tags for address spaces to the rescue!  contain process ID for which TLB entry is valid. Flushing no longer needed!
+        <ul>
+          <li><img src="../assets/content_images/omscs/aos/L02_img11.png" alt="img" /></li>
+          <li>this does require hardware support, though, so not always an option.  if you’re on Intel, for example, what should you do instead?</li>
+        </ul>
+      </li>
+      <li>Liedtke’s suggestion for avoiding TLB-flush when hardware support for AS-tagging is absent:
+        <ul>
+          <li>Exploit architectural features – e.g. segment registers in x86 + PowerPC
+            <ul>
+              <li>specify the range of addresses that can be legally accessed by the currently running process.</li>
+              <li>carve up linear address space using segment registers</li>
+            </ul>
+          </li>
+          <li>share hardware address space for protection domains</li>
+          <li>this approach is actually quite fast, as it skips looking at TLB at all if the requested address is ’illegal’</li>
+          <li>works best with smaller address spaces, as hardware address space is being divvied up, you lose the “infinite virtual memory” perk of common monolithic kernel systems</li>
+          <li>What if the needed protection domains are large?  What if it needs all of hardware address space?
+            <ul>
+              <li>In this case, and there is no support for AS-tagging in TLB, you’re just stuck doing a TLB-flush on address space switch</li>
+              <li>Costs above are explicit costs.  In the case of large protection domains those are much smaller than the implicit costs.
+                <ul>
+                  <li>Loss of locality is complete in this case, all caches are ice cold.  This is a much bigger hit.  Explicit cost here is 864 cycles for TLB flush in pentium, but loss of locality will be far more significant.</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li><img src="../assets/content_images/omscs/aos/L02_img12.png" alt="img" /></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="debunking-thread-switches-and-ipc-myth">Debunking thread switches and IPC myth</h3>
+
+<ul>
+  <li>Switch involves saving all volatile state of processor – explicit cost</li>
+  <li>By construction shown to be competitive to SPIN and Exokernel
+    <ul>
+      <li>Uh…. not a lot of detail provided here.  They built it, it was just as fast, the end?</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="debunking-memory-effects-myth">Debunking memory effects myth</h3>
+
+<ul>
+  <li>This was the big “implicit cost” hit discussed above</li>
+  <li>Loss of locality in microkernel is much bigger than monolith/SPIN/Exokernel?</li>
+  <li><img src="../assets/content_images/omscs/aos/L02_img13.png" alt="img" /></li>
+  <li>Hardware address space may not all be in physical memory, may be demand paged from disk</li>
+  <li>Working set slowly dragged up into higher level caches as a process runs</li>
+  <li>memory effects == how warm are caches when we context switch?
+    <ul>
+      <li>with small protection domains, all can share address space through segment registers as suggested above.  This results in very warm caches</li>
+      <li>if protection domains are large, can’t be helped.  it’s going to need to be flushed out.  This is true even for monolithic kernel.  Cache pollution must be incurred.</li>
+      <li>Thus the only place where monolithic/SPIN/Exokernel can really differentiate is in cases with small protection domains, and Liedtke’s suggestion means that there is no real advantage for them there either</li>
+    </ul>
+  </li>
+  <li>So why was Mach so bad?
+    <ul>
+      <li>border crossings cost 800 more cycles</li>
+      <li>due to: focus on portability (run on any architecture) =&gt; code bloat =&gt; large memory footprint =&gt; lesser locality =&gt; more cache misses =&gt; longer latency for border crossing</li>
+      <li>Therefore the kernel memory footprint is the culprit, not the architecture itself!
+        <ul>
+          <li>Corollary: portability and performance are in contradiction with each other</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="thesis-of-l3-for-os-structuring">Thesis of L3 for OS Structuring</h2>
+<ul>
+  <li>Minimal abstractions in microkernel</li>
+  <li>Microkernels are processor-specific in implementation =&gt; non-portable!</li>
+  <li>Right set of microkernel abstractions and processor-specific implementation =&gt; efficient processor-independent abstractions can be implemented at higher layer</li>
+</ul>
+:ET

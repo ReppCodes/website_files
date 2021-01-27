@@ -7,6 +7,8 @@ For Summer 2020, my third semester, I chose to take CS6300: Software Development
 
 The material is taught in the context of both group and individual projects requiring the students to make simple Android apps in Java.  I knew zero words of Java and nothing about Android programming before starting the course, but the prof and TAs do a **really** good job scaffolding you up to a level where you can manage it.  Plus, you know, IntelliJ and Android Studio hold your hand a lot, which is convenient.
 
+***
+
 * The screenshot images in these lecture notes are property of Georgia Tech.  You can find the originals in the publicly available Udacity and Kaltura videos.
 
 <section>
