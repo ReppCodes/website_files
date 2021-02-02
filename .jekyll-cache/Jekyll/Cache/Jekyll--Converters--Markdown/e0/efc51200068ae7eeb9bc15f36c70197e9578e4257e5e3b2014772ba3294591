@@ -1,0 +1,530 @@
+I"�i<h1 id="introduction-to-virtualization">Introduction to Virtualization</h1>
+
+<ul>
+  <li>The drive for extensibility in OS services leads to innovations in the internal structure of OS’s.</li>
+  <li>We will cover the concept of virtualization and how it extends the concept of extensibility, allowing the simultaneous coexistence of entire OS’s.</li>
+</ul>
+
+<h2 id="platform-virtualization">Platform Virtualization</h2>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L03_img1.png" alt="img" /></li>
+  <li>Goal is to provide a “virtual” platform at a fraction of the cost, by eliding over providing specific hardware.</li>
+  <li>Predicated on the assumption that the end user doesn’t generally care how an app is run, so long as it does what the user wants
+    <ul>
+      <li>amortize cost of ownership, use economies of scale and use patterns to find a lot of margin here.</li>
+    </ul>
+  </li>
+  <li>However, we as developers care quite a bit.</li>
+  <li>Key challenge is that usage is usually very <strong>bursty</strong>
+    <ul>
+      <li><img src="../assets/content_images/omscs/aos/L03_img2.png" alt="img" /></li>
+      <li>This means that we need to be mindful of overlaps.</li>
+      <li>We need far more resource than the need of any individual platform user.</li>
+      <li>However each user then has access to far more resource than they could possibly have afforded on their own</li>
+    </ul>
+  </li>
+  <li><strong>Virtualization</strong> is the concept of extensibility, but applied to an entire OS instead of just the services provided by an OS</li>
+</ul>
+
+<h2 id="hypervisors">Hypervisors</h2>
+
+<ul>
+  <li>How do we isolate/protect/run multiple OS’s running on the same hardware?</li>
+  <li>What allocates resources?  We need an OS of OS’s</li>
+  <li>Hypervisor!  aka VMM (Virtual Machine Monitor), with OS’s on it referred to as VMs or Guest OS’s</li>
+  <li><img src="../assets/content_images/omscs/aos/L03_img3.png" alt="img" /></li>
+  <li>Two types of hypervisor
+    <ul>
+      <li>Native (bare metal)
+        <ul>
+          <li>runs on top of bare hardware</li>
+          <li>We’ll focus mostly on these</li>
+          <li>interfere minimally with guest OS’s.  Similar in philosophy to extensible OS’s</li>
+          <li>offer best performance</li>
+        </ul>
+      </li>
+      <li>Hosted
+        <ul>
+          <li>runs on top of host OS.  Allows users to emulate the functionality of other OS’s</li>
+          <li>VMWare Workstation, VirtualBox</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="connecting-the-dots">Connecting the Dots</h3>
+
+<ul>
+  <li>IBM VM370 (1970’s)
+    <ul>
+      <li>origin of the concept of Virtualization</li>
+      <li>intent was to give the intent to all users that the computer was exclusively theirs
+        <ul>
+          <li>also to provide binary support for older versions of IBM computers</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Microkernels (late 1980’s and 1990’s)</li>
+  <li>Extensibility of OS (1990’s)</li>
+  <li>SIMOS (late 1990’s)
+    <ul>
+      <li>laid the groundwork for the modern resurgence of virtualization tech at the OS level</li>
+      <li>Was the basis for VMWare</li>
+    </ul>
+  </li>
+  <li>Xen + VMWare (early 2000’s)
+    <ul>
+      <li>proposed originally in the pursuit of supporting application mobility, server consolidation, co-location, distributed web services</li>
+    </ul>
+  </li>
+  <li>Today – accountability for usage in data centers
+    <ul>
+      <li>Margin for device making companies is very small.  Everyone wants instead to provide “services” for end users</li>
+      <li>Companies can now provide resources with complete isolation, and bill users appropriately
+        <ul>
+          <li>i.e. cloud providers billing app developers who are in turn selling SAAS apps.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="full-virtualization">Full Virtualization</h2>
+
+<ul>
+  <li>The ideal is to leave the guest OS untouched, running exactly as it would itself on bare metal</li>
+  <li>Must be a bit clever to manage this, though, as the guest OS’s must still run as user-level processes.  The hypervisor must still mediate access to the underlying hardware.
+    <ul>
+      <li>When guest OS executes privileged instructions, those instructions must trap into hypervisor, which will then emulate the intended functionality of the OS.  This is called the <em>trap and emulate</em> strategy.</li>
+      <li>Each guest OS thinks it is running on bare metal, and acts accordingly, trying to execute privileged instructions.
+        <ul>
+          <li>Some privileged instructions may fail silently.  Covered in more depth in my <a href="https://andrewrepp.com/gios_lec_P3L6.html">GIOS Notes</a>
+            <ul>
+              <li>Hypervisor will resort to a binary translation strategy
+                <ul>
+                  <li>look for such instructions in guest OS, and through binary editing, ensure that those instructions are dealt with appropriately.</li>
+                </ul>
+              </li>
+              <li>This has since been fixed for Intel and AMD architectures, where it was a big problem.</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="paravirtualization">Paravirtualization</h2>
+
+<ul>
+  <li>Not fully virtualized, OS’s know they’re on VMs.
+Modify the source code of guest OS</li>
+  <li>Avoid problematic instructions, and include possible optimizations
+    <ul>
+      <li>allow guest OS see real hardware resources, employ page coloring, etc.</li>
+    </ul>
+  </li>
+  <li>No different for the applications running on guest OS, they only know they’re running on whatever OS.</li>
+  <li>Xen product family uses this approach.</li>
+  <li>How much modification is actually needed for guest OS binaries with this approach?
+    <ul>
+      <li>Xen showed, by proof of construction, that it is less than 2% of the guest OS’s code</li>
+      <li><img src="../assets/content_images/omscs/aos/L03_img4.png" alt="img" /></li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="memory-virtualization">Memory Virtualization</h1>
+
+<ul>
+  <li>Stacked viz of memory going rom CPU with TLB down through caches to main memory (RAM) and then to Virtual Memory on disk</li>
+  <li>Thorny issue here is handling virtual memory (VA to PA mapping)
+    <ul>
+      <li>this is the key functionality of the memory management system on any OS</li>
+    </ul>
+  </li>
+  <li>In any OS each app is in its own protection domain (and usually its own hardware address space)</li>
+  <li>Page table holds VA-&gt;PA mapping</li>
+  <li>Physical memory is contiguous going from 0 to v(Max)</li>
+  <li>Virtual address space of a given process is not (does not have to be) contiguous in physical memory (advantage of page-based memory management)</li>
+  <li>In full virtualization example, each guest OS process is in its own protection domain
+    <ul>
+      <li>distinct page table in each guest OS</li>
+      <li>does hypervisor know about each page table?  no!</li>
+    </ul>
+  </li>
+  <li>physical memory is thought to be contiguous by guest OS’s, but they don’t actually see physical memory, hypervisor does.  and from the hypervisor’s point of view, the memory assigned out to VMs is not contiguous.  similar to VA-&gt;PA mapping at OS level.  terminology used for HV-&gt;VM layer is “machine memory” to “physical memory”, for convenience</li>
+  <li>Hypervisor maintains its own page table, allocating machine memory out to guest OS’s.  Physical page number to machine page number (MPN)
+    <ul>
+      <li>called the “shadow page table” (SPT)</li>
+      <li>so all mappings go: VPN-&gt;PT-&gt;PPN-&gt;SPT-&gt;MPN</li>
+      <li>open question:  does guest OS or hypervisor keep the SPT (mapping PPNs to MPNs)?
+        <ul>
+          <li>in fully virtualized setting, must be kept with hypervisor as there is no guest OS code for handling this process</li>
+          <li>in paravirtualized setting, guest OS has been altered to know it is being run in a VM.  In this case it can be either, but is usually housed within the guest OS</li>
+        </ul>
+      </li>
+      <li><img src="../assets/content_images/omscs/aos/L03_img5.png" alt="img" /></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="efficient-memory-mapping">Efficient Memory Mapping</h2>
+<h3 id="fully-virtualized">Fully Virtualized</h3>
+
+<ul>
+  <li>in many architectures, CPU uses page table for address translation
+    <ul>
+      <li><img src="../assets/content_images/omscs/aos/L03_img6.png" alt="img" /></li>
+    </ul>
+  </li>
+  <li>hardware page table is really the SPT in a virtualized setting.</li>
+  <li>How to make this efficient?
+    <ul>
+      <li><img src="../assets/content_images/omscs/aos/L03_img7.png" alt="img" /></li>
+      <li>two levels of indirection, two lookups, for every mapping is wildly inefficient</li>
+      <li>PT/TLB updates of guest OS are privileged, and therefore trapped to hypervisor.</li>
+      <li>SPT updated by hypervisor instead.</li>
+      <li>as a result, the actual translations are remembered in TLB/hardware PT.  we bypass guest OS PT</li>
+      <li><img src="../assets/content_images/omscs/aos/L03_img8.png" alt="img" /></li>
+      <li>This approach is, for example, used by VMWare’s ESX server</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="paravirtualized">Paravirtualized</h3>
+
+<ul>
+  <li>Shift the burden to guest OS</li>
+  <li>Maintain contiguous “physical memory”</li>
+  <li>map to dis-contiguous hardware pages</li>
+  <li>More efficient than fully virtualized approach, and possible here because we’re “allowed” to alter the guest OS code.</li>
+  <li>Example in Xen:
+    <ul>
+      <li>provides a set of “hypercalls” for guest OS to use to call to the hypervisor</li>
+      <li>Create PT hypercall allows guest OS to allocate and initialize a page frame it has previously acquired from the hypervisor as a hardware resource.  It can then target that page frame as a page table data structure directly.</li>
+      <li>Switch PT hypercall requesting context switch to new page table from hypervisor.</li>
+      <li>Update PT hypercall allows updates in place to page tables on hardware, e.g. as a result of a page fault</li>
+      <li>Hypervisor doesn’t need to know details, can just take the requests from guest OS.</li>
+      <li>Everything an OS would need to do when running on bare metal must be provided for in this way.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="dynamically-increasing-memory">Dynamically Increasing Memory</h2>
+
+<ul>
+  <li>How do we increase the amount of physical memory available to a given guest OS?</li>
+  <li>Memory requirements tend to be bursty, hypervisor must be able to allocate machine memory on demand</li>
+  <li>What happens when guest OS requests memory but host has none to give.
+    <ul>
+      <li>One option is to claw back some of the memory allocated out to another guest OS that isn’t using it.</li>
+      <li>Instead of forced reclamation, a request might be better.</li>
+    </ul>
+  </li>
+  <li>This concept is called “ballooning”
+    <ul>
+      <li>the idea is to have a special device driver installed in every guest OS</li>
+      <li>Upon needing more memory, hypervisor will contact an under-utilizing guest OS, talking to the balloon driver through private channel.</li>
+      <li>Balloon device driver will request memory from guest OS, inflating the balloon and restricting “available” memory visible to guest OS as it pages out to disk other processes’ memory.</li>
+      <li>Balloon driver will then return that machine memory back to hypervisor.</li>
+      <li>The idea here is that the “balloon” inflates, taking up footprint in the guest OS.</li>
+      <li>The reverse of the above, where the hypervisor needs less memory, will deflate the balloon and return that footprint back to “available” status to the guest OS, which will then page in from disk the working sets of whatever processes would like it.</li>
+      <li>This model assumes cooperation between the hypervisor and the guest OS, despite the guest OS not actually knowing about the hypervisor.  Therefore it is applicable to both fully virtualized and paravirtualized settings.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="sharing-memory-across-virtual-machines">Sharing Memory Across Virtual Machines</h2>
+
+<ul>
+  <li>Can we share memory across VMs without affecting the protection offered to them?</li>
+  <li>If two apps have the same data (e.g. two instances of Firefox running on two different VMs), they could in theory share the same PPN.
+    <ul>
+      <li>The ‘core pages’ of apps are often the same, so this is a common case</li>
+    </ul>
+  </li>
+  <li>Guest OS has hooks that allow such page frames to be marked copy-on-write on the local page tables on guest OS, and therefore only make copies on machine page table when they diverge
+    <ul>
+      <li>This requires the guest OS and hypervisor to collaborate</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="vm-oblivious-page-sharing">VM Oblivious Page Sharing</h3>
+
+<ul>
+  <li>Alternatively, achieve the same effect but without guest OS knowing anything about it</li>
+  <li>The idea is to use content-based sharing</li>
+  <li>VMWare keeps a hash table in the hypervisor, which contains a content hash of the machine pages.
+    <ul>
+      <li><img src="../assets/content_images/omscs/aos/L03_img9.png" alt="img" /></li>
+    </ul>
+  </li>
+  <li>To use, hash contents of page table, scan data structure for a match to the hash.
+    <ul>
+      <li>If you get a match, doesn’t mean it’s for sure match, page may be dirty</li>
+      <li>So do a full comparison between page table contents upon match.</li>
+      <li>If content matches, map both page tables to same machine page table, increment reference count in hint frame on hash structure.  Mark both page tables being mapped to same machine page table as copy-on-write.</li>
+      <li>Free up page frame in machine memory, as we have doubled up somewhere else and don’t need it.  This is the space savings we’re trying for.</li>
+    </ul>
+  </li>
+  <li>Scanning pages for such duplicates that we can double up on is done as background activity of the server, when load is low, as these are expensive operations.</li>
+  <li>Applicable to both fully virtualized and paravirtualized environments</li>
+</ul>
+
+<h2 id="summary">Summary</h2>
+
+<ul>
+  <li>we have discussed mechanism here, but a higher-level issue is policies for how to do all the above.</li>
+  <li>The goal of virtualization is maximizing utilization of the virtualized resources</li>
+</ul>
+
+<h3 id="example-policies">Example Policies</h3>
+
+<ul>
+  <li>Pure share based approach (pay less, get less)
+    <ul>
+      <li>problem is it leads to hoarding.  largest share user may not actually need much</li>
+    </ul>
+  </li>
+  <li>Working-set based approach
+    <ul>
+      <li>allocation based on actual utilization.</li>
+    </ul>
+  </li>
+  <li>Dynamic idle-adjusted shares approach
+    <ul>
+      <li>tax idle pages more than active ones</li>
+      <li>determine best tax rate based on your business model or use case, could be 0%, could be 100%, those would be equivalent to the two approaches above</li>
+    </ul>
+  </li>
+  <li>Reclaim most idle memory (from VMs not actively using it)
+    <ul>
+      <li>allow for sudden working set increases, as we don’t reclaim <em>all</em> idle memory</li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="cpu--and-device-virtualization">CPU  and Device Virtualization</h1>
+<h2 id="cpu-virtualization">CPU Virtualization</h2>
+
+<ul>
+  <li>The first challenge challenge here is giving the illusion to guest OS’s that they own the resources
+    <ul>
+      <li>similar in principle to the illusion provided by OS to apps that they are the only one running on the processor</li>
+      <li>Hypervisor must handle program discontinuities, fielded and passed to correct guest OS</li>
+      <li>Hypervisor therefore must have precise way of accounting time used on CPU by each guest OS</li>
+      <li>Policies for CPU Sharing:
+        <ul>
+          <li>proportional share
+            <ul>
+              <li>commensurate with the service agreement that the VM has with the hypervisor</li>
+            </ul>
+          </li>
+          <li>fair share
+            <ul>
+              <li>give out equal shares to each guest OS</li>
+            </ul>
+          </li>
+          <li>In either policy, the hypervisor must account for time used on CPU by one guest during time intended/allocated for another.  This might happen due to external interrupts.  Recompensing for ‘stolen time’ here.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>The second challenge is delivering events to parent guest OS
+    <ul>
+      <li>events are generated by process that belongs to guest OS currently executing on CPU</li>
+      <li>Once process has been scheduled on CPU, during execution, everything should happen at hardware speeds.
+        <ul>
+          <li>process will generate virtual addresses that must be translated to machine page addresses (discussed above).  This is done at hardware speeds due to techniques above.  Very fast.</li>
+        </ul>
+      </li>
+      <li>process may execute a system call, or a page fault, or an exception, or there may be an unrelated external interrupt.
+        <ul>
+          <li>these are the discontinuities that may mess with the execution of a process</li>
+          <li>all such discontinuities must be passed up to parent guest Os by the hypervisor to be correctly handled.
+            <ul>
+              <li>events delivered as software interrupts, packaged up by the hypervisor</li>
+              <li>the guest OS must then field them and handle as it normally would</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>some discontinuities may require the guest OS to have privileged access to CPU (only able to handle in kernel mode)
+        <ul>
+          <li>this is a problem, especially in fully virtualized environment.  guest OS is just user level, but doesn’t know it</li>
+          <li>must trap into hypervisor so it can do the work the guest OS would normally have to do</li>
+          <li>but some privileged instructions fail silently.  noted above, see my <a href="https://andrewrepp.com/gios_lec_P3L6.html">GIOS Notes</a>
+            <ul>
+              <li>as noted, happens in older versions of x86</li>
+            </ul>
+          </li>
+          <li>in fully virtualized environments, communication between guest OS and hypervisor is always implicit, done via traps.</li>
+          <li>in paravirtualized environments, this communication can be explicit, with APIs for communication between the guest OS and hypervisor</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="device-virtualization">Device Virtualization</h2>
+
+<ul>
+  <li>here, again, we want to give the illusion to the guest that they “own” the devices</li>
+  <li>for full virtualization, we use “trap and emulate” approach
+    <ul>
+      <li>not a lot of scope for innovation there.  must always do what device/OS would do. Lots of finnicky details though.</li>
+    </ul>
+  </li>
+  <li>for paravirtualization, there is much more opportunity to innovate
+    <ul>
+      <li>the IO devices seen by guest OS are exactly those available to hypervisor</li>
+      <li>can innovate interaction between guest OS and hypervisor here.</li>
+      <li>hypervisor can create device abstractions</li>
+      <li>hypervisor can expose shared buffers to guest OS, so that data can be passed efficiently between guest OS and hypervisor, and to devices, without overhead of copying between address spaces
+        <ul>
+          <li>even delivery of data can be innovated</li>
+        </ul>
+      </li>
+      <li>need to sort out how to transfer control between hypervisor and guest.
+        <ul>
+          <li>hardware manipulation must still be done by privileged operations</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="control-transfer">Control Transfer</h3>
+
+<ol>
+  <li>
+    <p>Full Virtualization</p>
+
+    <ul>
+      <li>implicit (traps) from guest to hypervisor</li>
+      <li>when guest OS executes any privileged instruction it results in a trap.  hypervisor catches and does whatever is needed</li>
+      <li>in the other direction (hypervisor to guest OS) is done via software interrupts (events)</li>
+    </ul>
+  </li>
+  <li>
+    <p>Paravirtualization</p>
+
+    <ul>
+      <li>explicit (hypercalls) from guest OS to hypervisor (example in memory section with page faults)</li>
+      <li>in the other direction (hypervisor to guest OS) is done via software interrupts (events), similar to full virtualization
+        <ul>
+          <li>difference from full virtualization is that guest OS has control via hypercalls on when event notifications are delivered</li>
+          <li>similar to an OS disabling interrupts</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="data-transfer">Data Transfer</h3>
+
+<ul>
+  <li>In full virtualization environments data transfer must be done implicitly</li>
+  <li>In paravirtualized environments (e.g. Xen) it is done explicitly, again giving opportunity to innovate
+    <ul>
+      <li>two aspects to resource management and accountability
+        <ul>
+          <li>CPU Time (time issue)
+            <ul>
+              <li>when an interrupt comes in, hypervisor has to de-multiplex the data coming from device to domains very quickly.</li>
+              <li>this takes CPU time to do, and the hypervisor must account for computation time for managing buffers on behalf of the guest OS above it</li>
+              <li>this is especially important in the context of e.g. a data center, where you must bill appropriate VMs for their usage</li>
+            </ul>
+          </li>
+          <li>How the memory buffers are managed (space issue)
+            <ul>
+              <li>how are these allocated and managed either by guest OS or by hypervisor?</li>
+              <li>Xen’s async I/O rings
+                <ul>
+                  <li><img src="../assets/content_images/omscs/aos/L03_img10.png" alt="img" /></li>
+                  <li>a data structure shared between guest and Xen</li>
+                  <li>any number of I/O rings can be allocated for handling all device I/O needs of a particular guest domain</li>
+                  <li>the I/O ring itself is just a set of descriptors</li>
+                  <li>idea is that requests from guest can be placed in I/O ring by populating the descriptors.</li>
+                  <li>every request will have a unique ID</li>
+                  <li>I/O ring is specific to a guest</li>
+                  <li>after hypervisor completes processing a request, it will place a response back in the same I/O ring in one of the descriptors.  this response will have the same ID as the original request.</li>
+                  <li>symmetric relationship between guest and Xen in terms of request and response</li>
+                  <li>guest is producer of requests.  has a pointer into the ring that indicates where to place next request.  pointer is modified by guest, but readable by Xen</li>
+                  <li>Xen is consumer of requests. it consumes requests in the order the guest produced them.  it has a pointer into the ring that indicates where it is presently servicing requests.  This pointer is private to Xen.</li>
+                  <li>Difference between guest’s request pointer and Xen’s request pointer tells Xen how many outstanding requests there are for Xen to service.</li>
+                  <li>Xen has a second pointer for producing responses. This pointer is modified by Xen, readable by guest.</li>
+                  <li>Guest OS has a second pointer for consuming responses. This pointer is private to the guest.</li>
+                  <li>Difference between Xen’s response pointer and guest’s response pointer tells guest how many outstanding responses there are for guest to process.</li>
+                  <li>Empty slots are theoretically available between request and response sections as all four pointers progress.</li>
+                  <li>Remember, ring just has descriptors.  These must have pointers to machine pages where the data actually resides.</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Network virtualization in Xen example
+    <ul>
+      <li>each guest has two I/O rings, one for transmission and one for reception</li>
+      <li>if guest wants to transmit packets, it enqueues descriptors in transmit ring, via hypercalls
+        <ul>
+          <li>packets that need to be transmitted are in guest OS buffers.  guest embeds pointers to these buffers in descriptors in ring.  data is not copied.</li>
+          <li>pages associated with the packets are pinned so that Xen can complete transmission of the packets</li>
+          <li>if more than one guest OS wants to transmit, Xen uses a round robin scheduler to transmit packets from multiple VMs</li>
+        </ul>
+      </li>
+      <li>Receiving packets from network and passing to appropriate domain works the same, but in opposite direction.
+        <ul>
+          <li>hypervisor exchanges received packet for one of the guest OS pages that has been provided to Xen as the holding place for incoming packets.</li>
+          <li>guest OS pre-allocates network buffers for this purpose.  Xen places directly there, and enqueues a descriptor.  avoids copying
+            <ul>
+              <li>if Xen receives a packet into a machine page instead, it can just swap with a page the guest OS owns, avoiding copying that way instead.</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Disk I/O Virtualization example
+    <ul>
+      <li>works similarly to network virtualization example</li>
+      <li>Every VM has an I/O ring dedicated to disk I/O</li>
+      <li>communication between Xen and guest OS avoids copying, enqueues descriptors with pointers</li>
+      <li>philosophy is asynchronous I/O via requests/responses.</li>
+      <li>Requests from competing domains may be reordered
+        <ul>
+          <li>if this is inappropriate, Xen provides a reorder barrier for guest OS semantics, to prevent this from happening if needed.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="usage-and-billing">Usage and Billing</h2>
+
+<ul>
+  <li>all about measuring time</li>
+  <li>The whole tenet is that we’re sharing resources between clients.  Need to be able to measure them
+    <ul>
+      <li>CPU Usage</li>
+      <li>Memory Usage</li>
+      <li>Storage Usage</li>
+      <li>Network Usage</li>
+    </ul>
+  </li>
+  <li>Xen vs VMWare - and Guests
+    <ul>
+      <li><img src="../assets/content_images/omscs/aos/L03_img11.png" alt="img" /></li>
+      <li>Difference from Extensible OS is a strong focus on protection and flexibility, with sharing at full OS level</li>
+    </ul>
+  </li>
+</ul>
+
+:ET

@@ -1,4 +1,4 @@
-I"‘<p>For Spring 2021, my fifth semester, I chose to take CS6210: Advanced Operating Systems.  This class addresses a broad range of topics in operating system design and implementation, including:</p>
+I"Ý<p>For Spring 2021, my fifth semester, I chose to take CS6210: Advanced Operating Systems.  This class addresses a broad range of topics in operating system design and implementation, including:</p>
 <ul>
   <li>Operating system structuring</li>
   <li>Synchronization, communication and scheduling in parallel systems</li>
@@ -34,6 +34,12 @@
 <li>
 <a href="/aos_lec_L02.html">
     Lesson 2 - OS Structures
+</a>
+</li>
+
+<li>
+<a href="/aos_lec_L03.html">
+    Lesson 3 - Virtualization
 </a>
 </li>
 

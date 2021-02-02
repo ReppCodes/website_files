@@ -36,4 +36,10 @@ The theoretical material in the lectures and exams is augmented with rather larg
 </a>
 </li>
 
+<li>
+<a href="{{ "/aos_lec_L03" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    Lesson 3 - Virtualization
+</a>
+</li>
+
 </section>
