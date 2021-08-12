@@ -18,6 +18,8 @@ The theoretical material in the lectures and exams is augmented with rather larg
 3. Distributed Service using GRPC
 4. Implement MapReduce Framework using GRPC
 
+I switched jobs towards the end of the semester, and between that and the final project being a monster my class notes are incomplete.  I've posted here what I managed to take, both for my own future reference and in case even partial notes might be helpful to someone.
+
 ***
 
 * The screenshot images in these lecture notes are property of Georgia Tech.  You can find the originals in the publicly available [Kaltura videos](https://omscs.gatech.edu/cs-6210-advanced-operating-systems-course-videos).

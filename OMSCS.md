@@ -33,6 +33,7 @@ the program.
 
 <section>
 <h3>Classes where my notes will not be published:</h3>
-<li>CS6035: Introduction To Information Security</li>
-<li>CS6250: Computer Networks</li>
+<li>CS6035: Introduction To Information Security (Fall 2019)</li>
+<li>CS6250: Computer Networks (Spring 2020)</li>
+<li>INTA6450: Data Analytics and Security (Summer 2021)</li>
 </section>
