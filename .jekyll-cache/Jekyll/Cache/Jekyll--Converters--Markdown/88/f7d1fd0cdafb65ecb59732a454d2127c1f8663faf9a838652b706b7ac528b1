@@ -1,0 +1,664 @@
+I"�o<h1 id="distributed-systems">Distributed Systems</h1>
+
+<h2 id="definitions">Definitions</h2>
+<ul>
+  <li>What fundamentally distinguishes a distributed system from a parallel system is the degree of autonamy of the individual nodes of the system.
+    <ul>
+      <li>Also the fact that the interconnection system between the nodes of a distributed system is wide open to the worlds, instead of being confined to a rack or something</li>
+      <li>However, as hardware advances a lot of what have historically been “DS” problems are becoming relevant even at the single-chip level</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="3-main-properties-of-a-distributed-system">3 Main Properties of a Distributed System</h3>
+<ul>
+  <li>A distributed system is a collection of nodes interconnected by a LAN or WAN
+    <ul>
+      <li>The LAN or WAN may be implemented with a variety of hardware (fiber, cable, satellite)</li>
+    </ul>
+  </li>
+  <li>No physical memory shared between nodes of a distributed system.
+    <ul>
+      <li>All communication must be done via messaging between nodes.</li>
+    </ul>
+  </li>
+  <li>Event computation time (time it takes on a single node to do some significant processing) is significantly less than the messaging time between nodes (Te « Tm)
+    <ul>
+      <li>Lamport definition: A system is distributed if the message transmission time is not negligible to the time between events in a single process</li>
+      <li>Interestingly, by this definition even a cluster is a distributed system (due to CPU speed being so good these days)</li>
+    </ul>
+  </li>
+  <li><img src="../assets/content_images/omscs/aos/L05_img1.png" alt="img" />
+    <ul>
+      <li>This indicates that A happened before B</li>
+      <li>This tells us that either A and B happened sequentially on the same process, or there is a communication event from A and B.  Otherwise we would not know ordering and not be able to make this statement</li>
+    </ul>
+  </li>
+  <li><img src="../assets/content_images/omscs/aos/L05_img2.png" alt="img" />
+    <ul>
+      <li>“Happened before” relationship is transitive</li>
+      <li>“Concurrent” events are (basically) never actually at the exact same time, it’s just that we don’t have enough information to make a statement about which happened first based on the logic above</li>
+    </ul>
+  </li>
+  <li><img src="../assets/content_images/omscs/aos/L05_img3.png" alt="img" />
+    <ul>
+      <li>Showing the logic for how to determine concurrent vs ordered events.  Basically it reiterates above, about how we have ordering knowledge within a process, or if there are communication events between processes (which apply transitively when determining ordering).  Anything where we don’t know gets lumped into “concurrent”, highlighted here with event M</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="lamport-clocks">Lamport Clocks</h2>
+<ul>
+  <li>What does each node know?
+    <ul>
+      <li>Its own events</li>
+      <li>Communication events</li>
+    </ul>
+  </li>
+  <li>Lamport’s Logical Clock
+    <ul>
+      <li>Monotonic increase of own event times (increment amount does not matter)
+        <ul>
+          <li>Condition 1: Ci(a) &lt; Ci(b)</li>
+        </ul>
+      </li>
+      <li>Message receipt time greater than send time
+        <ul>
+          <li>Condition 2: Ci(a) &lt; Cj(d)</li>
+        </ul>
+      </li>
+      <li>Timestamps of concurrent events are arbitrary</li>
+      <li>The above describes a “partial ordering” of events</li>
+      <li>What to do if you need a total order?</li>
+    </ul>
+  </li>
+  <li>Lamport’s Total Order
+    <ul>
+      <li>If there are two events, A and B, that are concurrent by the above definition, then you can use and arbitrary “well known” condition to break the tie</li>
+      <li>The corrolary of this is that there is no single “total order” universally. It is a function of whatever condition you choose to break ties</li>
+      <li>Once a total order is determined, the actual timestamps are no longer relevant. Only Lamport ordering actually matters for application logic</li>
+    </ul>
+  </li>
+  <li>Distributed M.E. Lock Algorithm
+    <ul>
+      <li><img src="../assets/content_images/omscs/aos/L05_img4.png" alt="img" /></li>
+      <li>Each node maintains a queue of requests for the lock</li>
+      <li>Whenever a node wants the lock, adds it to its own queue and sends a request to all other nodes, which add the request to their queue.  All such messages/queue entries include timestamp of the request.</li>
+      <li>Every process orders their queue by lamport’s clock</li>
+      <li>Ties broken by process ID</li>
+      <li>Queues across processes may not match each other, due to travel time of messages</li>
+      <li>Processes know that they have the lock if:
+        <ul>
+          <li>Their own request is at the top of the queue (again, ordered by Lamport order with PID as tiebreaker)</li>
+          <li>They have acks or later lock requests from all other nodes in the system</li>
+        </ul>
+      </li>
+      <li>Lock release:
+        <ul>
+          <li>P1 removes its request from its own queue and sends unlock message to all other nodes</li>
+          <li>When peers receive the unlock message, P1s request is removed from their queues</li>
+        </ul>
+      </li>
+      <li>Correctness is based on the following assumptions
+        <ul>
+          <li>Messages arrive in order</li>
+          <li>There is no message loss</li>
+          <li>Queues are totally ordered =&gt; by Lamport’s logical clocks plus PID to break ties</li>
+        </ul>
+      </li>
+      <li>Message Complexity
+        <ul>
+          <li>How many messages are exchanged among all the nodes for each lock acquisition followed by a lock release
+            <ul>
+              <li>3 * (N-1)</li>
+              <li>N-1 Lock request messages</li>
+              <li>N-1 Lock ack messages</li>
+              <li>N-1 Unlock messages
+                <ul>
+                  <li>No acks due to above assumption that no messages are lost</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>Can we do better?  Yes.
+            <ul>
+              <li>Defer acks if my req precedes yours
+                <ul>
+                  <li>Combining with unlock reduces to 2 * (N-1)</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Lamport’s Physical Clock
+    <ul>
+      <li>How should we handle individual clock drift between nodes?</li>
+      <li>Use arrows to indicate real time relationships (e.g. a-&gt;b means that a happened before b in terms of real time)</li>
+      <li>Physical clock conditions
+        <ul>
+          <li>PC1(bound on individual clock drift)
+            <ul>
+              <li>individual drifts are small</li>
+            </ul>
+          </li>
+          <li>PC2 (bound on mutual drift)
+            <ul>
+              <li>differences between the drifts of individual clocks will be small</li>
+            </ul>
+          </li>
+          <li><img src="../assets/content_images/omscs/aos/L05_img5.png" alt="img" /></li>
+        </ul>
+      </li>
+      <li>IPC time and clock drift
+        <ul>
+          <li>To avoid anomalies:
+            <ul>
+              <li>Disparity of mutual drift must not be longer than IPC time</li>
+              <li>Amount of individual clock drift should be negligible compared to IPC time</li>
+            </ul>
+          </li>
+          <li><img src="../assets/content_images/omscs/aos/L05_img6.png" alt="img" /></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="latency-limits">Latency Limits</h2>
+<ul>
+  <li>Given that network communication is the limiting factor for performance in distributed systems, the OS must strive hard to reduce the latency incurred in the system software for networked services</li>
+  <li>Latency == elapsed time</li>
+  <li>Throughput == events per unit of time
+    <ul>
+      <li>Bandwidth is a common measure of throughput</li>
+    </ul>
+  </li>
+  <li>RPC Performance
+    <ul>
+      <li>RPC is the basis for client-server based distributed systems</li>
+      <li>Two components to latency
+        <ul>
+          <li>Hardware overhead
+            <ul>
+              <li>Dependent on how the network is interfaced to the computer</li>
+              <li>Moving the bits from the memory to the node to the network controller.  Usually accomplished using direct memory access (DMA)
+                <ul>
+                  <li>There are some other types where the CPU steps in, too, but this is uncommon in modern systems</li>
+                </ul>
+              </li>
+              <li>Then out onto the wire, where network bandwidth comes into play</li>
+              <li><img src="../assets/content_images/omscs/aos/L05_img7.png" alt="img" /></li>
+            </ul>
+          </li>
+          <li>Software overhead
+            <ul>
+              <li>What the OS tacks on to the hardware overhead</li>
+              <li>Incurred to make message available in memory for transmission</li>
+            </ul>
+          </li>
+          <li>Latency as a whole is software + hardware overheads</li>
+          <li>Focus of this lesson is how to reduce the software overhead to reduce latency</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="components-of-rpc-latency">Components of RPC Latency</h3>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L05_img8.png" alt="img" />
+    <ol>
+      <li>Client call</li>
+    </ol>
+    <ul>
+      <li>client has to set up arguments for procedure call, and trap into kernel</li>
+      <li>kernel validates and then marshalls the arguments into a network packet.</li>
+      <li>kernel sets up controller to do the network transaction.
+        <ol>
+          <li>Controller latency</li>
+        </ol>
+      </li>
+      <li>Controller must DMA message into its buffer, and then put it out on the wire.  Done in hardware.
+        <ol>
+          <li>Time on wire</li>
+        </ol>
+      </li>
+      <li>Depends on distance between client and server and on bandwidth.  Limiting factor is the speed of light.
+        <ol>
+          <li>Interrupt handling</li>
+        </ol>
+      </li>
+      <li>Message arrives at destination node, as an interrupt.  This must be handled by the OS.</li>
+      <li>Move bits from wire to controller buffer to memory.
+        <ol>
+          <li>Server setup to execute call</li>
+        </ol>
+      </li>
+      <li>Locate server procedure, dispatch server procedure, unmarshall network packet as arguments for call.</li>
+      <li>Actually execute the call.
+        <ol>
+          <li>Server execution and reply</li>
+        </ol>
+      </li>
+      <li>Not really under the control of the OS.  Whatever the server does, it does.</li>
+    </ul>
+  </li>
+  <li>Controller latency again (omitted in numbering)
+    <ul>
+      <li>equivalent to step 2.</li>
+    </ul>
+  </li>
+  <li>Time on wire back (omitted in numbering)
+    <ul>
+      <li>equivalent to step 3, travel time on network</li>
+    </ul>
+  </li>
+  <li>Interrupt handling again (omitted in numbering)
+    <ul>
+      <li>equivalent to step 4
+        <ol>
+          <li>Client setup to receive results and restart</li>
+        </ol>
+      </li>
+      <li>Dispatch client.  This again is really not under the control of the OS, all about how the client is implemented and what it’s doing.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="sources-of-overhead-in-rpc">Sources of overhead in RPC</h3>
+<ul>
+  <li>Marshalling and data copying
+    <ul>
+      <li>Marshalling refers to semantics of RPC call being made is something that the OS knows nothing about.  Arguments actually passed have semantic meaning only between the client and server.</li>
+      <li>Marshalling == accumulate all arguments from the call and make one contiguous network packet out of it.</li>
+      <li>Biggest source of overhead in marshalling is copying.  Copying happens 3 times.
+        <ol>
+          <li>Client stub takes arguments of the call from the stack and convert into contiguous sequence of bytes called an RPC message.</li>
+          <li>Client is a user program, so RPC message must be copied into a kernel buffer in kernel space.</li>
+          <li>Now the data must be copied by network controller out onto the wire using DMA</li>
+        </ol>
+      </li>
+      <li>How can this be reduced?
+        <ul>
+          <li>Third copy via DMA is a hardware action and therefore unavoidable (at least from our OS perspective)</li>
+          <li>We could marshal into the kernel buffer directly, avoiding the second data copy
+            <ul>
+              <li>This would require allowing the client stub to work directly with kernel memory.</li>
+              <li>This means the stub would be installed directly inside the kernel at bind time.  This is concerning, of course, as installing code into the kernel is a big risk.</li>
+            </ul>
+          </li>
+          <li>Alternatively, have a structured mechanism for communication between client stub and the kernel
+            <ul>
+              <li>This might be a shared descriptor, where each entry is an argument for the rpc call.</li>
+              <li>Kernel doesn’t need to know what each entry is, just starting position and length.</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Control transfer
+    <ul>
+      <li>The context switches that have to happen in order to effect an RPC call and return</li>
+      <li>Potentially 4 context switches
+        <ol>
+          <li>client makes call out to network via kernel to request from server
+            <ul>
+              <li>can be overlapped with network communication while rpc call is in transmission on the wire</li>
+            </ul>
+          </li>
+          <li>server makes call in from network via kernel to receive from client
+            <ul>
+              <li>this is in critical path of latency</li>
+            </ul>
+          </li>
+          <li>server makes call out to network via kernel to respond to client
+            <ul>
+              <li>can be overlapped with network communication while rpc call is in transmission on the wire</li>
+            </ul>
+          </li>
+          <li>client makes call back in from network via kernel to receive from kernel
+            <ul>
+              <li>this is in critical path of latency</li>
+            </ul>
+          </li>
+        </ol>
+      </li>
+      <li>Can latency be reduced down to 1 switch?
+        <ul>
+          <li>First switch may be unnecessary if time of network transit and server process is very short, and so client box would only be blocked for a short time and does not need to be switched away from.
+            <ul>
+              <li>Spin instead of switch</li>
+            </ul>
+          </li>
+          <li>Then the only context switch is on server (switch 2) and so there’s only one switch that actually affects latency of RPC call</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Protocol processing
+    <ul>
+      <li>What transport should be used for RPC?</li>
+      <li>Latency and reliability are competing priorities.</li>
+      <li>If we are working on a LAN, then that is reliable so we should focus on reducing latency.</li>
+      <li>Choices for reducing latency in transport
+        <ul>
+          <li>No low-level ACKs
+            <ul>
+              <li>messages not going to get lost on a LAN, presumably.  Result itself can serve as an ACK</li>
+            </ul>
+          </li>
+          <li>Hardware checksum for packet integrity
+            <ul>
+              <li>A message is unlikely to be corrupted on a LAN, so checksums will not be needed to confirm message validity.  Save the time spent calculating and comparing checksums in software, the hardware checksums will be sufficient.</li>
+            </ul>
+          </li>
+          <li>No client side buffering since client is blocked
+            <ul>
+              <li>Do not need to buffer message if on a reliable LAN, as retransmission due to message loss is unlikely.  In case of message loss, can reconstruct and re-send the call.</li>
+            </ul>
+          </li>
+          <li>Overlap server-side buffering with result transmission
+            <ul>
+              <li>As above, message loss is unlikely but possible, so buffering on server side to avoid needing to reproduce the result is still a worthwhile precaution (processing is far more expensive than constructing the call so the penalty for message loss on the server-&gt;client trip is higher).</li>
+              <li>However, this can be done while message is in transit, overlapping to reduce latency.</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>How to reduce kernel overhead
+    <ul>
+      <li>“Take what hardware gives you” to reduce latency</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="active-networks">Active Networks</h2>
+<ul>
+  <li>This section covers the idea of providing quality of service for network communication in an Operating System by making the network “active”</li>
+  <li><img src="../assets/content_images/omscs/aos/L05_img9.png" alt="img" />
+    <ul>
+      <li>Routers normally don’t inspect packet in any way.  Just figure out the next hop to send the packet to, and do so.
+        <ul>
+          <li>Done statically via table lookups</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>So what does it mean to make a node “active”?
+    <ul>
+      <li>Instead of the next hop being done viaa static table lookups, it should be dynamically determined by the router.</li>
+      <li>This would allow each network to have its own flows, and to update those based on traffic or conditions.</li>
+    </ul>
+  </li>
+  <li>How should this be implemented?
+    <ul>
+      <li><img src="../assets/content_images/omscs/aos/L05_img10.png" alt="img" /></li>
+      <li>OS must provide QoS APIs to the application</li>
+      <li>The application will provide hints that the OS will use in synthesizing code to give hints to the network on how to handle the packets</li>
+      <li>This code will be added to the payload of the packets</li>
+      <li>These changes are very difficult to actually implement in the protcol stacks of the OS</li>
+      <li>Routers are not open, not all of them will be able to use the code in question</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="ants-toolkit">ANTS Toolkit</h3>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L05_img11.png" alt="img" /></li>
+  <li><img src="../assets/content_images/omscs/aos/L05_img12.png" alt="img" />
+    <ul>
+      <li>Type field identifies code that must be executed to process capsule
+        <ul>
+          <li>MD5 hash of the code</li>
+        </ul>
+      </li>
+      <li>Prev field is the identity of the upstream node that successfully processed a capsule of this type</li>
+      <li>Capsule does not contain the code, only a type that allows to identify the code needed</li>
+    </ul>
+  </li>
+  <li><img src="../assets/content_images/omscs/aos/L05_img13.png" alt="img" />
+    <ul>
+      <li>Routing decisions can be made regardless of physical topology based on API</li>
+      <li>Soft-store is where necessary code is stored, in key-value store</li>
+      <li>Other things can be stored in soft-store too, as needed</li>
+      <li>Can also query node, possibly about the network or the node itself</li>
+    </ul>
+  </li>
+  <li>ANTS == Active Node Transfer System</li>
+  <li>Application level package</li>
+  <li>Creates a capsule of ANTS header and payload</li>
+  <li>Allows for both “normal” and “active” nodes to act upon the packet.  This helps with “closed” router problem by keeping active nodes at only edges of the network</li>
+  <li>Capsule Implementation
+    <ul>
+      <li><img src="../assets/content_images/omscs/aos/L05_img14.png" alt="img" /></li>
+      <li>Action taken on capsule arrival
+        <ul>
+          <li>Type field: fingerprint for the capsule code
+            <ul>
+              <li>Cryptographically strong hash</li>
+            </ul>
+          </li>
+          <li>Demand load capsule code from previous node by sending request
+            <ul>
+              <li>If the node does not already have the code indicated by the type field from the node indicated by the prev node field</li>
+              <li>The locality of capsule processing is very high, likely to process many of the same kind of capsule in close time proximity.  Thus this will be a proportionally small expense</li>
+              <li>Once gotten and hashed, store in soft-store for future use</li>
+            </ul>
+          </li>
+          <li>Drop capsule if code is not in soft-store or previous node
+            <ul>
+              <li>Higher-level acks will indicate to source and cause a re-transmission</li>
+              <li>This might happen because, for example, soft-store is limited and the relevant code may have been deleted from soft-store on previous node to make space</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="potential-applications-of-active-networks">Potential Applications of Active Networks</h3>
+<ul>
+  <li>Protocol-independent multicast</li>
+  <li>Reliable multicast</li>
+  <li>Congestion notification</li>
+  <li>Private IP (PIP)</li>
+  <li>Anycasting</li>
+</ul>
+
+<h3 id="pros-and-cons-of-active-networks">Pros and Cons of Active Networks</h3>
+<ul>
+  <li>Pros
+    <ul>
+      <li>Flexibility from Application perspective
+        <ul>
+          <li>Can ignore physical layout of the network</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Cons
+    <ul>
+      <li>Protection threats =&gt; solutions
+        <ul>
+          <li>ANTS runtime safety =&gt; Java sandboxing</li>
+          <li>code spoofing =&gt; robust fingerprinting method</li>
+          <li>soft-store integrity =&gt; restricted API</li>
+        </ul>
+      </li>
+      <li>Resource management threats =&gt; solutions
+        <ul>
+          <li>Executing code at each node =&gt; restricted API</li>
+          <li>Flooding the network =&gt; Internet already susceptible (though may exacerbate this issue)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="feasibility-of-active-networks">Feasibility of Active Networks</h3>
+<ul>
+  <li>Router makers loath to opening up the network
+    <ul>
+      <li>Only feasible at the edge of the network</li>
+    </ul>
+  </li>
+  <li>Software routing cannot match the performance of hardware routing
+    <ul>
+      <li>Only feasible at the edge of the network</li>
+    </ul>
+  </li>
+  <li>Social and Psychological Objections
+    <ul>
+      <li>Hard for user community to accept arbitrary code executing in the public routing fabric</li>
+    </ul>
+  </li>
+  <li>Active Networks were a bit ahead of their time and lacked a killer app. Modern cloud computing offers a better use case, and Software-Defined Networking has resurrected a lot of the ideas that Active Networking originally innovated.</li>
+</ul>
+
+<h2 id="systems-from-components">Systems From Components</h2>
+<ul>
+  <li>VLSI technology uses component based approach to build large, complex hardware systems.  Can we do the same for software?
+    <ul>
+      <li>Instead of starting from a clean slate, re-use software components?</li>
+      <li>Easier in a lot of ways, if possible.  Lots of challenges, though, such as locality, redundancies, etc.
+        <h3 id="design-framework">Design Framework</h3>
+      </li>
+    </ul>
+  </li>
+  <li><img src="../assets/content_images/omscs/aos/L05_img15.png" alt="img" /></li>
+  <li>Design cycle
+    <ul>
+      <li>specify -&gt; code -&gt; optimize -&gt; deploy</li>
+      <li>Specify: IOA (IO Automata)
+        <ul>
+          <li>c-like syntax</li>
+          <li>composition operator
+            <ul>
+              <li>allows expressing specification of entire subsystem to be built</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Code: ocaml
+        <ul>
+          <li>object oriented
+            <ul>
+              <li>also functional (no side effects)</li>
+            </ul>
+          </li>
+          <li>efficient code, similar to C
+            <ul>
+              <li>important for systems programming, performance matters a lot.</li>
+            </ul>
+          </li>
+          <li>nice complemnet to IOA
+            <ul>
+              <li>formal semantics available line up well</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Optimize: NuPrl
+        <ul>
+          <li>Framework for automatic optimization of ocaml code</li>
+          <li>output verified to be functionally equivalent to the original ocaml code</li>
+          <li>There’s no easy (formal) way to show that the ocaml implementation is the same as the IOA specification</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="implementing-tcpip-stack-using-components">Implementing TCP/IP Stack Using Components</h3>
+<ul>
+  <li>Start with IOA Spec
+    <ul>
+      <li>Abstract Spec</li>
+      <li>Concrete Spec</li>
+    </ul>
+  </li>
+  <li>How to synthesize stack from concrete spec?  Getting to an unoptimized ocaml implementation
+    <ul>
+      <li>Ensemble suite of microprotocols
+        <ul>
+          <li>flow control, sliding window, encryption, scatter/gather, etc
+            <ul>
+              <li>well-defined interfaces allowing composition</li>
+            </ul>
+          </li>
+          <li>This allows flexibility and customization, and a component-based design</li>
+          <li>Needed protocols are selected using a heuristic and the provided behavior spec.  This results in a functional but unoptimized protocol stack
+            <ul>
+              <li>Layering could lead to inefficiences.  This is where the analogy to VSLI component-based design breaks down for software</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Optimizing
+    <ul>
+      <li>Several sources of optimization are available
+        <ul>
+          <li>Use explicit memory management instead of implicit garbage collection in ocaml</li>
+          <li>Avoid marshaling/unmarshaling across layers</li>
+          <li>Buffering in parallel with transmission</li>
+          <li>Header compression
+            <ul>
+              <li>Layers may each get their own headers with lots of shared fields that could be compressed into single representations</li>
+            </ul>
+          </li>
+          <li>Locality enhancement for common code sequences
+            <ul>
+              <li>colocate code paths common across layers to improve cache hit rate</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>But manually doing all this would be very tedious.  How to automate?</li>
+      <li>NuPrl to the rescue!
+        <ul>
+          <li>Static optimization
+            <ul>
+              <li>NuPrl expert and an ocaml expert sit together and work layer by layer through the protocol stack to use the above optimizations</li>
+              <li>Within each layer, not across layers at this stage.</li>
+              <li>Only a semi-automatic process</li>
+            </ul>
+          </li>
+          <li>Dynamic optimizationm
+            <ul>
+              <li>Collapse layers</li>
+              <li>Uses the theorem-proving framework
+                <ul>
+                  <li>Identifies common work happening in multiple layers</li>
+                </ul>
+              </li>
+              <li>completely automatic</li>
+              <li>Generate bypass code if common case predicate (ccp) satisfied
+                <ul>
+                  <li><img src="../assets/content_images/omscs/aos/L05_img16.png" alt="img" /></li>
+                  <li>CCP is basically how the protocol is supposed to react to any given event</li>
+                  <li>Theorem prover framework can automatically prove that the bypass code creates the equivalent result as all the layers being bypassed would have.  This means we get the same result but much faster.</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>Final step – convert back to ocaml
+            <ul>
+              <li>Theorem prover framework can show that original and optimized ocaml code are equivalent, automatically</li>
+              <li>Again, though, this says nothing about verification of the code against the original IOA specs</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+:ET

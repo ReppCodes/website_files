@@ -1,4 +1,4 @@
-I"Ý<p>For Spring 2021, my fifth semester, I chose to take CS6210: Advanced Operating Systems.  This class addresses a broad range of topics in operating system design and implementation, including:</p>
+I"I	<p>For Spring 2021, my fifth semester, I chose to take CS6210: Advanced Operating Systems.  This class addresses a broad range of topics in operating system design and implementation, including:</p>
 <ul>
   <li>Operating system structuring</li>
   <li>Synchronization, communication and scheduling in parallel systems</li>
@@ -16,6 +16,8 @@
   <li>Distributed Service using GRPC</li>
   <li>Implement MapReduce Framework using GRPC</li>
 </ol>
+
+<p>I switched jobs towards the end of the semester, and between that and the final project being a monster my class notes are incomplete.  Iâ€™ve posted here what I managed to take, both for my own future reference and in case even partial notes might be helpful to someone.</p>
 
 <hr />
 
@@ -40,6 +42,30 @@
 <li>
 <a href="/aos_lec_L03.html">
     Lesson 3 - Virtualization
+</a>
+</li>
+
+<li>
+<a href="/aos_lec_L04.html">
+    Lesson 4 - Sharing Semantics
+</a>
+</li>
+
+<li>
+<a href="/aos_lec_L05.html">
+    Lesson 5 - Distributed Systems
+</a>
+</li>
+
+<li>
+<a href="/aos_lec_L06.html">
+    Lesson 6 - Distributed Objects and Middleware
+</a>
+</li>
+
+<li>
+<a href="/aos_lec_L07.html">
+    Lesson 7 - Distributed Subsystems
 </a>
 </li>
 

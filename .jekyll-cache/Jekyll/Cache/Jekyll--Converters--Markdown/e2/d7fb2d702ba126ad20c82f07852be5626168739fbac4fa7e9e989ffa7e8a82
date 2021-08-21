@@ -1,0 +1,338 @@
+I"�I<h1 id="shared-memory-machines">Shared Memory Machines</h1>
+<ul>
+  <li>Three structures:
+    <ul>
+      <li>In every structure there will be CPU’s, memory and an IC network.
+        <ul>
+          <li>Also, full address space of all memories accessible from any of the CPU’s</li>
+          <li>Also, cache associated with each CPU</li>
+        </ul>
+      </li>
+      <li>Dance Hall Architecture
+        <ul>
+          <li>CPU’s on one side, memory on other, of an IC network</li>
+          <li><img src="../assets/content_images/omscs/aos/L04_img1.png" alt="img" /></li>
+        </ul>
+      </li>
+      <li>Symmetric Multiprocessor (SMP) Architecture
+        <ul>
+          <li>Access time from any CPU to memory is the same</li>
+          <li><img src="../assets/content_images/omscs/aos/L04_img2.png" alt="img" /></li>
+        </ul>
+      </li>
+      <li>Distributes Shared Memory (DSM) Architecture
+        <ul>
+          <li>A piece of memory associated with each CPU</li>
+          <li>Each CPU can still access all memory, but the piece that is closest will be fastest.</li>
+          <li><img src="../assets/content_images/omscs/aos/L04_img3.png" alt="img" /></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Shared Memory and Caches
+    <ul>
+      <li>SMP example for simplicity</li>
+      <li>cache serves exact same purpose in multiprocessor as it does in uniprocessor
+        <ul>
+          <li>CPU, when accessing memory, preferentially accesses cache.  If cache miss, go to main memory, and add to cache.</li>
+        </ul>
+      </li>
+      <li>Cache in MP associated with each CPU performs as it does in uniprocessor
+        <ul>
+          <li>however there is a unique problem with an MP system – caches are unique to each CPU but memory is shared among them</li>
+          <li>If a value is updated in one cache, but is outdated in other caches, what should happen?  This is the “cache coherence problem”</li>
+          <li>Hardware and software must agree on memory consistency model (developer using this system must know the rules the system is playing by to write correct software)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="memory-consistency-model">Memory Consistency Model</h2>
+<ul>
+  <li>The model dictates what expectations the developer can have around ordering of memory reads and writes</li>
+  <li>Example given is that the memory accesses on a given processor will always happen in the same order, but the interleaving across multiple processors is arbitrary
+    <ul>
+      <li>This is called Sequential Consistency (SC)</li>
+      <li>covered in more detail in my <a href="https://andrewrepp.com/gios_lec_P4L3.html">GIOS Lecture Notes on Distributed Shared Memory</a></li>
+    </ul>
+  </li>
+  <li>Memory Consistency and Cache Coherence go hand in hand
+    <ul>
+      <li>Memory consistency: What is the model presented to the programmer?</li>
+      <li>Cache coherence: How is the system implementing the model in the presence of private caches?</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="hardware-cache-coherence">Hardware Cache Coherence</h2>
+<ul>
+  <li>If the hardware is going to handle this, there are two approaches possible</li>
+  <li>Write invalidate
+    <ul>
+      <li>If a processor writes to a memory location in its own cache, the hardware will ensure that location is invalidated in all other caches</li>
+      <li>This is done by broadcasting a signal on the IC Bus, “invalidate memory location X”.  This propagates, and caches are watching on the bus for this, and will handle it if seen</li>
+    </ul>
+  </li>
+  <li>Write update
+    <ul>
+      <li>If a processor writes to a memory location in its own cache, the hardware will ensure that location is updated to the new value on all other caches</li>
+      <li>Same propagation and cache snooping on Bus to accomplish this</li>
+    </ul>
+  </li>
+  <li>Both of these approaches do involve overhead, however.  Further, this overhead grows with number of processes, and with complexity of interconnect medium</li>
+  <li>So how does this scale?  If you add more processors, does performance increase?
+    <ul>
+      <li>Pro in adding more processors is that it allows you to exploit parallelism</li>
+      <li>Con is the increased overhead discussed.</li>
+      <li>This flattens the scalability curve of adding processors to a system to increase performance.</li>
+      <li><img src="../assets/content_images/omscs/aos/L04_img4.png" alt="img" /></li>
+    </ul>
+  </li>
+  <li>
+    <p>Honest solution is “don’t share memory across cores”, there’s always going to be some cost if you do.</p>
+  </li>
+  <li>Synchronization</li>
+  <li>Going to focus on sync algorithms</li>
+  <li>Key for parallel programming.</li>
+</ul>
+
+<h2 id="locks">Locks</h2>
+<ul>
+  <li>Protects shared data structures from multiple threads.  Allows thread to make sure that when accessing shared data, it is not being interfered with</li>
+  <li>Two kinds:
+    <ul>
+      <li>Exclusive lock: mutex, one thread at a time</li>
+      <li>Shared lock: multiple threads can access data at same time
+        <ul>
+          <li>e.g. multiple readers, single write</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="barriers">Barriers</h2>
+<ul>
+  <li>Multiple threads all doing computation, but on reaching a given point wait for every other thread to reach that before proceeding</li>
+  <li>Analogy is waiting at a restaurant for your entire party before you can be seated</li>
+</ul>
+
+<h2 id="readwrite-to-implement-a-mutex">Read/Write to Implement a Mutex</h2>
+<ul>
+  <li>Example is given where process2 wants to use a struct, but wants to wait until it’s done being modified by process1.  The question is posed as to whether this is possible given only read/write atomics available.
+    <ul>
+      <li>The answer is yes, as a simple flag variable can serve, with each process checking the flag, and updating it to 0/1 to signal the other.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="atomic-operations">Atomic Operations</h2>
+<ul>
+  <li>Instructions needed to implement a mutex</li>
+  <li>Lock/Unlock operations displayed here, using simple flag, if/while ops</li>
+  <li>The challenge though is that read and write group for the lock check need to happen at once – be atomic</li>
+  <li>so, we need a new Read/Modify/Write (RMW) semantic, a new atomic instruction
+    <ul>
+      <li>Test_and_set instruction takes a memory location as input, returns current value in that memory location, and sets that location to desired value (1 in this example).  Atomically!</li>
+      <li>Fetch_and_inc takes a memory location as input, returns current value in that location, and increments the value in that location.  Atomically!</li>
+      <li>Generically the above are referred to as “Fetch_and_Phi”.  There are many similar such instructions.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="scalability-issues-with-synchronization">Scalability Issues with Synchronization</h2>
+<ul>
+  <li>Sources of inefficiencies are:
+    <ul>
+      <li>Latency: time spent by thread in acquiring a lock</li>
+      <li>Waiting time: how long must you wait to get a lock (partially a function of whatever use pattern the application has, OS can’t do much here)</li>
+      <li>Contention: when lock is released, how long does it take, in presence of contention, for one thread to get lock and the others to stop trying to acquire</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="naive-spinlock-spin-on-test-and-set">Naive Spinlock (Spin on Test and Set)</h2>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L04_img5.png" alt="img" /></li>
+  <li>Processor will spin waiting to get lock</li>
+  <li>initialize lock to unlocked</li>
+  <li>spin on T+S atomic instruction</li>
+</ul>
+
+<h3 id="problems-with-this-approach">Problems with this approach</h3>
+<ul>
+  <li>too much contention – all threads go after lock when released even though only one can get</li>
+  <li>does not exploit caches – spinning on an atomic goes to main memory every single iteration</li>
+  <li>disrupts useful work – when a processor acquires the lock it wants to continue doing work, but the IC contention from other processors vying for lock reduces effectiveness of the winner</li>
+</ul>
+
+<h2 id="caching-spinlock-spin-on-read">Caching Spinlock (Spin on Read)</h2>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L04_img6.png" alt="img" /></li>
+  <li>Spin on cached value of lock (leverage cache coherence of architecture to ensure other caches also see correct value of lock)</li>
+</ul>
+
+<h3 id="problems-with-this-approach-1">Problems with this approach</h3>
+<ul>
+  <li>too much contention – when cached lock value changes, every CPU hits bus all at once, floods the bus</li>
+  <li>disrupts useful work – same issues as Spin on Test and Set</li>
+</ul>
+
+<h2 id="spinlock-with-delay">Spinlock with Delay</h2>
+<ul>
+  <li>on lock release, delay a while before vying for lock</li>
+</ul>
+
+<h3 id="two-alternatives">Two alternatives</h3>
+<ul>
+  <li>Delay after lock release
+    <ul>
+      <li><img src="../assets/content_images/omscs/aos/L04_img7.png" alt="img" /></li>
+      <li>delay chosen differently for each processor, so even though all see the lock value change at once, only one will go check it</li>
+      <li>this is a static delay, though, so you will waste time on longer-delayed processors</li>
+    </ul>
+  </li>
+  <li>Delay with exponential backoff
+    <ul>
+      <li><img src="../assets/content_images/omscs/aos/L04_img8.png" alt="img" /></li>
+      <li>initial value of delay is small, but if lock is not free when check, increase value exponentially</li>
+      <li>this allows contention to be managed, as more contention will result in longer delays, reducing contention on future rounds of checking</li>
+      <li>This works even on NCC architectures as we are always checking with T+S, thus not relying on cache values being kept in agreement with each other</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="ticket-lock">Ticket Lock</h2>
+<ul>
+  <li>Above solutions to do not consider “fairness”, only latency and contention.</li>
+  <li>Should we not try to give lock to the process that requested it first?</li>
+  <li><img src="../assets/content_images/omscs/aos/L04_img9.png" alt="img" /></li>
+  <li>check lock after appropriate delay, estimated by difference between “my_ticket” and “now_serving”</li>
+  <li>Achieves fairness, but still have issues with contention when lock is released</li>
+</ul>
+
+<h2 id="spinlock-summary">Spinlock Summary</h2>
+<ul>
+  <li>Read &amp; T+S &amp; T+S with Delay: no fairness</li>
+  <li>Ticket Lock: fair but still has problems with contention</li>
+</ul>
+
+<h2 id="array-based-queuing-lock-andersons-lock">Array-based Queuing Lock (Anderson’s Lock)</h2>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L04_img10.png" alt="" /></li>
+  <li>array of flags associated with each lock – size of array is number of processes</li>
+  <li>array serves as circular queue</li>
+  <li>each element in flag array is either “has-lock” (hl) or “must-wait” (mw) state (obvious what those indicate)</li>
+  <li>only one processor can be in hl state</li>
+  <li>initialize array by marking one slot as hl and all others as mw</li>
+  <li>slots are not statically associated with any one processor, dynamically populated as request comes in.  enough spaces that there’s one available per processor, but not static.</li>
+  <li>circular queue means you must keep track of where the end is, as future requests will loop around to beginning of queue1:w</li>
+  <li>Addresses contention by virtue of unlock function handing access to next position in the queue. Also by having each lock requester spinning on its own variable (array slot flag).</li>
+  <li>Addresses fairness by iterating through the queue addressing requests in the order received</li>
+  <li>In situation where there is a small subset of processors requesting this lock, the array is unnecessarily large and so wastes space.  This is the only downside to this approach.</li>
+</ul>
+
+<h2 id="linked-list-based-queuing-lock">Linked List-based Queuing Lock</h2>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L04_img11.png" alt="" /></li>
+  <li>To avoid space complexity in Anderson Lock, we will use a linked list instead of an array for the queue</li>
+  <li>Sometimes referred to as MCS lock based on authors</li>
+  <li>Every lock starts with a dummy node to indicate no lock requesters
+    <ul>
+      <li>dummy node has one member: a pointer “l”, to indicate last_requester</li>
+    </ul>
+  </li>
+  <li>Every node object will have two fields, “got it” and “next’
+    <ul>
+      <li>got_it is a boolean</li>
+      <li>next_is a successor</li>
+    </ul>
+  </li>
+  <li>Queue means that fairness is assured, same as Anderson lock</li>
+  <li>next_is being set to null indicates no requesters waiting for the lock</li>
+  <li>nodes/processors spin on got_it field, unlock sets next_is node to true breaking its spin</li>
+  <li>joining queue requires atomic fetch_and_store of node pointer into next_is field of appropriate predecessor, and to last_requester field of dummy node
+    <ul>
+      <li>obviously most (all?) architectures will not have fetch_and_store, so you must simulate with test_and_set</li>
+    </ul>
+  </li>
+  <li>in special case when there is no successor to currently running process, last_requester on dummy node is set to null to indicate nobody holds the lock
+    <ul>
+      <li>new requests arriving while this is happening can run into a race condition where last_requester is set to new request but next_is on currently running process is null, and then currently running process sets last_requester to null, effectively erasing the new request from the waiting process</li>
+      <li>solution here is for currently running process to atomically comp_and_swap last_requester on dummy node, such that it will set last_requester to null only if last_requester is still pointing to current process node.  This means that it cannot overwrite the new requests pointer
+        <ul>
+          <li>comp_and_swap may also need to be simulated with test_and_set if it isn’t available on target architecture</li>
+          <li>if comp_and_swap fails it returns false.  in this circumstance the current process will spin on its next_is member being null, waiting for the new request to finish forming to unlock and hand the lock over to the new process</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>This has all the benefits of the array-based queuing lock, with the addition of wasting less space in circumstances where there are far fewer requesters than processors on average.</li>
+  <li>Downside is some increased overhead around linked-list maintenance.  So while it’s smaller than Anderson’s lock, it’s often also slower
+    <ul>
+      <li>both Anderson’s Lock and this lock also both take a hit if the architecture doesn’t support the more exotic atomics and you’re stuck simulating with test_and_set</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="summary-of-lock-performance">Summary of Lock Performance</h2>
+<p><img src="../assets/content_images/omscs/aos/L04_img12.png" alt="" /></p>
+
+<h1 id="communication">Communication</h1>
+<h2 id="barrier-synchronization">Barrier Synchronization</h2>
+<h3 id="centralized-barrier-aka-counting-barrier">Centralized Barrier (aka Counting Barrier)</h3>
+<ul>
+  <li>counter is initialized to N where N is number of threads that must wait at the barrier</li>
+  <li>when a thread arrives at the barrier it must atomically decrement the count, and then wait for count==0</li>
+  <li>all processors except last one will spin, the last one hits the count==0 and resets the count back up to N</li>
+  <li>Problem here is that resetting count to N is not atomic, the other waiting threads may speed ahead past the next barrier before count is reset to N while it is still 0.</li>
+  <li>Solution: add another spin loop after count==0 where each thread will now wait until count == N to proceed</li>
+  <li>Having two spin loops for every barrier is rather inefficient though</li>
+</ul>
+
+<h3 id="sense-reversing-barrier">Sense Reversing Barrier</h3>
+<ul>
+  <li>Solves two spin loops problem from Counting Barrier via removing second/reset_N spin loop</li>
+  <li>In addition to count, we have a new variable: sense</li>
+  <li>Sense will be true for one barrier episode, false for the next barrier episode
+    <ul>
+      <li><img src="../assets/content_images/omscs/aos/L04_img13.png" alt="" /></li>
+    </ul>
+  </li>
+  <li>On barrier arrival each thread will decrement the count and spin on sense reversal
+    <ul>
+      <li>e.g. if count == 0 then reverse sense</li>
+      <li>accomplishes the same thing as above, but without need of spinning on reset to N as sense polarity will be flipped immediately even if next barrier is reached by other threads</li>
+    </ul>
+  </li>
+  <li>Still has contention issues, as everything is hitting the same shared sense variable.  Bad for scalability.</li>
+</ul>
+
+<h2 id="tree-barrier">Tree Barrier</h2>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L04_img13.png" alt="" /></li>
+  <li>Leverages divide and conquer, limit the amount of sharing to a small number of processors</li>
+  <li>Break large number of processors up into small groups of k number of processor</li>
+  <li>if you have N processors grouped into k-sized groups, you will have $log_{k} n$ levels in your tree (example given is 8 processors in groups of 2 resulting in 3 levels)</li>
+  <li>Arrival at a barrier – at a micro level the algorithm works just like sense reversing</li>
+  <li>each group of k processors shares count and locksense variables</li>
+  <li>count and locksense replicated at every level of the tree</li>
+  <li>count is decremented on arrival at barrier by each process.  count is set equal to k.  If count!=0 the process will wait for locksense to reverse, same as sense reversing barrier.</li>
+  <li>when count goes to 0 at lowest level, process which gets it down to 0 proceeds up to next level and decrements count variable at next level up, but does not flip lowest level locksense variable.</li>
+  <li>This propagates up the tree until top-level count hits 0, then all locksense variables at all levels flip at once
+    <ul>
+      <li>backbone of algorithm is:
+        <ul>
+          <li>if count==0 and has_parent==1 then recurse (up a level)</li>
+          <li>else if count==0 and has_parent==0 then reverse locksense on self and all children</li>
+          <li>else spin on locksense</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>This reduces contention for any one locksense variable as they’re split across groups and levels.</li>
+</ul>
+
+<h1 id="the-remainder-of-this-section-not-captured-due-to-conflicting-priorities">The remainder of this section not captured due to conflicting priorities</h1>
+:ET

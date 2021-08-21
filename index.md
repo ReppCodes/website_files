@@ -9,7 +9,7 @@ Hi, my name is Andrew. This is my personal website, where I house articles about
 ### Who am I?
 I'm a computer nerd with a variety of interests.  
 
-* I currently work as a Software Engineer for a cybersecurity startup, mostly focusing on backendy stuff.  Python, Javascript, Redis, regexes for days.
+* I currently work as a Software Engineer for a cybersecurity startup, mostly focusing on backend stuff.  Python, Javascript, Redis, regexes for days.
 * Before this I worked as a data scientist in the healthcare space, for about 10 years.
 * I am currently a student at Georga Tech in the OMSCS program.  I'm incredibly proud to be part of that institution.
 * I really enjoy cybersecurity and CTFs.  I take runs at HackTheBox whenever I find some free time.  I hope to continue to develop my chops in this arena.

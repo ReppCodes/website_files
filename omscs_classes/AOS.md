@@ -44,4 +44,28 @@ I switched jobs towards the end of the semester, and between that and the final 
 </a>
 </li>
 
+<li>
+<a href="{{ "/aos_lec_L04" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    Lesson 4 - Sharing Semantics
+</a>
+</li>
+
+<li>
+<a href="{{ "/aos_lec_L05" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    Lesson 5 - Distributed Systems
+</a>
+</li>
+
+<li>
+<a href="{{ "/aos_lec_L06" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    Lesson 6 - Distributed Objects and Middleware
+</a>
+</li>
+
+<li>
+<a href="{{ "/aos_lec_L07" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    Lesson 7 - Distributed Subsystems
+</a>
+</li>
+
 </section>
