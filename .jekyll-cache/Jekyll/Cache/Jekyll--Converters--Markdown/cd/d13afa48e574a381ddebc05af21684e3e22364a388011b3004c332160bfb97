@@ -1,0 +1,405 @@
+I"+:<h1 id="networking">Networking</h1>
+<ul>
+  <li>Computer network connects two or more computing devices of the same or differing types</li>
+</ul>
+
+<h2 id="types-of-networks">Types of networks</h2>
+<ul>
+  <li>Types of networks are categorized by the geographic area they cover</li>
+  <li>BAN - body area network – local to a human body</li>
+  <li>LAN - local area network – about building sized</li>
+  <li>MAN - metropolitan area network – about city-sized, often falls between LAN and WAN and not a common term</li>
+  <li>WAN - wide area network - global or regional, such as the internet</li>
+</ul>
+
+<h2 id="network-topology">Network Topology</h2>
+<ul>
+  <li>The way in which devices are connected to a network</li>
+  <li>Layout and paths</li>
+  <li>Common topologies include:
+    <ul>
+      <li>Bus topology
+        <ul>
+          <li><img src="../assets/content_images/omscs/icpss/L03_img1.png" alt="img" /></li>
+        </ul>
+      </li>
+      <li>Ring topology
+        <ul>
+          <li><img src="../assets/content_images/omscs/icpss/L03_img2.png" alt="img" /></li>
+        </ul>
+      </li>
+      <li>Star topology
+        <ul>
+          <li><img src="../assets/content_images/omscs/icpss/L03_img3.png" alt="img" /></li>
+        </ul>
+      </li>
+      <li>Extended star topology
+        <ul>
+          <li><img src="../assets/content_images/omscs/icpss/L03_img4.png" alt="img" /></li>
+          <li>central nodes are backbone switches, directing traffic where it is needed</li>
+        </ul>
+      </li>
+      <li>Mesh topology
+        <ul>
+          <li><img src="../assets/content_images/omscs/icpss/L03_img5.png" alt="img" /></li>
+          <li>used primarily for redundancy and fault tolerance</li>
+          <li>also often used for wireless networks due to the nature of wireless as a medium</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="osi-model">OSI Model</h2>
+<ul>
+  <li>Open Systems Interconnection</li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/icpss/L03_img6.png" alt="img" /></p>
+<ul>
+  <li>Multiple protocols at each layer</li>
+  <li>Owned by ISO (International Standards Organization)</li>
+  <li>Each Layer serves a separate role</li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/icpss/L03_img7.png" alt="img" /></p>
+
+<ul>
+  <li>Within a computer each layer uses the services of the layer below it</li>
+  <li>Across computers, each layer communicates with the equivalent layer on the other machine
+    <ul>
+      <li>It does this by traversing down the layer stack, and back up in the other machine</li>
+      <li><img src="../assets/content_images/omscs/icpss/L03_img8.png" alt="img" /></li>
+      <li>Differentiates between end-to-tend layer and hop-by-hop layers, indicated in this diagram</li>
+    </ul>
+  </li>
+  <li>As information traverses down the stack, a header is added by each layer, and is stripped as it traverses back up.
+    <ul>
+      <li><img src="../assets/content_images/omscs/icpss/L03_img9.png" alt="img" /></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="tcpip-protocol-suite">TCP/IP Protocol Suite</h2>
+<ul>
+  <li>developed before the OSI model, is similar but doesn’t quite line up</li>
+  <li>Is generally more appropriate/accurate to actual protocol usage</li>
+  <li><img src="../assets/content_images/omscs/icpss/L03_img10.png" alt="img" /></li>
+  <li><img src="../assets/content_images/omscs/icpss/L03_img11.png" alt="img" /></li>
+</ul>
+
+<h3 id="addressing-at-each-layer">Addressing at each layer</h3>
+<p><img src="../assets/content_images/omscs/icpss/L03_img12.png" alt="img" /></p>
+
+<h3 id="protocols-at-each-layer">Protocols at each layer</h3>
+<p><img src="../assets/content_images/omscs/icpss/L03_img13.png" alt="img" /></p>
+<ul>
+  <li>Goes into TCP vs UDP in detail, discusses strengths and tradeoffs</li>
+  <li>Addresses the Syn/SynAck/Ack three-way handshake
+    <ul>
+      <li>Also mentions the Fin Active close equivalent</li>
+    </ul>
+  </li>
+  <li>Discusses some control flow stuff in TCP</li>
+</ul>
+
+<h1 id="security">Security</h1>
+<ul>
+  <li>CPS security goals are the same as traditional IT security, just harder to accomplish and higher stakes</li>
+  <li>The security of a system/application/protocol is relative to:
+    <ul>
+      <li>a set of desired properties</li>
+      <li>an adversary with specific capabilities</li>
+    </ul>
+  </li>
+  <li>Goals are:
+    <ul>
+      <li>Confidentiality</li>
+      <li>Integrity</li>
+      <li>Availability
+        <h2 id="confidentiality">Confidentiality</h2>
+        <h3 id="tools-for-confidentiality">Tools for Confidentiality</h3>
+      </li>
+    </ul>
+  </li>
+  <li>Encryption – transform information using a secret</li>
+  <li>Access control – use rules and policies to limit access to information
+    <ul>
+      <li>Authentication – determine identity of a role for someone requesting access
+        <ul>
+          <li>Use something someone knows, has, or is</li>
+        </ul>
+      </li>
+      <li>Authorization – the determination if a person or system is allowed to access a resource, using a policy</li>
+      <li>Physical security – the establishment of physical barriers to limit access to protected computational resources</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="integrity">Integrity</h2>
+<ul>
+  <li>The property that information has not been altered in an unauthorized way</li>
+</ul>
+
+<h2 id="availability">Availability</h2>
+<ul>
+  <li>The propety that information is accessible and modifiable in a timely fashion by those authorized to do so</li>
+</ul>
+
+<h2 id="other-security-concepts">Other Security Concepts</h2>
+<h3 id="assurance">Assurance</h3>
+<ul>
+  <li>Refers to how trust is provided and managed in computer systems</li>
+  <li>Policies specify behavioral expetations that people or systems have for themselves or others</li>
+  <li>Permissions describe the behaviors that are allowed by the agents that interact with a person or system</li>
+  <li>Protections describe mechanisms put in place to enforce permissions and policies</li>
+</ul>
+
+<h3 id="authenticity">Authenticity</h3>
+<ul>
+  <li>The ability to determine that statements, policies, and permissions issued by persons or systems are genuine</li>
+  <li>Digital signatures use cryptographic computations that allow a person or system to commit to the authenticity of their documents in a unique way that achieves nonrepudiation</li>
+</ul>
+
+<h3 id="anonymity">Anonymity</h3>
+<ul>
+  <li>The property that certain records or transactions cannot be attributed to any individual</li>
+  <li>Aggregation iss the combining of data from many individuals so that disclosed sums or averages cannot be tied to any individual</li>
+  <li>Mising is the intertwining of transactions, information, or communmications in a way that cannot be traced to any individual</li>
+  <li>Proxies are trusted agents that are willing to engage in actions for an individual in a way that cannot be traced back to that person</li>
+  <li>Psuedonyms are fictional identities that can fill in for real identities in communications and transactions, but are otherwise known only to a trusted entity</li>
+</ul>
+
+<h2 id="threats-and-attacks">Threats and Attacks</h2>
+<h3 id="eavesdropping">Eavesdropping</h3>
+<ul>
+  <li>The interception of information inteded for someone else during its transmission over a communication channel</li>
+  <li>Attack on confidentiality</li>
+</ul>
+
+<h3 id="alteration">Alteration</h3>
+<ul>
+  <li>The unauthorized modification of information</li>
+  <li>Attack on integrity</li>
+</ul>
+
+<h3 id="denial-of-service">Denial of Service</h3>
+<ul>
+  <li>The interruption or degradation of a data service or information access</li>
+  <li>Attack on availability</li>
+</ul>
+
+<h3 id="masquerading">Masquerading</h3>
+<ul>
+  <li>The fabrication of information that is purported to be from someone who is not actually the author</li>
+  <li>Attack on authenticity</li>
+</ul>
+
+<h3 id="repudiation">Repudiation</h3>
+<ul>
+  <li>The denial of a commitment or data receipt</li>
+  <li>Attack on authenticity</li>
+</ul>
+
+<h3 id="correlation-and-traceback">Correlation and Traceback</h3>
+<ul>
+  <li>The integration of multiple data sources and information flows to determine the source of a particular data stream or piece of information</li>
+  <li>Attacks on anonymity</li>
+</ul>
+
+<h2 id="ten-security-principles">Ten Security Principles</h2>
+<ul>
+  <li>Economy of mechanism
+    <ul>
+      <li>complexity is the enemy of security.  keep it simple</li>
+    </ul>
+  </li>
+  <li>Fail-safe defaults
+    <ul>
+      <li>the default configuration should have a conservative protection scheme</li>
+      <li>e.g. minimal access rights keeps user-level damage low</li>
+    </ul>
+  </li>
+  <li>Complete mediation
+    <ul>
+      <li>every access to a resource must be checked for compliance</li>
+      <li>things like caching permissions are <em>scary</em></li>
+    </ul>
+  </li>
+  <li>Open design
+    <ul>
+      <li>security should be publicly available for better scrutiny of security</li>
+      <li>only secrets should be secret</li>
+    </ul>
+  </li>
+  <li>Separation of privilege
+    <ul>
+      <li>multiple conditions should be required to get at protected things</li>
+    </ul>
+  </li>
+  <li>Least privilege
+    <ul>
+      <li>what it says on the tin.  compromise is kept cheaper if your lost password only gets at your stuff</li>
+    </ul>
+  </li>
+  <li>Least common mechanism
+    <ul>
+      <li>if multiple users share a computer they should have separate accounts</li>
+      <li>avoid sharing stuff wherever possible</li>
+    </ul>
+  </li>
+  <li>Psychological acceptability
+    <ul>
+      <li>if security makes no sense or is hard or jarring, people will avoid using it</li>
+    </ul>
+  </li>
+  <li>Work factor
+    <ul>
+      <li>keep in mind your threat model, scope security measures appropriately to avoid wasting resources you might need elsewhere</li>
+    </ul>
+  </li>
+  <li>Compromise recording
+    <ul>
+      <li>sometimes it is more desirable to record details of an intrustion</li>
+      <li>e.g., affording IP cameras is maybe better than a fleet of guards</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="cryptographic-concepts">Cryptographic concepts</h2>
+<h3 id="encryption">Encryption</h3>
+<ul>
+  <li>a means to allow two parties, customarily called Alice and Bob, to establish confidential communication over an insecure channel that is subject to eavesdropping</li>
+</ul>
+
+<h3 id="cryptosystem-characteristics">Cryptosystem Characteristics</h3>
+<p>Can be described by:</p>
+<ul>
+  <li>the set of possible plaintexts</li>
+  <li>the set of possible ciphertexts</li>
+  <li>the set of encryption keys</li>
+  <li>the set of decryption keys</li>
+  <li>the correspondence between encryption keys and decryption keys</li>
+  <li>the encyrption algorithm to use</li>
+  <li>the decryption algorithm to use</li>
+</ul>
+
+<h3 id="symmetric-cryptosystems">Symmetric Cryptosystems</h3>
+<ul>
+  <li>Alice and Bob share a secret key, which is used for both encryption and decryption</li>
+  <li>key distribution requires each pari of communicating parties to share a separate secret key</li>
+  <li>requires ((n * (n-1) )/ 2) keys</li>
+</ul>
+
+<h3 id="public-key-cryptography">Public-Key Cryptography</h3>
+<ul>
+  <li>Uses public keys for encryption, private keys for decryption</li>
+  <li>Only one key is needed for each recipient, with public and private components, n key pairs</li>
+  <li>Can also be used to provide non-repudiation via signatures.  Use a private key to sign/encrypt, anyone can then use public key to decrypt for confirmation
+    <ul>
+      <li>Can also sign hash instead, slightly more secure</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="cryptographic-hash-functions">Cryptographic Hash Functions</h3>
+<ul>
+  <li>A compression function that maps an arbitrary-length file/input to a fixed-length hash/output</li>
+  <li>To be considered “cryptographic” a hash function must have the following properties
+    <ul>
+      <li>Must be “one-way”, e.g. it is simple to compute the hash given  an input, but very difficult to get the input given only the hash</li>
+      <li>Should be collision-resistant, meaning that it should be very difficult to find two inputs that give the same hash output</li>
+    </ul>
+  </li>
+  <li>Message authentication codes
+    <ul>
+      <li>MAC enables data integrity, generated using hash function and a shared secret</li>
+      <li>similar to salting password hashes</li>
+      <li>recomputing hash with secret will show if file has been changed</li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="control-systems">Control Systems</h1>
+<ul>
+  <li>Controlling complex systems like the power grid</li>
+</ul>
+
+<h2 id="introduction">Introduction</h2>
+<ul>
+  <li>Understand and control segments of complex environments known as systems</li>
+  <li>Room being heated system:
+    <ul>
+      <li>Temperature gauge
+        <ul>
+          <li>aka sensor</li>
+        </ul>
+      </li>
+      <li>Room being heated
+        <ul>
+          <li>aka system or process</li>
+        </ul>
+      </li>
+      <li>furnace
+        <ul>
+          <li>aka actuator</li>
+        </ul>
+      </li>
+      <li>thermostat
+        <ul>
+          <li>aka controller</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Foundation provided by linear systems theory
+  <img src="../assets/content_images/omscs/icpss/L03_img14.png" alt="img" /></li>
+</ul>
+
+<h2 id="open-loop-conrol-system">Open-Loop Conrol System</h2>
+<p><img src="../assets/content_images/omscs/icpss/L03_img15.png" alt="img" /></p>
+<ul>
+  <li>Defined as a system without feedback
+    <ul>
+      <li>e.g. a space heater</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="closed-loop-control-system">Closed-Loop Control System</h2>
+<p><img src="../assets/content_images/omscs/icpss/L03_img16.png" alt="img" /></p>
+<ul>
+  <li>In contrast, closed-loop system uses a measure to compare actual output with desired output
+    <ul>
+      <li>e.g. home HVAC system instead of a space heater</li>
+    </ul>
+  </li>
+  <li>Many advantages over open-loop control</li>
+</ul>
+
+<h2 id="multi-loop-feedback-control-system">Multi-Loop Feedback Control System</h2>
+<p><img src="../assets/content_images/omscs/icpss/L03_img17.png" alt="img" /></p>
+<ul>
+  <li>Both inner and outer loops have controller and sensor</li>
+</ul>
+
+<h3 id="multivariable-control-system">Multivariable Control System</h3>
+<ul>
+  <li>As systems become complex, multiple sensors and controllers must all be kept in the loop and their behavior monitored and adjusted
+    <ul>
+      <li>e.g. humidity and pressure, in addition to temperature, for an HVAC system</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="automation">Automation</h2>
+<ul>
+  <li>The control of an industrial process by automatic rather than manual means</li>
+  <li>Necessary for complex systems</li>
+</ul>
+
+<h2 id="productivity">Productivity</h2>
+<ul>
+  <li>Defined here for our purposes as the ratio of physical output to physical input</li>
+</ul>
+:ET

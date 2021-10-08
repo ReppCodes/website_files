@@ -9,7 +9,11 @@ the program.
 
 <section>
 <h3>2021</h3>
-<li>Fall - CS6263: Intro to Cyber Physical Systems Security</li>
+<li>
+<a href="{{ "/omscs_classes/ICPSS" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    Fall - CS6263: Intro to Cyber Physical Systems Security
+</a>
+</li>
 
 <li>
 <a href="{{ "/omscs_classes/AOS" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">

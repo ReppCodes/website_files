@@ -1,0 +1,107 @@
+I"�<h1 id="industrial-networks">Industrial Networks</h1>
+<ul>
+  <li>Automation systems that provide control and monitoring to CPSs
+    <ul>
+      <li>Process control systems</li>
+      <li>Distributed control systems</li>
+      <li>Supervisory control and Data Acquisition systems
+        <ul>
+          <li>SCADA!</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="simplified-representation-of-industrial-network">Simplified Representation of Industrial Network</h3>
+<p><img src="../assets/content_images/omscs/icpss/L04_img1.png" alt="img" /></p>
+
+<h3 id="within-wider-context-of-actual-network">Within wider context of actual network</h3>
+<p><img src="../assets/content_images/omscs/icpss/L04_img2.png" alt="img" /></p>
+
+<h2 id="protocols">Protocols</h2>
+<ul>
+  <li>Often use non  standard protocols, such as Modbus</li>
+  <li>Often designed for serial use, have been adjusted to work at varying levels of OSI model</li>
+  <li>Because they were not designed to be publicly exposed, often they are fundamentally insecure</li>
+  <li>Security by obscurity is no longer sufficient</li>
+</ul>
+
+<h2 id="routability">Routability</h2>
+<ul>
+  <li>Distinction between routable and non-routable networks is diminishing as IP slowly eats everything</li>
+  <li>Routable typically means “uses IP”, while non-routable may use serial, bus, or point-to-point communication
+<img src="../assets/content_images/omscs/icpss/L04_img3.png" alt="img" /></li>
+  <li>Legacy protocols such as modbus have also been updated to work over IP</li>
+  <li>At this point it’s safest to assume all networks are connected to routable networks, one way or another
+    <ul>
+      <li>This is further exacerbated by remote-access functionality on otherwise non-routable devices</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="zones-and-enclaves">Zones and Enclaves</h3>
+<p><img src="../assets/content_images/omscs/icpss/L04_img4.png" alt="img" /></p>
+<ul>
+  <li>To ensure protection, network segmentation must be done</li>
+  <li>Does not necessarily require physical boundary, but logical delineation at least must be done</li>
+  <li>Perimiter is the outmost bound of assets, and is a natural point to place controls</li>
+  <li>Cloud architectures make defining a perimiter a bit more complicated</li>
+</ul>
+
+<h2 id="critical-infrastructure">Critical Infrastructure</h2>
+<ul>
+  <li>Industrial Network == any network operating some sort of automated control system that communicates digitally over a network</li>
+  <li>Critical Infrastructure == the critical systemss and assets used within a networked computing infrastructure
+    <ul>
+      <li>16 sectors recognized by the US as critical infrastructure
+        <ul>
+          <li>PPD-21</li>
+          <li>banking and finance, chemical, IT, manufacturing, defense, food and Agriculture, commercial, comms, dams, emergency services, energy, govt facilities, healthcare, nuclear, transportation, water</li>
+          <li>Shoutout to NERC CIP regulating the power grid</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Lectures chat through some of the above list, and discuss some nuance.  No real meat there, not transcribed</li>
+</ul>
+
+<h2 id="common-industrial-security-recommendations">Common Industrial Security Recommendations</h2>
+<ol>
+  <li>Identifying what systems need to be protected
+    <ul>
+      <li>Asset inventory, and assess importance thereof</li>
+      <li>Tells us what should be monitored and how closely</li>
+      <li>Informs network segmentation and placement of security points such as firewalls</li>
+    </ul>
+  </li>
+  <li>Separating the systems logically into functional groups
+    <ul>
+      <li>reduces attack surface, easiest step to do so</li>
+      <li>firewall rules get a lot easier if you’re only protecting one kind of thing, fewer permit rules needed</li>
+      <li>functional DMZ’s</li>
+    </ul>
+  </li>
+  <li>Implementing a defense-in-depth strategy around each system or group</li>
+  <li>Controlling access into and between each group</li>
+  <li>Monitoring activities that occur within and between groups</li>
+  <li>Limiting the actions that can bew executed within and between groups</li>
+</ol>
+
+<p><img src="../assets/content_images/omscs/icpss/L04_img5.png" alt="img" /></p>
+<ul>
+  <li>Note the firewall icons can be any number of security things, such as ACLs, firewalls, application filters, etc</li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/icpss/L04_img6.png" alt="img" /></p>
+<ul>
+  <li>Defense in depth, the diagram.  This is good.</li>
+</ul>
+
+<h3 id="additional-security-recommendations">Additional Security Recommendations</h3>
+<ul>
+  <li>Real-time security monitoring</li>
+  <li>Application whitelisting</li>
+  <li>Policy whitelisting</li>
+</ul>
+:ET

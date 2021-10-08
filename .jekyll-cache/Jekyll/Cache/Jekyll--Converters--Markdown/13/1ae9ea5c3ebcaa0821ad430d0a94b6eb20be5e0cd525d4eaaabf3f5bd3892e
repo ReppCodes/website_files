@@ -1,0 +1,55 @@
+I"1<h1 id="introduction">Introduction</h1>
+<h2 id="what-are-cpss">What are CPS’s</h2>
+<ul>
+  <li>Cyber-physical systems are the integration of computing and physical domains
+    <ul>
+      <li>usually done to improve reliability and performance</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="parts-of-a-cps">Parts of a CPS</h2>
+<ul>
+  <li>Generation system
+    <ul>
+      <li>where electrons are first generated using whatever source</li>
+    </ul>
+  </li>
+  <li>Then push into transmission system
+    <ul>
+      <li>transmission system is basically a wheelbarrow</li>
+    </ul>
+  </li>
+  <li>Ends in distribution system
+    <ul>
+      <li>step down in voltage, and leaves from there to a home</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="key-equipment">Key Equipment</h2>
+<ul>
+  <li>Transformer
+    <ul>
+      <li>steps voltage up or down as needed</li>
+    </ul>
+  </li>
+  <li>Circuit breaker
+    <ul>
+      <li>sits ahead of transformer and protects and other components downline</li>
+    </ul>
+  </li>
+  <li>Recloser
+    <ul>
+      <li>protects the circuit feeding your home, similar to a circuit breaker</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="compromise">Compromise</h2>
+<ul>
+  <li>If a component is compromised, biggest problem locally is outages</li>
+  <li>Bigger problem is destabilization of grid, causing much larger outages</li>
+</ul>
+
+:ET

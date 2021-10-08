@@ -1,0 +1,134 @@
+I"q<h1 id="industrial-cyber-security-history-and-threats">Industrial Cyber Security History and Threats</h1>
+<ul>
+  <li>Compared to traditional IT systems, CPS’s are:
+    <ul>
+      <li>more specialized</li>
+      <li>greater demands on reliability and longevity</li>
+      <li>high-stakes systems</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="need-to-improve">Need to improve</h2>
+<ul>
+  <li>The need to improve cannot be overstated</li>
+  <li>Physical security on many CPS’s are decent, but digital is not great
+    <ul>
+      <li>Physical is often helped by being geographically remote</li>
+      <li>Given that physical is decent, digital usually represents the only feasible way in</li>
+    </ul>
+  </li>
+  <li>Historically CPS networks were air-gapped, leaving infosec as something that didn’t need to be thought about
+    <ul>
+      <li>in modern times, this airgap almost never actually exists, for cost and convenience reasons</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="what-is-the-state-of-security-posture-for-cpss">What is the state of security posture for CPS’s</h2>
+<ul>
+  <li>A massive pentest found tens of thousands of vulns</li>
+  <li>Also provided metadata around responses
+    <ul>
+      <li>average time to patch found was 331 days, with a long right tail</li>
+      <li>industry standard disclosure practice is to disclose upon patch release, giving a window between patch release and patch application for badness to happen</li>
+      <li>This is not (necessarily) due to negligence.  Control systems are hard to patch due to things like topology, downtime requirements, and such.
+        <ul>
+          <li>A common response to this is to focus on strengthening the perimeter defenses in lieu of patching</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="summary-of-past-incident-reports">Summary of Past Incident Reports</h2>
+<ul>
+  <li>Most attacks seem to be opportunistic
+    <ul>
+      <li>This may change going forwards</li>
+    </ul>
+  </li>
+  <li>Initial attacks tend to use simpler exploits
+    <ul>
+      <li>This may just be because nothing more complex was needed, not because nothing better exists</li>
+    </ul>
+  </li>
+  <li>The majority of cyber-attracks are financially motivated
+    <ul>
+      <li>Again, may change going forwards</li>
+    </ul>
+  </li>
+  <li>New malware samples are increasing at an alarming rate</li>
+  <li>The majority of attacks originate externally</li>
+  <li>However, the majority of incidents affecting industrial systems are unintentional</li>
+  <li>New malware code samples are increasingly more sophisticated</li>
+  <li>Malware and “hacking as a service” is increasingly available</li>
+</ul>
+
+<h2 id="apts-and-weaponized-malware">APTs and Weaponized Malware</h2>
+<ul>
+  <li>APT Qualities
+    <ul>
+      <li>Not intended to impact or disrupt network operations</li>
+      <li>Designed to avoid detection over long periods of time</li>
+    </ul>
+  </li>
+  <li>Weaponized Malware Qualities
+    <ul>
+      <li>Possible intentions include network disruption</li>
+      <li>Possible intentions include physical damage of systems or devices</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="high-profile-cases">High Profile Cases</h2>
+<ul>
+  <li>Night Dragon
+    <ul>
+      <li>A series of attacks over a 2 year period targeting oil and energy companies, stealing sensitive information</li>
+    </ul>
+  </li>
+  <li>Stuxnet
+    <ul>
+      <li>A worm developed to infect as many computers as possible.</li>
+      <li>When it found Iranian centrifugrs, it activated and ruined them</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="the-future-of-malware">The future of malware</h2>
+<ul>
+  <li>Sophistication will continue to increase over time</li>
+  <li>It’s expensive to develop things from scratch, so it’s reasonable to expect that the majority will be evolutions on existing tools and techniques, instead of from-scratch new builds</li>
+</ul>
+
+<h2 id="insider-threats">Insider Threats</h2>
+<ul>
+  <li>One of the most common pitfalls is to roll out security policies without building an appropriate threat model.  This results in policies targeting the wrong things.</li>
+  <li>The most probable threat is an insider.
+    <ul>
+      <li>Employees with direct access to data</li>
+      <li>Employees with admin privileges</li>
+      <li>Employees with indirect access to data</li>
+      <li>Subcontractor with access to specific ICS componensts or subsystems for operation</li>
+      <li>Services providers with access to specific ICS components or subsystems for support</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="recent-history">Recent history</h2>
+<ul>
+  <li>Disclosures spiked around 2010
+    <ul>
+      <li>The year Stuxnet was discovered</li>
+    </ul>
+  </li>
+  <li>This is likely due to:
+    <ul>
+      <li>a combination of increased awareness around ICS</li>
+      <li>increased hacktivism in cultural contexts</li>
+      <li>improved availability of Open Source Tools for conducting attacks</li>
+    </ul>
+  </li>
+</ul>
+:ET

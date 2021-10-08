@@ -1,0 +1,198 @@
+I"�<h1 id="overview">Overview</h1>
+<ul>
+  <li>Broadly, CPS’s are systems that integrate computing into the physical world</li>
+  <li>Advances in digital technology have led to a huge increas in the number of systems spanning the digital/physical gap (CPS’s)</li>
+</ul>
+
+<h2 id="examples-and-definitions">Examples and Definitions</h2>
+<h3 id="cyber-systems">Cyber Systems</h3>
+<ul>
+  <li>Personal computers</li>
+  <li>Mobile phones</li>
+  <li>Embedded Devices</li>
+</ul>
+
+<h3 id="physical-systems">Physical Systems</h3>
+<ul>
+  <li>Motors</li>
+  <li>Pumps</li>
+  <li>Generators</li>
+  <li>Valves</li>
+  <li>Relays</li>
+</ul>
+
+<h3 id="cyber-physical-systems">Cyber Physical Systems</h3>
+<ul>
+  <li>Integrations of computation with physical processes
+    <ul>
+      <li>Lee</li>
+    </ul>
+  </li>
+  <li>Embedded systesm together with their physical environment
+    <ul>
+      <li>Marwedel</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/icpss/L02_img1.png" alt="img" /></p>
+
+<ul>
+  <li>An important distinction between physical and cyber is the non-reversibility or preemption of actuator operations.  No rolling back an actuation.</li>
+  <li>Normally CPS’s must act in real time
+    <ul>
+      <li>RTOS!</li>
+      <li>Open- and closed-loop control</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/icpss/L02_img2.png" alt="img" /></p>
+<ul>
+  <li>Lots of overlap and interrelationships between CPS and more well-known terms
+    <ul>
+      <li>IOT can generally be thought of as CPS’s, for example</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="example-cps-industries">Example CPS Industries</h2>
+<h3 id="smart-manufacturing">Smart Manufacturing</h3>
+<ul>
+  <li>Leverage embedded technology to improve safety, effciency, etc</li>
+</ul>
+
+<h3 id="emergency-response">Emergency Response</h3>
+<ul>
+  <li>Medium/large scale</li>
+  <li>Handling the threats against public safety, and protecting nature and valuable infrastructures</li>
+</ul>
+
+<h3 id="air-transportation">Air Transportation</h3>
+<ul>
+  <li>Large scale</li>
+  <li>Operation and traffic management of aircraft systems</li>
+  <li>It is expected that smart vehicles (such as drones) will be predominant in the near future</li>
+</ul>
+
+<h3 id="healthcare">Healthcare</h3>
+<ul>
+  <li>Medium scale</li>
+  <li>Monitoring health conditions of the patients and taking necessary actions
+    <ul>
+      <li>E.g. pacemakers and more modern equivalents</li>
+      <li>Support for in-home care and assisted living</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="intelligent-transportation">Intelligent Transportation</h3>
+<ul>
+  <li>Medium/Large scale</li>
+  <li>Improving safety, coordination and services in t raffic management and real-time info sharing</li>
+  <li>Support communication between vehicles, infrastructure, and devices in the near future</li>
+</ul>
+
+<h3 id="service-robots">Service Robots</h3>
+<ul>
+  <li>Small/medium scale</li>
+  <li>Performing services for the welfare of humans</li>
+</ul>
+
+<h3 id="building-automation">Building Automation</h3>
+<ul>
+  <li>Small/medium scale</li>
+  <li>Provides optimum control and automation of HVAC, lighting, etc</li>
+</ul>
+
+<h3 id="critical-infrastructure">Critical Infrastructure</h3>
+<ul>
+  <li>Large scale</li>
+  <li>Distribution of daily life supplies such as water, electricity, gas, oil</li>
+</ul>
+
+<h2 id="cps-challenges">CPS Challenges</h2>
+<p><img src="../assets/content_images/omscs/icpss/L02_img3.png" alt="img" /></p>
+
+<h2 id="challenges-for-securing-cpss">Challenges for Securing CPS’s</h2>
+<ul>
+  <li>Many CPS are becoming more vulnerable to computer attacks for many reasons
+    <ul>
+      <li>Need example adversary models for CPS</li>
+      <li>Fundamentlaly different problems encountered in CPS as compared to traditional IT security</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="adversary-models">Adversary Models</h3>
+<ul>
+  <li>A systematic study of the security of any system requires the description of the threats we expect to face</li>
+  <li>Developing an adversary model is a way to understand the scope of the problem and assess the risks</li>
+  <li>Example models
+    <ul>
+      <li>Cybercriminals (the usual suspects).  Attacks may not be targeted, but can stil cause camage</li>
+      <li>Disgruntled employees</li>
+      <li>Terrorists, activists, and organized criminal groups
+        <ul>
+          <li>No currently available public information about this happening yet, but some indicators</li>
+        </ul>
+      </li>
+      <li>Nation States
+        <ul>
+          <li>e.g. notpetya, stuxnet</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="maintaining-control-of-cps">Maintaining Control of CPS</h2>
+<p><img src="../assets/content_images/omscs/icpss/L02_img4.png" alt="img" /></p>
+
+<h3 id="countermeasures">Countermeasures</h3>
+<ul>
+  <li>Better understand the consequences of an attack</li>
+  <li>Design novel attack-detection algorithms</li>
+  <li>Design new attack-resilient algorithms and architectures</li>
+</ul>
+
+<h3 id="prevention">Prevention</h3>
+<ul>
+  <li>Regulation</li>
+  <li>Standards (both use and enforcement)
+    <ul>
+      <li>shotout to NERC and NIST</li>
+    </ul>
+  </li>
+  <li>Best practices</li>
+</ul>
+
+<h3 id="detection-and-recovery">Detection and Recovery</h3>
+<ul>
+  <li>Control systems can provide a paradigm shift for intrusion detection
+    <ul>
+      <li>e.g. monitoring physical systems directly may reveal attacks we could not detect from the IT side</li>
+    </ul>
+  </li>
+  <li>Provide information awareness to operators of control systems</li>
+  <li>Ideas from control theory such as reconfiguration or fault-detection and isolation can be leveraged</li>
+</ul>
+
+<h3 id="resilience">Resilience</h3>
+<ul>
+  <li>Redundancy</li>
+  <li>Separation of privilige</li>
+  <li>Operate using open loop control
+    <ul>
+      <li>under false data injection attack, system should be able to operate using open loop control for a significant amount of time</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="deterrence">Deterrence</h3>
+<ul>
+  <li>Successful legislation</li>
+  <li>Law enforcement</li>
+  <li>International collaboration</li>
+</ul>
+:ET
