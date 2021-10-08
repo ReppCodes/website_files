@@ -1,6 +1,6 @@
 ---
 layout: page
-title: CS6210 Advanced Operating Systems
+title: CS6263 Intro to Cyber Physical Systems Security
 ---
 
 For Fall 2021, my seventh semester, I chose to take CS6263: Intro to Cyber Physical Systems Security.  This class provides an introduction to security issues relating to various cyber-physical systems including industrial control systems
