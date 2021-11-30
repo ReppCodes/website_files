@@ -1,0 +1,353 @@
+I"�B<h1 id="smart-grid">Smart Grid</h1>
+<p><img src="../assets/content_images/omscs/icpss/L10_img1.png" alt="img" /></p>
+<ul>
+  <li>An extremely complex interconnection of multiple systems</li>
+  <li>Objectives
+    <ul>
+      <li>Increase grid resilience</li>
+      <li>Improve environmental performance</li>
+      <li>Deliver operational efficiencies</li>
+    </ul>
+  </li>
+  <li>Utilizes common, open, and specialized protcols</li>
+  <li>Blend of open and proprietary networks</li>
+  <li>Energy demand has increased due to growth in population, disposable income, and just general energy consumption (due likely to increased electronic usage in homes)
+    <ul>
+      <li>Globally the population growth is the biggest factor</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="grid-resilience">Grid Resilience</h2>
+<ul>
+  <li>Resilience: the capability ofa given entity to withstand from unexpected actions, and recover very quickly thereafter</li>
+  <li>In the case of the electricity network, a Smart Grid should be able to withstand environmental threats (both intentional or unintentional), and recove in a timely fashion</li>
+  <li>One of the biggest threats to resilience is peak load demands</li>
+  <li>Other threats include old equipment and cyber attacks</li>
+</ul>
+
+<h3 id="peak-load-demands">Peak Load Demands</h3>
+<ul>
+  <li>Multiple kinds of units
+    <ul>
+      <li>baseload, intermediate, and peak.</li>
+      <li>Vary primarily in ability to meet constant vs bursty load demands.</li>
+      <li>Cost to operate increases from baseload-&gt;intermediate-&gt;peak
+        <ul>
+          <li>peak load units are designed to spin up, meet bursts of demand, and then shut back down</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="effects-of-cyber-attack">Effects of Cyber Attack</h3>
+<ul>
+  <li>The grid today is very much centralized</li>
+  <li>Psychological impact of power outages in modern times is severe.  Can lead to “feelings of sheer terror”</li>
+  <li>Secondary effects
+    <ul>
+      <li>Loss of communications</li>
+      <li>Financial impact</li>
+    </ul>
+  </li>
+  <li>Simulation exercise conducted in June 2010
+    <ul>
+      <li>goal: assess the strategic and economic impact of a major energy supply disruption caused by coordinated terrorist attacks on key nodes in the global energy infrastructure</li>
+      <li>Findings: financial implications are severe.  petroleum prices spiked, and stayed high.  gas prices did too.  GDP losses were massive, &gt; $300b per year.  Unemployment grew.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="environmental-performance">Environmental Performance</h3>
+<ul>
+  <li>Improving efficiency of the US power grid reduces CO2 emissions</li>
+  <li>How can the smart grid help?
+    <ul>
+      <li>Greater efficiency.
+        <ul>
+          <li>Less consumption (lower growth) means fewer emissions</li>
+        </ul>
+      </li>
+      <li>Integration of renewable technologies
+        <ul>
+          <li>These have much lower emissions.  The Smart Grid allows more of them to be used, displacing older petrochemical energy sources.</li>
+        </ul>
+      </li>
+      <li>Reduction in the need for new power plants.
+        <ul>
+          <li>Building more power plants addresses only short term needs, and the financial and environmental costs are steep.</li>
+        </ul>
+      </li>
+      <li>Support for electric vehicles
+        <ul>
+          <li>Provisioning of charging infrastructure.</li>
+          <li>Charging usually done during off-peak hours, mitigates the need for use of costly peak load devices</li>
+          <li>Mitigates use of gas by traditional ICE cars</li>
+          <li>There is some debate on this, but smart money says this is still a net win</li>
+        </ul>
+      </li>
+      <li>Smarter appliances
+        <ul>
+          <li>Smart devices can detect power fluctuations and reduce their consumption to help prevent emergencies</li>
+          <li>These appliances can run at low price periods (off peak) to also reduce cost</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="operational-efficiencies">Operational Efficiencies</h3>
+<ul>
+  <li>Consider current power bill.
+    <ul>
+      <li>Almost half is cost associated with the transmission and network distribution.  Rising costs are passed to the consumer</li>
+      <li>The cost for maintaining aging infrastructure only increases, this means higher bills</li>
+      <li>Overall benefit of Smart Grid in this context, according to one analysis, is &gt;$2b over 15 years.  Over half to consumer.</li>
+    </ul>
+  </li>
+  <li>Scheduling devices to run at off-peak times reduces cost, both to consumer and to the system in general</li>
+  <li>Another benefit is line loss reduction
+    <ul>
+      <li>About 7% line loss in US</li>
+      <li>Approximately 300b kWh of power from transmission and distribution line loss</li>
+    </ul>
+  </li>
+  <li>Asset management
+    <ul>
+      <li>reduce costs of poor asset inventory or management</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="components-of-the-smart-grid">Components of the Smart Grid</h2>
+<ul>
+  <li>Substation Automation
+    <ul>
+      <li>Growing trend of automation to facilitate more efficient use of substations</li>
+    </ul>
+  </li>
+  <li>Synchronized Phasor Measurement (PMUs)
+    <ul>
+      <li>measure voltage and current, and are placed across various locations across the grid</li>
+      <li>By providing this information at short intervals, you can get a very accurate status of the grid</li>
+    </ul>
+  </li>
+  <li>Advanced Metering Infrastructure (AMI)
+    <ul>
+      <li>the use of systems that are able to automatically send relevant metering information to appropriate stakeholders</li>
+      <li>involves a device at the customer’s home, using some networking to send information back</li>
+      <li>reduces need for manual meter readings</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="social-pitfalls-of-the-smart-grid">Social Pitfalls of the Smart Grid</h2>
+<ul>
+  <li>Certain communities may not have the opportunity to leverage its advantages, potentially leading to energy poverty</li>
+  <li>Communities based at home all day, thus unable to take advantage of off-peak pricing</li>
+  <li>Individuals unable to grasp the information overload presented to them</li>
+  <li>Individuals who can’t afford smart appliances, which are more expensive</li>
+  <li>Renters whose landlord don’t embrace smart devices</li>
+</ul>
+
+<h2 id="smart-grid-network-architecture">Smart Grid Network Architecture</h2>
+<ul>
+  <li>This section given as high-level talk, that boils down to giving edge nodes more agency, to communicate state back to central management.  Briefly mentions the increased attack surface that represents.</li>
+  <li>Mentions concept of microgrids, where the distance between generation and in-home usage is much smaller</li>
+</ul>
+
+<h3 id="bulk-distribution-generation-architectures">Bulk Distribution Generation Architectures</h3>
+<ul>
+  <li>Also high-level.  Acknowledges things like small solar adding architectural complexity.</li>
+  <li>Automation has been in place for many years at this component.  The challenges here are more about securing legacy infrastructure than securing new builds</li>
+</ul>
+
+<h2 id="types-of-electrical-generation">Types of Electrical Generation</h2>
+<ul>
+  <li>Electric generation sources include several distinct mechanisms, built around the specific fuel used to create electricity</li>
+  <li>Each system represents its own vulnerabilities that are inherent in their designs</li>
+  <li>Goes through very high-level common-sense talks about how multiple forms of energy generation is done.  E.g. solar vs hydro-electric vs combustion</li>
+  <li>Follows up with in-depth dive of a combustion system, with the various actuators, sensors, controllers, etc.  Not transcribed here.</li>
+</ul>
+
+<h2 id="transmission-and-distribution-targets">Transmission and Distribution Targets</h2>
+<p><img src="../assets/content_images/omscs/icpss/L10_img2.png" alt="img" /></p>
+<ul>
+  <li>Architecturally similar, but transmission occurs at high voltages, whereas distribution systems step down the voltage.</li>
+  <li>Voltages get stepped up for efficient transmission, then stepped back down</li>
+  <li>Transmission begins where generation ends, and differs from generation architecture.</li>
+  <li>Transmission systems are physically accessible, while generation generally is not</li>
+  <li>More remote substations also have some amount of physical access risk</li>
+  <li>Transmission requires WAN to support measurement of the infrastructure, and SCADA system for operations</li>
+  <li>Voltage step-up usually done at generation, but may be done during transmission as needed</li>
+  <li>SCADA == Supervisory control and data acquisition
+    <ul>
+      <li>G-SCADA == Generation SCADA</li>
+      <li>T-SCADA == Transmission SCADA</li>
+      <li>D-SCADA == Distribution SCADA</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="substation-gateway">Substation Gateway</h3>
+<ul>
+  <li>Direct manipulation</li>
+  <li>Indirect manipulation</li>
+  <li>Remote manipulation</li>
+  <li>Many kinds listed off, but not much context presented</li>
+</ul>
+
+<h3 id="phasor-measurement-units-pmu">Phasor measurement units (PMU)</h3>
+<ul>
+  <li>aka Synchrophasor</li>
+  <li>Electricity flows from high to low voltage, and from high to low “phase angles”
+    <ul>
+      <li>Not sure what “phase angles” are.  Not explained</li>
+    </ul>
+  </li>
+  <li>To effectively transmit energy, must know the voltage and phase angle at key points.  PMU does this
+    <ul>
+      <li>Measure up to 30 times per second according to standard</li>
+    </ul>
+  </li>
+  <li>Remote access added to PMUs increase attack surface</li>
+  <li>Usually run on Windows, so share attack effort with all other members of that platform</li>
+</ul>
+
+<h3 id="line-protection-and-monitoring-systems">Line Protection and Monitoring Systems</h3>
+<ul>
+  <li>Combine metering and measurement with protection mechanisms</li>
+  <li>Consists of breakers or line monitoring systems with automation</li>
+  <li>Think of these as similar to a home circuit breaker</li>
+  <li>Prevent undercurrent and overcurrent conditions</li>
+  <li>Measurement functions overlap with PMU, and so often combine or integrate with those</li>
+  <li>Detection of aberrant conditions might indicate equipment failure.  Monitoring helps with preventative or quick maintenance and repair</li>
+  <li>Often built atop commercial operating systems, and so share attack vectors with the rest of the platform</li>
+</ul>
+
+<h3 id="transformers">Transformers</h3>
+<ul>
+  <li>Transfers electricity from one coil to another via inductive coupling, stepping up or down the current by varying the delta between the coils</li>
+  <li>Step-up transformers are necessary for electric transmission.  Increase voltages to levels where power can be transmitted efficiently over long distances.  Located at ingress of transmission</li>
+  <li>Step-down transformers are used for consumption by the end user.  Decrease voltages to levels that consumer devices and wiring can withstand.  Located at egress of transmission</li>
+  <li>Some transformers can do both, often useful at substations</li>
+  <li>Rely on external control from portection systems and T-SCADA systems</li>
+  <li>Tend to have a much smaller attack surface than other components of the transmission system.  No controller or SCADA functions, no  web-based consoles, etc.</li>
+  <li>Manipulation could cause significant short-term or long-term damage</li>
+</ul>
+
+<h3 id="distribution-scada--dms">Distribution SCADA / DMS</h3>
+<ul>
+  <li>Responsible for the control of distribution operations</li>
+  <li>Often controlled by DSCADA devices within a substation</li>
+  <li>Have coummunication, data aggregation, and control plane functions.
+    <ul>
+      <li>Also metering, and transformer monitoring and control</li>
+    </ul>
+  </li>
+  <li>In short, D-SCADA systems are often feature rich</li>
+  <li>Support lots of protocols and so have massive attack surface</li>
+  <li>Due to heavy interconnectivity at this point, compromise here can have sever consequences</li>
+</ul>
+
+<h3 id="field-controllers-and-automated-field-devices">Field Controllers and Automated Field Devices</h3>
+<ul>
+  <li>A field controller is a remote terminal unit (RTU) used throughout the distribution system, outside of the substation</li>
+  <li>Many commercially available RTUs have a proliferation of interfaces, protocols, ports, and services that give substation gateways such a broad attack surface</li>
+  <li>Examining commercially available volt/VAR systems, reclosers, feeders, and other field devices, there are far fewer communication vectors, and so narrower attack surface</li>
+  <li>If compromised, consequences range from inefficiencies in operations, to inaccuracies in reported data, to outages
+    <ul>
+      <li>For example, auto-reclosers are designed to protect against power surges and to recover once conditions are normal
+        <ul>
+          <li>Manipulation of line conditions could cause a recloser to trip unnecessarily, results cascading throughout the distribution system</li>
+        </ul>
+      </li>
+      <li>Complete compromise of an RTU could allow a cyber attacker to insert malicious logic into the controller</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="metering-and-advanced-metering-infrastructure-ami">Metering and Advanced Metering Infrastructure (AMI)</h3>
+<ul>
+  <li>We’ve made it to the home or business</li>
+  <li>Consists of meters that report to a headend system</li>
+  <li>When hacking analog meters by manipulating the magnetic resistance that controlled the analog meter dials, the result of such an attack was isolated to the source and fairly easy to detect.</li>
+  <li>More modern meters provide contact-free reading</li>
+  <li>Smart grids add considerable sophistication to metering.   Smart meters can measure energy utilization and be remotely connected/disconnected</li>
+  <li>AMI is used by many industries, including energy, water, and gas</li>
+  <li>AMI Architecture consists of three primary components
+    <ul>
+      <li>Smart meters
+        <ul>
+          <li>A digital meter consisting of a few key elements
+            <ul>
+              <li>A solid-state meter for real-time data collection</li>
+              <li>A microprocessor and local memory to store and transmit digital meter measurements</li>
+              <li>A communication network often including a home network connection for home automation and other advanced in-home services</li>
+              <li>Thus, there’s enough computer here to compromise.</li>
+            </ul>
+          </li>
+          <li>Many smart meters have common features and capabilities mostly around network connectivity and manageability including various communication ports and protocols.
+            <ul>
+              <li>Diagnostic ports may be short-range IR</li>
+              <li>Remote management and configuration are often provided via a dedicated software system
+                <ul>
+                  <li>These systems are typically software based, and installed on a utility-owned computing platform with a standard OS</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Communication network</li>
+      <li>AMI server or headend
+        <ul>
+          <li>Consist of server and database</li>
+          <li>Typically software-based, utilizing utility-owned Windows systems</li>
+          <li>Lots of attack surface here, between commercial DB software and normal Windows vulns</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Compromise of smart meter and AMI
+    <ul>
+      <li>Physical access is often available, so lots of attack surface here, starting with just simple DOS.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="in-home-systems">In-home systems</h3>
+<ul>
+  <li>Lots of variety in what this is made up of</li>
+  <li>We won’t go in-depth on the systems downstream of the meter, but must acknowledge these exist and present risk</li>
+  <li>Home Area Networks (HANs)</li>
+  <li>Home Energy Management Systems (HEMS)</li>
+  <li>Smart Appliances and In-home devices (IHDs)</li>
+  <li>Private generation
+    <ul>
+      <li>Such as wind or solar</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="microgrids">Microgrids</h3>
+<p><img src="../assets/content_images/omscs/icpss/L10_img3.png" alt="img" /></p>
+<ul>
+  <li>Integrated energy systems, typically used by campuses or communities, or military locations</li>
+  <li>May operate in parallel with the public grids, or run in isolation</li>
+  <li>Just a small-scale version of the traditional power grid
+    <ul>
+      <li>However, usually deployed for a specific purpose</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="protocols---iee-c37118">Protocols - IEE C37.118</h3>
+<p><img src="../assets/content_images/omscs/icpss/L10_img4.png" alt="img" /></p>
+<ul>
+  <li>Specific to power grid</li>
+  <li>Covers phasor measurements, specifically the synchronization thereof</li>
+  <li>Accomplished by tagging each measurement with an absolute timestamp</li>
+</ul>
+:ET

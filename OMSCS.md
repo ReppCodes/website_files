@@ -8,31 +8,31 @@ notes about my lectures and projects.  This is mostly for my own benefit, but ho
 the program.
 
 <section>
-<h3>2021</h3>
-<li>
-<a href="{{ "/omscs_classes/ICPSS" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
-    Fall - CS6263: Intro to Cyber Physical Systems Security
-</a>
-</li>
-
-<li>
-<a href="{{ "/omscs_classes/AOS" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
-    Spring - CS6210: Advanced Operating Systems
-</a>
-</li>
-</section>
-
-<section>
 <h3>2020</h3>
+<li>
+<a href="{{ "/omscs_classes/SDP" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    Summer - CS6300: Software Dev Process
+</a>
+</li>
+
 <li>
 <a href="{{ "/omscs_classes/GIOS" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
     Fall - CS6200: Graduate Introduction to Operating Systems
 </a>
 </li>
+</section>
+
+<section>
+<h3>2021</h3>
+<li>
+<a href="{{ "/omscs_classes/AOS" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    Spring - CS6210: Advanced Operating Systems
+</a>
+</li>
 
 <li>
-<a href="{{ "/omscs_classes/SDP" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
-    Summer - CS6300: Software Dev Process
+<a href="{{ "/omscs_classes/ICPSS" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    Fall - CS6263: Intro to Cyber Physical Systems Security
 </a>
 </li>
 </section>

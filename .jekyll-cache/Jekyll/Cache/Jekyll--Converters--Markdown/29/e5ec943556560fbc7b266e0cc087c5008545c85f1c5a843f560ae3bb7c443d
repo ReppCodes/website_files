@@ -1,0 +1,339 @@
+I"	M<h1 id="securing-industrial-control-systems">Securing Industrial Control Systems</h1>
+
+<h2 id="identifying-and-classifying-security-zones-and-conduits">Identifying and Classifying Security Zones and Conduits</h2>
+<ul>
+  <li>Developing base requirements to determine asset placement in a zone is a challenge</li>
+  <li>These requirements or goals can typically be broken down into two broad categories
+    <ul>
+      <li>Communications and how each asset interacts with other assets outside a particular zone</li>
+      <li>Physical access to assets is another means of classifying the assets within a particular security zone</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="recommended-security-zone-separation">Recommended Security Zone Separation</h3>
+<ul>
+  <li>Zones may be defined “broadly” (“control” versus “business” zones) or narrowly, creating zones for highly granular functional groups of assets</li>
+  <li>A functional group can be based on almost anything
+    <ul>
+      <li>safety</li>
+      <li>basic process control</li>
+      <li>supervisory controls</li>
+      <li>peer-to-peer control process</li>
+      <li>and others</li>
+    </ul>
+  </li>
+  <li>When assessing the network and identifying potential zones, include:
+    <ul>
+      <li>all assets (physical devices)</li>
+      <li>systems (logical devices like software and applications)</li>
+      <li>users</li>
+      <li>protocols</li>
+      <li>other items</li>
+    </ul>
+  </li>
+  <li>Attempt to separate items, such as a protocol from an asset
+    <ul>
+      <li>If the two can be separated without impacting either item’s primary function, then they belong to two functional groups, and are therefore excellent candidates for their own zones</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="examples">Examples:</h4>
+<ul>
+  <li>Similarity and physical proximity
+    <ul>
+      <li><img src="../assets/content_images/omscs/icpss/L12_img1.png" alt="img" /></li>
+    </ul>
+  </li>
+  <li>Network Connectivity
+    <ul>
+      <li><img src="../assets/content_images/omscs/icpss/L12_img2.png" alt="img" /></li>
+      <li>Logical separation is done by use of layer 3 networking devices to separate physically proximate zones from each other (e.g. a firewall, subnets).  Can be done with Layer 2 using VLANs but this is not recommended.</li>
+    </ul>
+  </li>
+  <li>Control Loops
+    <ul>
+      <li>Zones can also be made for control loops within an ICS system.  This canoften span across multiple components of an ICS as described earlier in the class</li>
+      <li><img src="../assets/content_images/omscs/icpss/L12_img3.png" alt="img" /></li>
+    </ul>
+  </li>
+  <li>It can be unclear which group to place something in, when function, physical proximity, and network connectivity offer conflicting answers</li>
+  <li>Zones often span different integration levels, as things like HMI, historian, sensors, and controllers are all at different points in the control flow but may belong to the same group</li>
+</ul>
+
+<h3 id="remote-access">Remote Access</h3>
+<ul>
+  <li>Many systems allow remote access (such as HMIs, RTUs, historians, etc)
+    <ul>
+      <li>Often via routable network connection</li>
+      <li>Remote access refers to any communication through conduits to an external zone
+        <ul>
+          <li>does not have to be through a WAN or anything</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>From a zone perspective, this is two zones being connected through what may be trusted or untrusted conduits</li>
+  <li>Should always be done through secure VPNs or similar, which allow only predefined point to point connections and allowlisted behaviors</li>
+</ul>
+
+<h3 id="users-and-roles">Users and Roles</h3>
+<ul>
+  <li>Either a user or a system ultimately is what’s accessing any system</li>
+  <li>Historically functional groups were built around system accesses, they were about which device could access another device
+    <ul>
+      <li>Users are just as important though.  This requires a lot of legwork to identify users and define roles</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="system-protocols">System Protocols</h3>
+<ul>
+  <li>You can also create functional groups around protocols.  If a device is only supposed to be using specific procotocols, any others seen from that device should be noted and disallowed</li>
+</ul>
+
+<h3 id="system-criticality">System Criticality</h3>
+<ul>
+  <li>Zone-based security is about isolating common influencing factors into functional groups</li>
+  <li>Safety-integrity level can be quantified</li>
+  <li>Security level (SL) has been developed by ISA as a part of the ISA-62443 security standards to provide a measure for addressing the relative security of a particular security zone or conduit</li>
+  <li>When applied as part of the security lifecycle, a “target security level” is determined</li>
+  <li>“Capability Security Level” so thatcomponens and systems can be selected that help ensure all assets within a particular zone meet the same SL</li>
+  <li>Once thee system is commissioned, a final “Achieved Security Level” can be determined through physical assessment to ensure that the system has been properly installed and commissioned, and that the system meets the desired Security Level once it is in operation</li>
+  <li>Determining the criticality of a zone is a similarly straightforward process, and uses a similar methodology as determining critical assets as discussed in a previous lecture
+    <ul>
+      <li>A good rule of thumb is that any zone that contains a critical asset is a critical zone</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="establishing-security-zones-and-conduits">Establishing Security Zones and Conduits</h3>
+<ul>
+  <li>Conduits are a type of zone that only contains communication mechanisms as its assets</li>
+  <li>These assets are communication assets, such as active and passive network infrastructure (cables, switches, routers, firewalls, etc), as well as the communication channels that are transmitted over these cables</li>
+  <li>Nested subzones may be created for particular assets that may be aligned with other assets within the particular zone</li>
+  <li>This information will become vital in identifying possible security countermeasures that could be used to reduce the risk resulting from a threat</li>
+  <li>Zones are established considering the technologies that are both allowed and disallowed within the zone</li>
+  <li>Each type of technology possesses inherent vulnerabilities and with these vulnerabilities a certain amount of risk</li>
+  <li>These technologies must be aligned with security zones in order to prevent one technology from compromising the entire zone</li>
+  <li>Creating conduits and assigning “communication” assets to these special zones may be unclear</li>
+  <li>In most industrial architectures ,the physical network is the external conduit</li>
+  <li>There are internal conduits that control process communication</li>
+  <li>Documenting security conduits, and the communication channels containted within them, is vital to accurately deploying security controls</li>
+</ul>
+
+<h2 id="securing-the-smart-grid">Securing the Smart Grid</h2>
+<ul>
+  <li>The consequences of a cyber attack against the Smart Grid range from espionage to sabotage, and from petty theft to larger privacy concerns</li>
+  <li>While no one product or technology is certain to stop all attacks, when used together in a defense-in-depth posture across all areas of the Smart Grid, it is possible to greatly minimize the risk of a successful cyber attack</li>
+  <li>However, despite the degree of endpoint, network, and data security that is established, vulnerabilities will still remain as new and more sophisticated exploits are developed</li>
+  <li>It is therefore necessary to, above all else, establish appropriate monitoring of all Smart Grid systems to obtain situational awareness</li>
+  <li>By looking at the entirety of a system’s digital behaviors, areas of risk can be identified, attacks can be detected, and suspicious or dangerous trends can be identified</li>
+</ul>
+
+<h3 id="field-zone-protection">Field Zone Protection</h3>
+<p><img src="../assets/content_images/omscs/icpss/L12_img4.png" alt="img" /></p>
+<ul>
+  <li>Field devices are often embedded systems</li>
+  <li>Low cost and low power consumption</li>
+  <li>Smart grid owner is unable to alter these devices, or install any commercially available cyber security countermeasure</li>
+  <li>Onus falls to the device manufacturer to build cyber security</li>
+  <li>Application allowlisting is one of the more popular software security solutions for embedded devices</li>
+  <li>Biggest advantage in an embedded system is, of course, that the allowlist rarely changes</li>
+  <li>Vendors who are designing the silicon used within thesedevices are working with security vendors and researchers to implement a greater degree of protection</li>
+  <li>Many field device vendors have implemented secure coding and design practices, while others are addressing compensatory features to limit vulnerabilities, protect against exploits, or provide secure communication capability</li>
+</ul>
+
+<h3 id="control-zone-protection">Control Zone Protection</h3>
+<p><img src="../assets/content_images/omscs/icpss/L12_img5.png" alt="img" /></p>
+<ul>
+  <li>As we move further in from the field and into the substations, we see more sophisticated devices (e.g. SCADA servers, measurement and data management servers, AMI headends, and similar server-based systems)</li>
+  <li>Technologies deployed include:
+    <ul>
+      <li>Application allowlisting</li>
+      <li>Antivirus</li>
+      <li>Configuration management</li>
+      <li>Full system hardening</li>
+      <li>Separation of services (either to dedicated hardware or to individual virtual machines if virtual data centers are utilized)</li>
+      <li>Host IDS or IPS</li>
+      <li>Host data loss prevention (DLP)</li>
+      <li>Event logging</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="service-zone-protection-and-back-office-systems">Service Zone Protection and Back-Office Systems</h3>
+<p><img src="../assets/content_images/omscs/icpss/L12_img6.png" alt="img" /></p>
+<ul>
+  <li>As we get to centralized SCADA systems, historians, data concentrators, and back-office systems, the capabilities of the servers increase, as does the value of the data</li>
+  <li>There is an increased reliance upon the integrity of the data and less on availability since we are moving away from real-time control to more transaction-based information</li>
+  <li>Data integrity and information assurance tools, including database security solutions, database auditing, and data loss prevention tools in these areas</li>
+</ul>
+
+<h3 id="compensating-controls">Compensating Controls</h3>
+<ul>
+  <li>Can’t just implement and COTS tool here, lots of extreme conditions or unique requirements</li>
+  <li>A compensating control is a data security measure that is designed to satisfy the requirement for some other security measure that is deemed too difficult or impractical to implement</li>
+  <li>Includes devices such as firewalls, IDS and IPS, network access control systems, and similar devices</li>
+  <li>Authorized traffic can still be used to compromise a system, though, so should be supplemented with
+    <ul>
+      <li>Industrial protocol filters monitor industrial protocols</li>
+      <li>IDS performing deep packet inspection (DPI)</li>
+      <li>IPS</li>
+      <li>Application content inspection</li>
+      <li>Transport Layer Security</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="advanced-network-monitoring">Advanced Network Monitoring</h3>
+<ul>
+  <li>A monitored network connection can be used to aid security in several ways
+    <ul>
+      <li>Often, anomalous behavior can indicate that some sort of cyber attack is undeway</li>
+      <li>Breach has occurred and additional infection stages are in process</li>
+    </ul>
+  </li>
+  <li>By feeding network flow information to a Security information and event management  (SIEM) or log management tool, anomalies may be detected after the fact</li>
+  <li>One advantage to this method is that multiple flows can be compared, against each other and against other security events</li>
+  <li>This enables the detection of more complex threats such as multi-vector attacks, low-and-slow attacks, and blended attack scenarios</li>
+</ul>
+
+<h3 id="network-forensics">Network Forensics</h3>
+<ul>
+  <li>Network forensics tools capture all network traffic, storing it as abase of forensic evidence that is extremely useful to investigators should a breach occur</li>
+  <li>Network packet capture does require an investment in storage, but the return can be well worth it</li>
+</ul>
+
+<h3 id="data-loss-prevention-dlp">Data Loss Prevention (DLP)</h3>
+<ul>
+  <li>DLP provides detection of sensitive information, both at rest and in motion</li>
+  <li>This information could include:
+    <ul>
+      <li>Distributed measurements from PMUs, PDCs, the metering infrastructure, etc.</li>
+      <li>Power consumption information or other data with potential privacy concerns</li>
+      <li>Customer finance information from billing and payment systems</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="protecting-data-and-applications-within-the-smart-grid">Protecting Data and Applications Within the Smart Grid</h3>
+<ul>
+  <li>Protecting the data and applications being used within the Smart Grid means understanding how the Smart Grid works and its interconnectedness</li>
+  <li>Being aware of all the data and applications that are being used within the Smart Grid, including:
+    <ul>
+      <li>Where automation logic resides, what it controls, and how</li>
+      <li>Where measurements are being taken, and how those measurements are being used</li>
+      <li>Where management systems – including SCADA, EMS, and other systems – reside, what they manage, and how</li>
+      <li>What business applicationsn are being used, how they utilize or depend upon grid operations or measurement data, and how they obtain that data</li>
+      <li>Where repositories of data reside, and how they are stored (i.e. a database)</li>
+      <li>Collecting that information in a format that is relevant to digital cybersecurity, even if the data spans multiple domains or zones</li>
+      <li>Analyzing and assessing that data to detect indications of cyber risk and threat</li>
+      <li>Articulating that analysis back to the many stakeholders involved in Smart Grid operations</li>
+    </ul>
+  </li>
+  <li>This task can be made easier by somewhat understanding the grid using technology (e.g. tools that provide monitoring)</li>
+  <li>One of the most difficult tasks in securing ICS networks is that there is zero tolerance for any “false postiives”</li>
+  <li>Traditional office network tools/technologies could prove to be disastrous when implemented on sensitive, time-critical ICS networks
+<img src="../assets/content_images/omscs/icpss/L12_img7.png" alt="img" /></li>
+  <li>Monitoring technologies include:
+    <ul>
+      <li>SIEM or security information and event management systems</li>
+      <li>Network DLP that prevents the loss or theft of data across the network</li>
+      <li>Database Activity Monitoring or “DAM” monitors activity to and from the database</li>
+      <li>The SIEM can be deployed for both local information management or centralized</li>
+    </ul>
+  </li>
+  <li>Data that should be protected include:
+    <ul>
+      <li>SCADA project files</li>
+      <li>Personal data about customers or end users</li>
+      <li>Information about the grid (intellectual property)
+        <ul>
+          <li>SCADA servers</li>
+          <li>EMS</li>
+          <li>Demand, response, AMI, and HEMS</li>
+          <li>End-user information</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="situational-awareness">Situational Awareness</h2>
+<ul>
+  <li>Situational Awareness refers to process of perception, decision, and action that enables the assessment of and reaction to a situation</li>
+  <li>The first step (perception) requires the collection and aggregation of information from a variety of digital systems</li>
+  <li>The next step is to make educated decisions based upon the situation</li>
+  <li>SIEM tools provide many automated mechanisms to make decisions
+    <ul>
+      <li>Corellation of collected data</li>
+      <li>Tracking or “scoring” risk associated with specific assets, users, or applications</li>
+      <li>Filtering large amounts of data against defined criteria, and/or cross-referencing information against outside information sources</li>
+    </ul>
+  </li>
+</ul>
+
+<p>### What should be monitored?</p>
+<ul>
+  <li>Lots of things.  Basically, if it has a network interface and its connected to the grid, it should be monitored</li>
+  <li>Also, all activity from the network itself should be monitored</li>
+  <li>All data produced, such as by measurement devices or phasors, etc</li>
+  <li>Logging and event detection is best,  but for devices without logging or event generation, another means of information collection is needed.  For example, integrate with PLCs or Historians that already watch these devices</li>
+</ul>
+
+<h2 id="cps-specific-security-physics-of-the-systems">CPS Specific Security: Physics of the Systems</h2>
+<ul>
+  <li>Modeling the physical system to
+    <ul>
+      <li>Ensure that the resulting data generated are physically meaningful
+        <ul>
+          <li>e.g. If system is modeled, false data can be spotted because it won’t correlate with other, legitimate data points</li>
+        </ul>
+      </li>
+      <li>Ensure that control commands don’t destabilize the process
+        <ul>
+          <li>e.g. Control commands that overboil a steamer and would wreck the system could be spotted and blocked</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>The mechanical and phyiscal properties defining how quickly a device operates differs between devices and produces a unique fingerprint</li>
+</ul>
+
+<h2 id="honeypots">Honeypots</h2>
+<ul>
+  <li>Used to lure attackers to a system for reconnaisance</li>
+  <li>Most existing CPS honeypots don’t account for process or device behavior</li>
+  <li>Multiple types of honeypots
+    <ul>
+      <li>Low interaction</li>
+      <li>High interaction</li>
+      <li>Hybrid-interaction</li>
+    </ul>
+  </li>
+  <li>HoneyPhy: A physics-aware honeypot framework that addresses these problems, and aims to be extensible to all cyber-physical systems
+    <ul>
+      <li>PoC system described in detail.
+        <ul>
+          <li>Constructed simple heating system to implement models and test proof of concept</li>
+          <li>Mainly concerned with using our architecture to model air temperature in heated volume and model dleay introduced by P&amp;B relay</li>
+          <li>Developed analytical model for behavior of temperature inside contained area</li>
+          <li>Basically, other CPS honeypots just grab junk values, while HoneyPhy picked values along the expected behavior curve of the physical system, making it hard for an attacker to know they were in a honeypot</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Physical Fingerprinting Setup
+    <ul>
+      <li>Relays: typically used to open or close higher voltage circuits with a lower voltage signal.  Common device in ICS and analogous to large scale circuit breakers
+        <ul>
+          <li>HoneyPhy can also model these</li>
+        </ul>
+      </li>
+      <li>Test bed setup to basically demonstrate that two different relays can be distinguished between using only remote monitoring.  An attacker can therefore, with knowledge, tell whether they’re in the real system they mean to be attacking</li>
+    </ul>
+  </li>
+</ul>
+:ET

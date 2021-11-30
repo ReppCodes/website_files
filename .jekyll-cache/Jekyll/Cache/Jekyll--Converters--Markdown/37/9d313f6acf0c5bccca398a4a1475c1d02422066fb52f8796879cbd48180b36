@@ -1,4 +1,4 @@
-I"+:<h1 id="networking">Networking</h1>
+I" :<h1 id="networking">Networking</h1>
 <ul>
   <li>Computer network connects two or more computing devices of the same or differing types</li>
 </ul>
@@ -116,12 +116,14 @@
     <ul>
       <li>Confidentiality</li>
       <li>Integrity</li>
-      <li>Availability
-        <h2 id="confidentiality">Confidentiality</h2>
-        <h3 id="tools-for-confidentiality">Tools for Confidentiality</h3>
-      </li>
+      <li>Availability</li>
     </ul>
   </li>
+</ul>
+
+<h2 id="confidentiality">Confidentiality</h2>
+<h3 id="tools-for-confidentiality">Tools for Confidentiality</h3>
+<ul>
   <li>Encryption – transform information using a secret</li>
   <li>Access control – use rules and policies to limit access to information
     <ul>
@@ -165,7 +167,7 @@
 <ul>
   <li>The property that certain records or transactions cannot be attributed to any individual</li>
   <li>Aggregation iss the combining of data from many individuals so that disclosed sums or averages cannot be tied to any individual</li>
-  <li>Mising is the intertwining of transactions, information, or communmications in a way that cannot be traced to any individual</li>
+  <li>Mixing is the intertwining of transactions, information, or communmications in a way that cannot be traced to any individual</li>
   <li>Proxies are trusted agents that are willing to engage in actions for an individual in a way that cannot be traced back to that person</li>
   <li>Psuedonyms are fictional identities that can fill in for real identities in communications and transactions, but are otherwise known only to a trusted entity</li>
 </ul>

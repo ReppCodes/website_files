@@ -61,4 +61,40 @@ The theoretical material in the lectures and exams is augmented with 4 "mini pro
 </a>
 </li>
 
+<li>
+<a href="{{ "/icpss_lec_L09" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    Lesson 9 - Industrial Network Protocols
+</a>
+</li>
+
+<li>
+<a href="{{ "/icpss_lec_L10" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    Lesson 10 - Smart Grid
+</a>
+</li>
+
+<li>
+<a href="{{ "/icpss_lec_L11" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    Lesson 11 - Hacking Industrial Control Systems
+</a>
+</li>
+
+<li>
+<a href="{{ "/icpss_lec_L12" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    Lesson 12 - Securing Industrial Control Systems
+</a>
+</li>
+
+<li>
+<a href="{{ "/icpss_lec_L13" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    Lesson 13 - Privacy in CPS
+</a>
+</li>
+
+<li>
+<a href="{{ "/icpss_lec_L14" | prepend: site.baseurl | append: ".html" | replace: '//', '/' }}">
+    Lesson 14 - Threats to CPS in Other Domains
+</a>
+</li>
+
 </section>

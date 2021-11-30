@@ -3,31 +3,31 @@ notes about my lectures and projects.  This is mostly for my own benefit, but ho
 the program.</p>
 
 <section>
-<h3>2021</h3>
-<li>
-<a href="/omscs_classes/ICPSS.html">
-    Fall - CS6263: Intro to Cyber Physical Systems Security
-</a>
-</li>
-
-<li>
-<a href="/omscs_classes/AOS.html">
-    Spring - CS6210: Advanced Operating Systems
-</a>
-</li>
-</section>
-
-<section>
 <h3>2020</h3>
+<li>
+<a href="/omscs_classes/SDP.html">
+    Summer - CS6300: Software Dev Process
+</a>
+</li>
+
 <li>
 <a href="/omscs_classes/GIOS.html">
     Fall - CS6200: Graduate Introduction to Operating Systems
 </a>
 </li>
+</section>
+
+<section>
+<h3>2021</h3>
+<li>
+<a href="/omscs_classes/AOS.html">
+    Spring - CS6210: Advanced Operating Systems
+</a>
+</li>
 
 <li>
-<a href="/omscs_classes/SDP.html">
-    Summer - CS6300: Software Dev Process
+<a href="/omscs_classes/ICPSS.html">
+    Fall - CS6263: Intro to Cyber Physical Systems Security
 </a>
 </li>
 </section>
