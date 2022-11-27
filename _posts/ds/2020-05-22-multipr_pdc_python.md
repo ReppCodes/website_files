@@ -80,3 +80,8 @@ else:
 That's all there is to it!  As noted elsewhere in my website healthcare data science is frequently of a very practical nature, not a lot of frills.  This example is no exception, but I hope it proves useful for you!
 
 If you've read this far, thank you!  Please feel free to [email](mailto:webmaster@andrewrepp.com) me with any corrections, concerns, or ideas for similar code/measures/articles you'd like to see me write about!
+
+## PDC in Rust
+I went ahead and [ported this to rust](https://github.com/ReppCodes/propdayscov-rs) as a way to get more comfortable in the language. I went with CLI and CSV in/out to do something different (more of a standalone tool, less of a library). I used serde for passing the CSV file format in/out of my code, it's excellent. I used Rayon multithreading for concurrency, and holy cow is that library just an absolute superpower.  I cannot recommend it enough. 
+
+Overall, I found rust to be a good deal simpler for this project, which I was not expecting in the slightest.  Also, the rust version performs about 2 orders of magnitude faster than python, which isn't a surprise but is worth mentioning.  I am increasingly a fan of the language, y'all should check it out.
