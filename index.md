@@ -9,10 +9,10 @@ Hi, my name is Andrew. This is my personal website, where I house articles about
 ### Who am I?
 I'm a computer nerd with a variety of interests.  
 
-* I currently work as a Software Engineer for a working on a distributed SQL database.  It's a fork of postgres, my specific areas of interest are backup/restore and the core server code.  Piles of `go` and `c`, and I love it.
+* I currently work as a Software Engineer on a distributed SQL database project.  It's a fork of PostgreSQL, my specific areas of interest are backup/restore and the core server code.  Piles of `go` and `c`, and I love it.
 * My previous gig was at a cybersecurity startup, mostly focusing on backend stuff.  Python, Javascript, Redis, regexes for days.
 * Prior to working in software I worked as a data scientist in the healthcare space, for about 10 years.
-* I completed my MSCS at Georga Tech in Fall 2022. I specialized in Computing Systems, with a good amount of infosec coursework mixed in. I'm incredibly proud to be part of that institution.
+* I completed my MSCS at Georga Tech in Fall 2022. I specialized in Computing Systems, with a good amount of infosec coursework mixed in. I'm incredibly proud to have been part of that institution.
 
 
 ### Where am I?
