@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>NetSec Lecture Notes - Lesson 8 - Security of Internet Protocols</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>NetSec Lecture Notes - Lesson 8 - Security of Internet Protocols</h2>
+  <h1 id="security-of-internet-protocols">Security of Internet Protocols</h1>
+
+<h2 id="internet-infrasturcture">Internet Infrasturcture</h2>
+<ul>
+  <li>Easiest to think of the Internet as a collection of large networks
+    <ul>
+      <li>Autonomous Systems (ASs)</li>
+    </ul>
+  </li>
+  <li>Managed by Internet Service Providers (ISPs)</li>
+  <li>Computers within one network use local and inter-domain routing</li>
+  <li>Computers across networks use TCP/IP for routing and messaging
+    <ul>
+      <li>BGP for routing announcements</li>
+      <li>DNS for finding IP addresses from symbolic names</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="infrastructure-quiz">Infrastructure Quiz</h2>
+<ul>
+  <li>A network that purchases all transit from other networks
+    <ul>
+      <li>Tier Three</li>
+    </ul>
+  </li>
+  <li>A network that peers some of its network access and purchases some of it
+    <ul>
+      <li>Tier Two</li>
+    </ul>
+  </li>
+  <li>A network that can reach every other network through peering
+    <ul>
+      <li>Tier One</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="trivia">Trivia</h3>
+<ul>
+  <li>There are only 17 Tier 1 Networks in the world at the time of recording</li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/netsec/L08_img1.png" alt="img" /></p>
+
+<h2 id="tcp-protocol-stack">TCP Protocol Stack</h2>
+<p><img src="../assets/content_images/omscs/netsec/L08_img2.png" alt="img" /></p>
+<ul>
+  <li>Link Layer is the group of protocols that only operate on the link the host is physically connected to</li>
+</ul>
+
+<h3 id="data-formats">Data Formats</h3>
+<p><img src="../assets/content_images/omscs/netsec/L08_img3.png" alt="img" /></p>
+
+<h2 id="internet-protocol">Internet Protocol</h2>
+<h4 id="ip-functions">IP Functions</h4>
+<p><img src="../assets/content_images/omscs/netsec/L08_img4.png" alt="img" /></p>
+<ul>
+  <li>Connectionless
+    <ul>
+      <li>Unreliable, best effort only.  No guarantee there</li>
+      <li>Ports are not in IP header because they’re part of the transport layer</li>
+    </ul>
+  </li>
+  <li>Typical route uses several hops
+    <ul>
+      <li>No ordering or delivery gaurantees across or between these hops</li>
+    </ul>
+  </li>
+  <li>Routing
+    <ul>
+      <li>IP host knows location of router (gateway)</li>
+      <li>IP gateway must know route to other networks</li>
+    </ul>
+  </li>
+  <li>Fragmentation and reassembly
+    <ul>
+      <li>If max-packet-size less than the user-data-size</li>
+    </ul>
+  </li>
+  <li>Error reporting
+    <ul>
+      <li>ICMP packet sent to source if packet is dropped</li>
+    </ul>
+  </li>
+  <li>TTL field: decremented after every hop
+    <ul>
+      <li>Packet dropped if TTL = 0</li>
+      <li>Prevents infinite loops / routing loops</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="ip-quiz">IP Quiz</h3>
+<ul>
+  <li>IP is a connectionless and reliable protocol</li>
+  <li>IP provides only best effort delivery.  It is not guaranteed
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>Due to the connectiopnless nature of IP, data corruption, packet loss, duplication, and out-of-order delivery can occur
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="ip-authentication">IP Authentication</h3>
+<ul>
+  <li>Client is trusted to embed correct source IP
+    <ul>
+      <li>Easy to override using raw sockets</li>
+      <li>Libnet: a library for formatting raw packets with arbitrary IP headers</li>
+    </ul>
+  </li>
+  <li>Problem: No Source IP authentication
+    <ul>
+      <li>Anyone who owns their machine can send packets with arbitrary source IP, and a response will be sent back to forged source IP</li>
+      <li>Enables anonymous DoS attacks</li>
+      <li>Enables anonymous infection/malware attacks</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="transmission-control-protocol">Transmission Control Protocol</h2>
+<p><img src="../assets/content_images/omscs/netsec/L08_img5.png" alt="img" /></p>
+<ul>
+  <li>Connection-oriented, preserves order</li>
+  <li>Sender breaks data into packets
+    <ul>
+      <li>Attach packet numbers</li>
+    </ul>
+  </li>
+  <li>Receiver acknowledges receipt
+    <ul>
+      <li>Lost packets are resent</li>
+      <li>Reassemble packets in correct order</li>
+    </ul>
+  </li>
+  <li>TCP headers include port numbers</li>
+</ul>
+
+<h3 id="yet-another-coverage-of-tcp-handshake">Yet another coverage of TCP handshake</h3>
+<p><img src="../assets/content_images/omscs/netsec/L08_img6.png" alt="img" /></p>
+<ul>
+  <li>received packets with SN too far out of window are dropped</li>
+</ul>
+
+<h3 id="tcp-basic-security-problesm">TCP Basic Security Problesm</h3>
+<ul>
+  <li>Network packets pass by untrusted hosts
+    <ul>
+      <li>Eavesdropping, packet sniffing</li>
+      <li>Especially easy when attacker controls a machine close to the victim (e.g. WiFi routers)</li>
+    </ul>
+  </li>
+  <li>TCP state easily obtained by eavesdropping
+    <ul>
+      <li>Enables spoofing and session hijacking</li>
+    </ul>
+  </li>
+  <li>Denial of Service (DoS) vulnerabilities
+    <ul>
+      <li>See DDOS Lesson (L02)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="tcp-security-quiz">TCP Security Quiz</h3>
+<ul>
+  <li>Application layer controls can protect application data, and IP addresses</li>
+  <li>IP information cannot be protected by transport layer controls
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>Network layer controls can protect the data within the packets as well as the IP information for each packet
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>Data link controls can protect connections comrpised of multiple links</li>
+</ul>
+
+<h3 id="random-initial-sequence-numbers">Random Initial Sequence Numbers</h3>
+<ul>
+  <li>In TCP handshake, the first packet from client and server have their sequence number randomly generated</li>
+  <li>This matters because if those numbers were predictable, an attacker could create a TCP session on behalf of a forged source IP address</li>
+  <li>Breaks IP- ased authentication (e.g. SPF, <code class="highlighter-rouge">/etc/hosts</code>)
+    <ul>
+      <li>Random sequence numbers do not prevent this attack, but they make it harder
+<img src="../assets/content_images/omscs/netsec/L08_img7.png" alt="img" /></li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="example-dos-vulnerability-reset">Example DoS Vulnerability: Reset</h3>
+<ul>
+  <li>Attacker sends a Reset packet on an open socker</li>
+  <li>If correct SNs then connection will close, denying service to the spoofed victim
+    <ul>
+      <li>Naively, probability of success is 1/232 (32-bit seq #s), but many systems allow for a large window of acceptable sequence numbers.  This gives a much higher success probability</li>
+    </ul>
+  </li>
+  <li>Attcker an just flood with RST packets until one works</li>
+</ul>
+
+<h2 id="protocols-quiz">Protocols Quiz</h2>
+<ul>
+  <li>Protocol designed to exchange routing and reachability information among autonomous systems
+    <ul>
+      <li>Border Gateway Protocol (BGP)</li>
+      <li>Handles routing between AS’s</li>
+    </ul>
+  </li>
+  <li>Protocol designed to map IP network addresses to the hardware addresses used by a data link protocol
+    <ul>
+      <li>Address Resolution Protocol (ARP)</li>
+      <li>Handles discovering IP addresses for MAC addresses, using MAC broadcast.
+        <ul>
+          <li>Requests from gateway to LAN as MAC broadcast</li>
+          <li>Response from hosts on LAN to gateway with their IP addresses, thus binding the IP address to their MAC address</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Protocol uses a link state routing algorithm and falls into the group of interior routing protocols
+    <ul>
+      <li>Open Shortest Path First (OSPF)</li>
+      <li>Handles routing within AS’s</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="routing-security-interdomain-routing">Routing Security: Interdomain Routing</h2>
+<ul>
+  <li>Autonomous System: Connected group of one or more Internet Protocol preficxes under a single routing policy (aka domain)</li>
+  <li>Within-AS routing is handled by OSPF</li>
+  <li>Between-AS routing is handled by BGP</li>
+</ul>
+
+<h3 id="arp-security">ARP Security</h3>
+<ul>
+  <li>ARP is a broadcast protocol</li>
+  <li>Local network attacks
+    <ul>
+      <li>Node A can confuse a gateway into sending it traffic intended for Node B just by responding with whatever IP address it wants to impersonate</li>
+      <li>This grants Node A man in the middle status, and it can proxy traffic to Node B, reading/injecting whatever it wants</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="bgp-security">BGP Security</h3>
+<ul>
+  <li>Unauthenticated route updates
+    <ul>
+      <li>Anyone can cause entire Internet to send traffic for a victim IP to attacker’s address
+        <ul>
+          <li>Notorious example is the Pakistani attack on Youtube</li>
+        </ul>
+      </li>
+      <li>Anyone can inject advertisements for arbitrary routes</li>
+      <li>Advertisement will propagate everywhere</li>
+      <li>Used for DoS, spam, and eavesdropping (details in DDoS lecture L02)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="bgp-attacks-quiz">BGP Attacks Quiz</h3>
+<ul>
+  <li>Unmasking the AS relationships by hacking the routing table
+    <ul>
+      <li>Revelation of network topologies</li>
+    </ul>
+  </li>
+  <li>Not yet used by hackers because damage cannot be contained.  It can blowback to the attacker
+    <ul>
+      <li>Creating route instabilities</li>
+    </ul>
+  </li>
+  <li>The first step is to hijack traffic from a legitimate host
+    <ul>
+      <li>Routing to endpoints in malicious networks</li>
+    </ul>
+  </li>
+  <li>Create a false route or kill a legitimate one
+    <ul>
+      <li>Denial of Service</li>
+    </ul>
+  </li>
+  <li>The attacker must control a device along the victim’s communication path
+    <ul>
+      <li>Sniffing</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="bgp-security-solutions">BGP Security Solutions</h3>
+<ul>
+  <li>RPKI: AS obtains a certificate (rout origination authority – ROA) from regional authority (RIR) and attaches ROA to path advertisement
+    <ul>
+      <li>Advertisements without a valid ROA are ignored</li>
+      <li>Defends against a malicious AS (but not a network attacker)</li>
+    </ul>
+  </li>
+  <li>SBGP: sign every hop of a path advertisement</li>
+</ul>
+
+<h2 id="s-bgp-design-overview">S-BGP Design Overview</h2>
+<ul>
+  <li>IPSec: secure point-to-point router communication</li>
+  <li>Public Key Infrastructure: authorization for all S-BGP entities</li>
+  <li>Attestations: digitally-signed authorizations
+    <ul>
+      <li>Address: authorization to advertise specified address blocks</li>
+      <li>Route: Validation of UPDATEs based on a new path attribute, using PKI certificates and attestations</li>
+    </ul>
+  </li>
+  <li>Repositories for distribution of certificates, CRLs, and address attestations</li>
+  <li>Tools for ISPs to manage address attestations, process certificates and CRLs, etc.</li>
+</ul>
+
+<h3 id="address-attestation">Address Attestation</h3>
+<ul>
+  <li>Indicates that the final AS listed in the UPDATE is authorized by the owner of those address blocks</li>
+  <li>Includes identification of:
+    <ul>
+      <li>owner’s certificate</li>
+      <li>AS to be advertising the address blocks</li>
+      <li>address blocks</li>
+      <li>expiration date</li>
+    </ul>
+  </li>
+  <li>Digitally signed by owner of the address blocks</li>
+  <li>Used to protect BGP from erroneous UPDATEs
+    <ul>
+      <li>authenticated but misbehaving or misconfigured BGP speakers</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="route-attestation">Route Attestation</h3>
+<ul>
+  <li>Indicates that the speaker or its AS authorizes the listener’s AS to use the route in the UPDATE</li>
+  <li>Includes identification of:
+    <ul>
+      <li>AS’s or BGP speaker’s certificate issued by owner of the AS</li>
+      <li>the address blocks and the list of AS’s in the UPDATE</li>
+      <li>the neighbor</li>
+      <li>expiration date</li>
+    </ul>
+  </li>
+  <li>Digitally signed by owner of the AS (or BGP speaker) distributing the UPDATE, traceable to the IANA</li>
+  <li>Used to protect BGP from erroneous UPDATEs
+    <ul>
+      <li>authenticated but misbehaving or misconfigured BGP speakers</li>
+    </ul>
+  </li>
+  <li>To validate a route from ASn,  ASn+1 needs:
+    <ul>
+      <li>address attestation from each organization owning an address block(s) in the NLRI</li>
+      <li>address allocation certificate from each organization owning address blocks in the NLRI</li>
+      <li>route attestation from every AS along the path (AS1 to ASn), where the route attestation for ASk specifies the NLRI and the path up to that point (AS1 through ASk-1)</li>
+      <li>certificates for each AS or router along path (AS1 to ASn) to check signatures on the route attestations</li>
+      <li>all the relevant CRLs must have been checked</li>
+    </ul>
+  </li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

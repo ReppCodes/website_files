@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>NetSec Lecture Notes - Lesson 2 - DDoS Attacks</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>NetSec Lecture Notes - Lesson 2 - DDoS Attacks</h2>
+  <h1 id="ddos-attacks">DDoS Attacks</h1>
+
+<ul>
+  <li>Distributed Denial of Service</li>
+</ul>
+
+<h2 id="dos-taxonomy-quiz-one">DOS Taxonomy Quiz One</h2>
+
+<ol>
+  <li>A portion of a list of targets is supplied to a compromised computer
+    <ul>
+      <li>Hitlist scanning</li>
+    </ul>
+  </li>
+  <li>All compromised computers share a common psuedo-random permutation of the IP address space
+    <ul>
+      <li>Permutation scanning</li>
+    </ul>
+  </li>
+  <li>Uses the communication patterns of the compromised computer to find a new target
+    <ul>
+      <li>Signpost scanning</li>
+    </ul>
+  </li>
+  <li>Each compromised computer probes random addresses
+    <ul>
+      <li>Random scanning</li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="dos-taxonomy-quiz-two">DOS Taxonomy Quiz Two</h2>
+
+<ol>
+  <li>Generate 32-bit numbers and stamp packets with them
+    <ul>
+      <li>Random spoofing</li>
+    </ul>
+  </li>
+  <li>Generate random addresses within a given space
+    <ul>
+      <li>Subnet spoofing</li>
+    </ul>
+  </li>
+  <li>The spoofed address is the address of the target
+    <ul>
+      <li>Fixed spoofing</li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="dos-taxonomy-quiz-three">DOS Taxonomy Quiz Three</h2>
+
+<ol>
+  <li>The motivation of this attack is a crucial service of a global internet operation, for example core router
+    <ul>
+      <li>Infrastructure</li>
+    </ul>
+  </li>
+  <li>The attack is targeted to a specific application on a server
+    <ul>
+      <li>Server application</li>
+    </ul>
+  </li>
+  <li>The attack is used to overlaod or crash the communication mechanism of a network
+    <ul>
+      <li>Network Access</li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="network-dos">Network DoS</h2>
+
+<ul>
+  <li>Goal is to take out a large site with little as little computing power as possible</li>
+  <li>How is this accomplished?
+    <ul>
+      <li>Amplification</li>
+      <li>Small number of packets to accomplish a big effect</li>
+      <li>Two types
+        <ul>
+          <li>DoS bug – design flaw allowing one machine to disrupt a service</li>
+          <li>DoS flood – command botnet to generate a flood of requests</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>DoS can happen at any layer
+    <ul>
+      <li>Example at Link layer
+        <ul>
+          <li>just send a lot of traffic to saturate link</li>
+        </ul>
+      </li>
+      <li>Example at TCP/UDP transport layer
+        <ul>
+          <li>Server needs to use memory to hold state about TCP connections. Run the server OOM with too many such connections</li>
+        </ul>
+      </li>
+      <li>Example at application layer
+        <ul>
+          <li>attacker can request the application to fetch large amounts of data, exhausting the server’s resources</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Sad truth: current internet is not designed to handle DDoS attacks</li>
+</ul>
+
+<h3 id="amplification-quiz">Amplification Quiz</h3>
+
+<ul>
+  <li>NTP server used to sync time and date. Data volume of request is much smaller than the response.</li>
+  <li>In general, any situation where small requests generate large resposnes is vulnerable to amplification attacks
+    <ul>
+      <li>A notable case study is open DNS resolvers</li>
+    </ul>
+  </li>
+  <li>Additionally, UDP is vulnerable to source IP spoofing, meaning that the large response can be aimed at any victim address desired</li>
+  <li>It is difficult to ensure computers communicate only with legitimate NTP servers, making filtering difficult</li>
+</ul>
+
+<h3 id="amplification-example">Amplification Example</h3>
+
+<ul>
+  <li>Scale of amplification attacks determined by two factors.
+    <ul>
+      <li>Number of bots sending bogus requests</li>
+      <li>Amplification ratio of response/request sizes</li>
+    </ul>
+  </li>
+  <li>Example given of open DNS resolvers</li>
+</ul>
+
+<h2 id="ip-header-format">IP Header Format</h2>
+
+<p><img src="../assets/content_images/omscs/netsec/L02_img1.png" alt="img" /></p>
+
+<ul>
+  <li>IP is connectionless, and unreliable</li>
+  <li>Each packet will find its way to destination, but no mechanism to ensure they all do, nor in order. Best effort</li>
+  <li>Main weakness of IP from a security perspective is that there’s no authentication of the source IP address. This allows spoofing of source addresses</li>
+</ul>
+
+<h2 id="tcp-header-format">TCP Header Format</h2>
+
+<p><img src="../assets/content_images/omscs/netsec/L02_img2.png" alt="img" /></p>
+
+<ul>
+  <li>Session based</li>
+  <li>Destination will check that all packets have arrived and are in order</li>
+  <li>Also offers congestion control</li>
+  <li>Minimizes packet loss</li>
+  <li>SEQ and ACK numbers used for keeping track of order, flags used for state</li>
+</ul>
+
+<h2 id="tcp-handshake">TCP Handshake</h2>
+
+<p><img src="../assets/content_images/omscs/netsec/L02_img3.png" alt="img" /></p>
+
+<h2 id="tcp-syn-flood">TCP SYN Flood</h2>
+
+<h2 id="low-rate--dos-bug">Low Rate – DoS Bug</h2>
+
+<ul>
+  <li>In TCP handshake, server needs to keep memory in state while waiting for ack</li>
+  <li>Attacker can spoof source IP address, even from single machine</li>
+  <li>Fills up backlog queue on server</li>
+  <li>No further connections possible</li>
+  <li>Example given is blaster worm from 2003
+    <ul>
+      <li>Attacked windowsupdate.com, 50 SYN packets per second</li>
+      <li>MS just issued a new name</li>
+    </ul>
+  </li>
+  <li>Non-solutions:
+    <ul>
+      <li>increase backlog queue size or decrease timeout</li>
+      <li>attacker can just send more packets, bad solution</li>
+    </ul>
+  </li>
+  <li>Correct solution – syncookies: remove state from server</li>
+</ul>
+
+<h3 id="syn-cookies-quiz">SYN Cookies Quiz</h3>
+
+<ol>
+  <li>SYN cookies require modified versions of TCP
+    <ul>
+      <li>FALSE</li>
+    </ul>
+  </li>
+  <li>SYN cookies lead to overall slower performance
+    <ul>
+      <li>FALSE</li>
+    </ul>
+  </li>
+  <li>The server must reject all TCP options because the server discards the SYN queue entry
+    <ul>
+      <li>TRUE</li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="massive-flood--ddos">Massive Flood – DDoS</h2>
+
+<ul>
+  <li>Command bot army to flood specific target</li>
+  <li>20,000 bots can generate 2Gb/sec of SYNs (2003)</li>
+  <li>At web site:
+    <ul>
+      <li>Saturates network uplink or network router</li>
+      <li>Random source IP -&gt; attack SYNs look the same as real SYNs
+        <ul>
+          <li>Hard to filter</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>How do we defend against this?
+    <ul>
+      <li>Prolexic/Cloudflare</li>
+      <li>One idea is to use powerful servers to protect a website. These will only forward established TCP connections to site
+        <ul>
+          <li>These proxies will handle SYNs and respond with SYN/ACKs</li>
+          <li>When proxy receives ACK, then forward to actual website</li>
+          <li>Attackers will not send ACK, so only normal traffic is serviced</li>
+          <li>This isn’t bulletproof</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Attacker can send complete TCP connections, from botnets
+    <ul>
+      <li>Send short HTTP HEAD request</li>
+      <li>Repeat</li>
+      <li>All these requests are “legitimate” from a protocol point of view</li>
+      <li>Similar to “real” spikes in traffic volume</li>
+      <li>This will bypass SYN flood protection proxy BUT attacker can no longer use random source IPs
+        <ul>
+          <li>This reveals the location of bot zombies</li>
+          <li>The proxy can now block or rate-limit the bots</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Example given of second kind of attack is GitHub DDoS from 2015
+    <ul>
+      <li>Involved interesting embedding of malicious html from a popular server</li>
+      <li>The JS instructed the user’s computer, once infected, to attack GitHub.com</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="flood-attack-quiz">Flood Attack Quiz</h3>
+
+<ul>
+  <li>Attackers can spoof the IP Address of their UDP packets
+    <ul>
+      <li>TRUE</li>
+    </ul>
+  </li>
+  <li>The attack can be mitigated using firewalls
+    <ul>
+      <li>FALSE</li>
+    </ul>
+  </li>
+  <li>Firewalls cannot stop a flood because the firewall is susceptible to flooding
+    <ul>
+      <li>TRUE</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="dos-via-route-hijacking">DoS via Route Hijacking</h2>
+
+<ul>
+  <li>The IP protocol itself can be used to launch DoS attacks</li>
+  <li>Example given below:
+    <ul>
+      <li>The gist is that just announcing a more specific prefix will tell the whole internet to send request for an IP address in that range to you instead of the rightful owner</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/netsec/L02_img4.png" alt="img" />
+<img src="../assets/content_images/omscs/netsec/L02_img5.png" alt="img" /></p>
+
+<h2 id="dos-at-higher-levels">DoS at Higher Levels</h2>
+
+<h3 id="ssltls-handshake-sd03">SSL/TLS Handshake (SD’03)</h3>
+
+<p><img src="../assets/content_images/omscs/netsec/L02_img6.png" alt="img" /></p>
+
+<ul>
+  <li>RSA decrypt is much more expensive than RSA encrypt. The server does way more work on that third leg than the client has to do in total
+    <ul>
+      <li>This represents amplification, and so is the basis for a possible attack</li>
+    </ul>
+  </li>
+  <li>Simply sending fetch requests for very large resources, such as a large .pdf file, can also accomplish DoS in this way.</li>
+</ul>
+
+<h2 id="dos-mitigation---client-puzzles">DoS Mitigation - Client puzzles</h2>
+
+<ul>
+  <li>Goal is to slow down the attacker</li>
+  <li>Done by giving them a moderately hard problem
+    <ul>
+      <li>e.g. Given challenge C find X such that…
+        <ul>
+          <li><img src="../assets/content_images/omscs/netsec/L02_img7.png" alt="img" /></li>
+          <li>Assumption: takes expected 2^n time to solve</li>
+          <li>For n=16 takes about .3sec on 1Ghz machine</li>
+        </ul>
+      </li>
+      <li>Main point is that checking the puzzle solution is easy, repairing the disparity in workload between client and server, reducing amplification threat surface</li>
+    </ul>
+  </li>
+  <li>During DoS attack everyone must submit puzzle solution with requests</li>
+  <li>When no attack, do not require puzzle solution</li>
+  <li>Examples
+    <ul>
+      <li>TCP connection floods (RSA ‘99):
+        <ul>
+          <li>Example challenge <code class="highlighter-rouge">C = TCP server-seq-num</code></li>
+          <li>First data packet must contain puzzle solution
+            <ul>
+              <li>Otherwise TCP connection is closed</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>SSL handshake DoS (SD’03):
+        <ul>
+          <li>Challenge C based on TLS session ID</li>
+          <li>Server: check puzzle solution before even attempting to do the RSA decrypt</li>
+        </ul>
+      </li>
+      <li>Similar ideas can be applied to application layer, or payment systems</li>
+    </ul>
+  </li>
+  <li>Benefits
+    <ul>
+      <li>Hardness of challenge can be decided based on DoS attack volume</li>
+    </ul>
+  </li>
+  <li>Limitations
+    <ul>
+      <li>Requires changes to both clients and servers</li>
+      <li>Hurts low power legitimate clients during attack
+        <ul>
+          <li>Possibly, clients on cell phones and tablets cannot even connect</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="dos-mitigation---client-puzzles-memory-bound-functions">DoS Mitigation - Client Puzzles: Memory-Bound Functions</h2>
+
+<ul>
+  <li>CPU power ratio:
+    <ul>
+      <li>(high end server)/(low end cell phone) = 8000</li>
+      <li>Impossible to scale to hard puzzles</li>
+    </ul>
+  </li>
+  <li>Interesting observation:
+    <ul>
+      <li>Main memory access time ratio:
+        <ul>
+          <li>(high end server)/(low end cell phone) = 2</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Solution requires many main memory accesses</li>
+  <li>Reading provided in class notes</li>
+</ul>
+
+<h3 id="puzzle-quiz">Puzzle Quiz</h3>
+
+<ul>
+  <li>Client puzzles should be hard to construct. This is an indication of the level of difficulty to solve them.
+    <ul>
+      <li>FALSE</li>
+    </ul>
+  </li>
+  <li>Client puzzles should be stateless.
+    <ul>
+      <li>TRUE</li>
+    </ul>
+  </li>
+  <li>Puzzle complexity should increase as the strength of the attack increases.
+    <ul>
+      <li>TRUE</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="dos-mitigation---captchas">DoS Mitigation - CAPTCHAs</h2>
+
+<ul>
+  <li>CAPTCHA: Completely Automated Public Turing test to tell Computers and Humans Apart</li>
+  <li>Idea is to verify that the connection is from a human</li>
+  <li>Applies to application layer DDoS</li>
+  <li>During attack, generate CAPTCHAs and process request only if valid solution</li>
+</ul>
+
+<h2 id="dos-mitigation---source-identification">DoS Mitigation - Source Identification</h2>
+
+<ul>
+  <li>Goal is to identify the packet source</li>
+  <li>To block the attack at the source (ingress filtering)</li>
+  <li>Harder than it sounds</li>
+  <li>ISP is often unable to help</li>
+  <li>Problem is it requires ALL ISPs to do this, which requires global trust</li>
+  <li>If even 10% of ISPs don’t participate, this provides functionally no defense</li>
+  <li>There is no incentive for the ISP to participate</li>
+  <li>As of 2014
+    <ul>
+      <li>25% of Autonomous Systems are fully spoofable</li>
+      <li>13% of announced IP address space is spoofable</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="dos-mitigation---traceback">DoS Mitigation - Traceback</h2>
+
+<ul>
+  <li>Given a set of attack packets, determine path to source</li>
+  <li>Done by changing routers to record this information in packets</li>
+  <li>Assumptions:
+    <ul>
+      <li>Most routers remain uncompromised (so that this information is valid)</li>
+      <li>Attacker sends many packets</li>
+      <li>Route from attacker to victim remains relatively stable</li>
+    </ul>
+  </li>
+  <li>Simple method
+    <ul>
+      <li>Have each router write its own IP address to packet</li>
+      <li>Victim reads path from packet</li>
+      <li>Problems:
+        <ul>
+          <li>this requires space in the packet
+            <ul>
+              <li>The path can be very long</li>
+            </ul>
+          </li>
+          <li>There are no extra fields in the current IP format
+            <ul>
+              <li>Changes to packet format are not practical to expect</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Better method
+    <ul>
+      <li>DDoS involved many packets on the same path</li>
+      <li>Store one link in each packet
+        <ul>
+          <li>Each router probabilistically stores its own address in the packet</li>
+          <li>This results in fixed space regardless of path length</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="traceback-quiz">Traceback Quiz</h3>
+
+<ul>
+  <li>Attackers can generate limited types of packets
+    <ul>
+      <li>FALSE</li>
+    </ul>
+  </li>
+  <li>Attackers may work alone or in groups
+    <ul>
+      <li>TRUE</li>
+    </ul>
+  </li>
+  <li>Attackers are not aware of the tracing mechanism
+    <ul>
+      <li>FALSE</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="traceback-mechanism--edge-sampling">Traceback Mechanism – Edge Sampling</h3>
+
+<ul>
+  <li>Main component is the edge sampling algorithm</li>
+  <li>Edge is the start and end IP addresses</li>
+  <li>Distance is the number of hops since last time edge was stored</li>
+  <li>Marking procedure for router R
+    <ul>
+      <li>when packet arrives, toss a coin</li>
+      <li>if coin turns up heads (with probability p) then:
+        <ul>
+          <li>write R into start address</li>
+          <li>write 0 into distance field</li>
+        </ul>
+      </li>
+      <li>if coin turns up tails
+        <ul>
+          <li>if distance == 0 then write R into end field</li>
+          <li>increment distance field</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Example
+    <ul>
+      <li>Packet received at R1 from source or another router</li>
+      <li>Packet slated to travel through 3 routers, R1, R2, and R3</li>
+      <li>R1 tosses coin, gets heads, chooses to write start of edge</li>
+      <li>R2 tosses coin, gets tails, chooses not to overwrite edge</li>
+      <li>Distance is 0, so R2 writes itself to end address, increments distance to 1</li>
+      <li>R3 tosses coin, gets tails, chooses not to overwrite edge
+        <ul>
+          <li>Distance is 1, so it does not write itself as end address, increments distance to 2</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>With edge information, we can now reconstruct the packets path
+    <ul>
+      <li>Extract information from attack packets</li>
+      <li>Build graph rooted at victim</li>
+      <li>Each (start, end, distance) tuple provides an edge</li>
+      <li>expected number of packets needed to reconstruct path can be probabilistically given by formula:
+        <ul>
+          <li><img src="../assets/content_images/omscs/netsec/L02_img8.png" alt="img" /></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="edge-sampling-quiz">Edge Sampling Quiz</h3>
+
+<ul>
+  <li>Multiple attackers can be identified since edge identifies splits in reverse paths
+    <ul>
+      <li>TRUE</li>
+    </ul>
+  </li>
+  <li>It is difficult for victims to reconstruct a path to the attacker
+    <ul>
+      <li>FALSE</li>
+    </ul>
+  </li>
+  <li>Requires space in the IP packet header
+    <ul>
+      <li>TRUE</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="reflector-attack">Reflector Attack</h2>
+
+<ul>
+  <li>Attacker spoofs Victim’s IP and sends DNS query to many DNS servers</li>
+  <li>All DNS servers respond to the DNS query and send data to victim’s IP</li>
+  <li>Victim is flooded by all of the data sent from the DNS servers</li>
+  <li>Examples
+    <ul>
+      <li>DNS Resolvers: UDP 53 with victim.com source
+        <ul>
+          <li>At victim: DNS response</li>
+        </ul>
+      </li>
+      <li>Web servers: TCP SYN 80 with victim.com source
+        <ul>
+          <li>At victim: TCP SYN ACK packet</li>
+        </ul>
+      </li>
+      <li>Gnutella servers</li>
+    </ul>
+  </li>
+  <li>Typically launched by a botmaster, commanding many bots</li>
+  <li>Reflectors send streams of non-spoofed but unsolicited traffic to victim</li>
+  <li>There is no traceback information kept by the reflectors, to allow the victim to know the sources of the attack</li>
+</ul>
+
+<h3 id="reflector-attack-quiz">Reflector Attack Quiz</h3>
+
+<ul>
+  <li>Self defense against reflector attacks should incorporate:</li>
+  <li>Filtering - filter DNS traffic as close to the victim as possible
+    <ul>
+      <li>FALSE</li>
+    </ul>
+  </li>
+  <li>Server redundancy - servers should be located in multiple networks and locations
+    <ul>
+      <li>TRUE</li>
+    </ul>
+  </li>
+  <li>Traffic limiting - traffic from a name server should be limited to reasonable thresholds
+    <ul>
+      <li>TRUE</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="capability-based-defense-theoretical">Capability-Based Defense (Theoretical)</h2>
+
+<ul>
+  <li>A number of examples available, papers linked</li>
+  <li>Basic idea is that the receivers can specify what packets they want</li>
+  <li>How?</li>
+  <li>Sender requests capability in SYN packet
+    <ul>
+      <li>Path identifier used to limit number of requests from one source</li>
+    </ul>
+  </li>
+  <li>Receiver responds with capabiltiy</li>
+  <li>Main point is that Routers will only forward request packets, and packets with valid capability</li>
+  <li>Capabilities can be revoked if source is attacking
+    <ul>
+      <li>Blocks attack packets close to source</li>
+    </ul>
+  </li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

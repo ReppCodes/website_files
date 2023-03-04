@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>AOS Lecture Notes - Lesson 7 - Distributed Subsystems</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>AOS Lecture Notes - Lesson 7 - Distributed Subsystems</h2>
+  <h1 id="distributed-subsystems">Distributed Subsystems</h1>
+<ul>
+  <li>Discuss the design and implementation of selected distributed systems</li>
+</ul>
+
+<h2 id="global-memory-systems">Global Memory Systems</h2>
+<ul>
+  <li>How can we use peer memory for paging across LAN?</li>
+</ul>
+
+<h3 id="context-for-global-memory-system">Context for Global Memory System</h3>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L07_img1.png" alt="img" /></li>
+  <li>Memory pressure
+    <ul>
+      <li>Different for each node</li>
+      <li>How best can we use idle cluster memory?</li>
+      <li>Remote memory access may soon be faster than local disk accesses
+        <ul>
+          <li>10 gigabit links will soon be common for LANs.  This is faster than local disk access speeds (especially given spinning rust technology if relevant)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Memory manager
+    <ul>
+      <li>VA-&gt;PA or read from disk</li>
+      <li>gives the illusion that all of virtual address space is in physical memory (covered thoroughly in GIOS notes)</li>
+    </ul>
+  </li>
+  <li>Global memory system
+    <ul>
+      <li>VA-&gt; or cluster memory or read from disk</li>
+    </ul>
+  </li>
+  <li>Generally, GMS favors networked acess to cluster memory over reading from local disk.
+    <ul>
+      <li>Only pull from local disk if required page is not in cluster memory</li>
+      <li>Does not interfere with writing to local disk, though. Disk always has local copies of all pages.  Only pages that are in cluster memory are paged out pages that are clean (not “dirty”).</li>
+      <li>GMS does not add any new causes for worrying abot failures, as a node crash will only lose clean pages, replicated in local disk</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="gsm-basics">GSM Basics</h3>
+<ul>
+  <li>“Cache” refers to physical memory (i.e. DRAM) not processor cache</li>
+  <li>Sense of “community” to handle page faults at a node
+    <ul>
+      <li>Use peer memories as a supplement for the disk</li>
+    </ul>
+  </li>
+  <li>Physical memory of a node
+    <ul>
+      <li><img src="../assets/content_images/omscs/aos/L07_img2.png" alt="img" />
+        <ul>
+          <li>Global component is where community service storage is kept</li>
+          <li>Boundary/size between local and global memory shifts depending on memory pressure on the node.  As working set grows, global memory shrinks and vice versa.</li>
+          <li>Shared pages will be in the local component of node memory for multiple nodes.  So pages in local memory may be private or shared.</li>
+          <li>Paradoxically, though, pages in the global part of a node’s memory are guaranteed to be private copes, as the global section is equivalent to a disk.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>The function of GSM is to serve as a remote paging facility</li>
+  <li>Coherence of shared pages it outside the purview of GSM.  Maintaining coherence is the concern of the application</li>
+  <li>GSM, as do most pagers, uses a variant of the LRU page replacement algorithm
+    <ul>
+      <li>As it is a global structure, it picks the globally oldest page to replace.  This means age information needs to be managed by GSM</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="handling-page-faults--case-1">Handling Page Faults – Case 1</h3>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L07_img3.png" alt="img" /></li>
+  <li>Common Case
+    <ul>
+      <li>Page fault for X on node P</li>
+      <li>hit in global cache of some node q</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="handling-page-faults--case-2">Handling Page Faults – Case 2</h3>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L07_img4.png" alt="img" /></li>
+  <li>Common case with memory pressurea t P
+    <ul>
+      <li>page fualt for x on node p</li>
+      <li>Swap LRU page y for X</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="handling-page-faults--case-3">Handling Page Faults – Case 3</h3>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L07_img5.png" alt="img" />
+    <ul>
+      <li>Note that if the least recently used page on R is in global section it must be clean, so can be discarded without worrying about storing.  If it is in local, it could be dirty so must be stored to disk.</li>
+    </ul>
+  </li>
+  <li>Faulting page on disk
+    <ul>
+      <li>page fault for x on node p</li>
+      <li>page not in cluster</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="handling-page-faults--case-4">Handling Page Faults – Case 4</h3>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L07_img6.png" alt="img" />
+    <ul>
+      <li>Page x is copied to p’s local section but not removed from q’s local section</li>
+    </ul>
+  </li>
+  <li>Faulting page actively shared
+    <ul>
+      <li>Page fault for x on node p</li>
+      <li>page in some peer node q’s local cache</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="summary-quiz">Summary Quiz</h3>
+<p><img src="../assets/content_images/omscs/aos/L07_img7.png" alt="img" /></p>
+
+<h3 id="geriatrics-age-management">Geriatrics (Age Management)</h3>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L07_img8.png" alt="img" /></li>
+  <li>How can we identify the globally oldest page for our LRU page replacmenet variant?</li>
+  <li>Epoch parameters
+    <ul>
+      <li>T: Max duration</li>
+      <li>M: Max replacements</li>
+    </ul>
+  </li>
+  <li>At the start of each epoch
+    <ul>
+      <li>Every node will send age info to initiator
+        <ul>
+          <li>What is the age of the pages resident at this node.</li>
+        </ul>
+      </li>
+      <li>Initiator node will compute and respond with:
+        <ul>
+          <li>Identify M oldest pages in cluster, that need to be replaced</li>
+          <li>Out of those M pages, what is the minimum age (the “youngest” page that must be replaced)
+            <ul>
+              <li>Expressed as MinAge</li>
+            </ul>
+          </li>
+          <li>What fraction of pages that belong to each node will be replaced (called here a weight)
+            <ul>
+              <li>Express as Wi</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Selection of an initator should be dynamic.  Any one node should not be stuck with this work every time, especially if it gets busy.
+    <ul>
+      <li>Initiator for next epoch will be the node with highest replacement weight (Wi).  This is easy because each node receives the weights of all nodes from the initiator each epoch.</li>
+    </ul>
+  </li>
+  <li>Action at a node on page fault
+    <ul>
+      <li>Page y eviction candidate</li>
+      <li>if: age(page y) &gt; MinAge =&gt; discard</li>
+      <li>if: age(page y) &lt; MinAge =&gt; send to peer Ni
+        <ul>
+          <li>Ni identified using the Wi weights from most recent epoch.  Decision algorithm slightly complicated, not given in detail.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Age management only approximates global LRU, does not actually establish it definitively.  This is a compromise for performance.</li>
+  <li>Think global, act local.  Hammered on throughout the course, mentioned again here.</li>
+</ul>
+
+<h3 id="implementation-of-gsm-in-unix">Implementation of GSM in Unix</h3>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L07_img9.png" alt="img" /></li>
+  <li>GMS integrated with DEC OSF/1
+    <ul>
+      <li>Access to anonymous pages and filesystem-mapped pages go through GMS on reads</li>
+    </ul>
+  </li>
+  <li>Collecting age information to calculate global LRU is the hard part, as described above
+    <ul>
+      <li>In particlar within the VM manager the OS does not see what user applications are doing with their pages.</li>
+      <li>The solution here was to add a daemon to dump information from the TLB periodically into a data structure the GMS maintains.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="distributed-data-structures">Distributed Data Structures</h3>
+<ul>
+  <li>Must convert VA to UID (universal ID)
+    <ul>
+      <li><img src="../assets/content_images/omscs/aos/L07_img10.png" alt="img" /></li>
+      <li>derived from VM and UBC</li>
+      <li>3 key data structures
+        <ul>
+          <li>PFD
+            <ul>
+              <li>page frame directory</li>
+              <li>UID -&gt; PFD -&gt; PFN</li>
+              <li>like a page table on a caching node</li>
+              <li>states: local private/shared, global private, on disk</li>
+            </ul>
+          </li>
+          <li>GCD
+            <ul>
+              <li>Global cache directory</li>
+              <li>A cluster-wide hash table</li>
+              <li>We want to distribute management of PFD lookups</li>
+              <li>UID -&gt; GCD -&gt; Ni
+                <ul>
+                  <li>Ni is which node has the PFD for this UID</li>
+                  <li>This is dynamic</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>POD
+            <ul>
+              <li>Page Ownership Directory</li>
+              <li>UID -&gt; POD -&gt; Ni</li>
+              <li>Given a UID, which node has the GCD for it?</li>
+              <li>Replicated on all nodes</li>
+            </ul>
+          </li>
+          <li>In short, use POD to find GCD, use GCD to find PFD, use PFD to find PFN
+            <ul>
+              <li><img src="../assets/content_images/omscs/aos/L07_img11.png" alt="img" />
+                <ul>
+                  <li>in case of GCD moving to different node, POD must be updated</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>On page eviction
+    <ul>
+      <li>paging daemon is invoked
+        <ul>
+          <li>every node has a paging daemon</li>
+          <li>invoked if freelist is below a specified threshold
+            <ul>
+              <li>there’s always a freelist, system doesn’t run with zero free pages as a matter of course</li>
+            </ul>
+          </li>
+          <li>putpage oldest pages</li>
+          <li>update GCD, PFD for the UIDs</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="distributed-shared-memory">Distributed Shared Memory</h2>
+<ul>
+  <li>Can we make the cluster appear like a shared memory machine?</li>
+</ul>
+
+<h2 id="distributed-file-systems">Distributed File Systems</h2>
+<ul>
+  <li>How can we use cluster memory for cooperative caching of files?</li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

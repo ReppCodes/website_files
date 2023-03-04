@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>NetSec Lecture Notes - Lesson 3 - Cybercrimes</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>NetSec Lecture Notes - Lesson 3 - Cybercrimes</h2>
+  <h1 id="cybercrimes">Cybercrimes</h1>
+
+<h2 id="actors-in-the-underground">Actors in the Underground</h2>
+
+<ul>
+  <li>Exploit developers
+    <ul>
+      <li>very smart people who reverse-engineer software</li>
+      <li>develop and sell exploit packs and kits</li>
+    </ul>
+  </li>
+  <li>Botnet masters
+    <ul>
+      <li>Develop software and control vast numbers of zombie machines</li>
+      <li>Rent out their botnet to other actors</li>
+    </ul>
+  </li>
+  <li>Spammers
+    <ul>
+      <li>Advertise links for other actors</li>
+    </ul>
+  </li>
+  <li>Phishers
+    <ul>
+      <li>Setup scam sites to steal information</li>
+      <li>Work with spammers to spread the attack</li>
+    </ul>
+  </li>
+  <li>Counterfeiters
+    <ul>
+      <li>Run websites selling fake goods</li>
+      <li>Must be able to clear credit cards</li>
+    </ul>
+  </li>
+  <li>Bulletproof Hosting Provides
+    <ul>
+      <li>Offer dedicated servers to other actors</li>
+      <li>Hosted in lawless parts of the internet</li>
+    </ul>
+  </li>
+  <li>Carders, Cashiers, and Mules
+    <ul>
+      <li>Turn stolen bank accounts and credit cards into cash</li>
+    </ul>
+  </li>
+  <li>Crowdturfers
+    <ul>
+      <li>Create, verify, and manage fake accounts</li>
+      <li>Solve CAPTCHAS for a fee</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="structure-of-the-underground">Structure of the Underground</h2>
+
+<ul>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>Pay-per-install and Exploit-as-a-service –&gt; Botnets {Credit Card and Bank Account Theft</td>
+          <td>DDoS and Ransomware Extortion</td>
+          <td>Click Fraud and Ad Injection</td>
+          <td>Spam</td>
+          <td>Bitcoin Mining}</td>
+        </tr>
+      </tbody>
+    </table>
+    <ul>
+      <li>Spam can facilitate Phishing, Counterfeit Goods, and Malware Attachments</li>
+      <li>Credit Card and Bank Account Theft can facilitate Carders and Cashiers</li>
+    </ul>
+  </li>
+  <li>The general point is that bad actors form an interconnected ecosystem</li>
+</ul>
+
+<h2 id="underground-forums">Underground Forums</h2>
+
+<ul>
+  <li>One of the entry points into the ecosystem</li>
+  <li>Today, underground forums are ubiquitous
+    <ul>
+      <li>Many operate in plain site; they’re just a Google search away</li>
+      <li>Large volume of illicit goods and services are available</li>
+    </ul>
+  </li>
+  <li>Law enforcement often targets forums/IRC rooms
+    <ul>
+      <li>In some cases, forums have been law enforcement sting operations</li>
+    </ul>
+  </li>
+  <li>Black market forums are hugely valuable for security professionals
+    <ul>
+      <li>Give researchers a view into the underworld</li>
+      <li>Allow white-hats to observe trends and detect unfolding attacks</li>
+    </ul>
+  </li>
+  <li>Forums are populated by buyers, sellers, and rippers
+    <ul>
+      <li>Administrators verify trustworthy buyers</li>
+      <li>Rippers steal from naive buyers or sell fraudulent goods</li>
+      <li>Some participants ask for goods or services</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="exploits-as-a-service-decoupling-and-specialization">Exploits-as-a-Service: Decoupling and Specialization</h2>
+
+<ul>
+  <li>In the old days, compromise and monetization were coupled
+    <ul>
+      <li>Criminals would develop exploits, use them to launch attacks, and then use the hacked machines to make money</li>
+    </ul>
+  </li>
+  <li>Monetization and Compromise are decoupled
+    <ul>
+      <li>Exploit developers sell exploit kits or packs</li>
+      <li>Other actors leverage the kits to attack hosts</li>
+      <li>Often via spam and/or compromised web servers</li>
+      <li>Compromised hosts are then sold on the black market</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="pay-per-install-model-of-malware">Pay-per-install model of malware</h3>
+
+<ul>
+  <li>A malware distribution model
+    <ul>
+      <li>Relies on drive-by-download attacks against browsers</li>
+      <li>Blackhole, MPack, and other exploit kits</li>
+    </ul>
+  </li>
+  <li>Two styles of attacks
+    <ul>
+      <li>A bad actor can buy an exploit kit and deploy it themselves
+        <ul>
+          <li>Bad actor must figure out distribution themselves. Need infrastructure.</li>
+        </ul>
+      </li>
+      <li>A bad actor can rent access to an exploit server that hosts that kit
+        <ul>
+          <li>Azure metasploit, lol</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Bad actors are responsible for acquiring traffic</li>
+  <li><img src="../assets/content_images/omscs/netsec/L03_img1.png" alt="img" /></li>
+</ul>
+
+<h2 id="dark-web-quiz">Dark Web Quiz</h2>
+
+<ul>
+  <li>Readily available to the public, and searchable with standard search engines
+    <ul>
+      <li>Surface web</li>
+      <li>While this is what we’re typically referring to when we talk about “the internet”, it really makes up only about 4% of the WWW content. About 96% is deep web</li>
+    </ul>
+  </li>
+  <li>It is not indexed by standard search engines
+    <ul>
+      <li>Deep web</li>
+    </ul>
+  </li>
+  <li>Web content that exists on darknets
+    <ul>
+      <li>Dark web</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="ppi-quiz">PPI Quiz</h2>
+
+<ul>
+  <li>A program that hides malicious code from anti-virus software
+    <ul>
+      <li>Crypters</li>
+    </ul>
+  </li>
+  <li>Software that allows an attacker to update or install malware on a victim’s computer
+    <ul>
+      <li>Trojan Download Manager</li>
+    </ul>
+  </li>
+  <li>It increases traffic to the attacker’s site by manipulating search engines
+    <ul>
+      <li>Blackhat Search Engine Optimizer</li>
+    </ul>
+  </li>
+  <li>A webpage that lists many keywords, in hopes of increasing search engine ranking. Scripts on the page redirect to the attackers page
+    <ul>
+      <li>Doorway pages</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="from-malware-to-botnets">From Malware to Botnets</h2>
+
+<ul>
+  <li>Infected machines have many other valuable resources
+    <ul>
+      <li>Unique IP addresses and bandwidth</li>
+      <li>Spare CPU cycles</li>
+    </ul>
+  </li>
+  <li>Botnets allow criminals to aggregate and control infected machines
+    <ul>
+      <li>Command and Control (C&amp;C, C2) infrastructure for controlling bots</li>
+      <li>Swaths of bots are often rented out to other actors for various purposes</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="command-and-control-irc-channels">Command and Control: IRC Channels</h2>
+
+<ul>
+  <li>The key to a botnet’s success is efficient and robust C2</li>
+  <li>This is not always easy</li>
+  <li>Simplest and most efficient approach is through centralized control
+    <ul>
+      <li><img src="../assets/content_images/omscs/netsec/L03_img2.png" alt="img" /></li>
+      <li>Problem: single point of failure</li>
+      <li>Easy to locate and take down</li>
+    </ul>
+  </li>
+  <li>A more robust approach is to use a peer-to-peer network
+    <ul>
+      <li><img src="../assets/content_images/omscs/netsec/L03_img3.png" alt="img" /></li>
+      <li>The drawback is that the botmaster does not have direct control over, or communication with, all the bots
+        <ul>
+          <li>In fact, the botmaster may not know how many bots even get the commands, or when</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>A more modern Approach is Fast Flux DNS
+    <ul>
+      <li><img src="../assets/content_images/omscs/netsec/L03_img4.png" alt="img" /></li>
+      <li>All bots connect to a C2 website</li>
+      <li>Website can map to whatever IP address, easy to post up wherever. This defeats IP-address-based blocking</li>
+      <li>However, domain name can still be detected and blocked</li>
+    </ul>
+  </li>
+  <li>Most modern approach is Random Domain Generation
+    <ul>
+      <li>Takes Fast Flux DNS approach, but generataes random domain names using same algorithm and seed between bot and botmaster
+        <ul>
+          <li><img src="../assets/content_images/omscs/netsec/L03_img5.png" alt="img" /></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="spam-quiz">Spam Quiz</h2>
+
+<ul>
+  <li>What are the two defining characteristics of spam?
+    <ul>
+      <li>Inappropriate or irrelevant to the user</li>
+      <li>Large number of recipients</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="spam">Spam</h2>
+
+<ul>
+  <li>It is estimated that &gt;90% of all email sent each day is spam
+    <ul>
+      <li>This translates into hundreds of billions of spam messages per day</li>
+    </ul>
+  </li>
+  <li>Spammers are key players in the cybercrime underground
+    <ul>
+      <li>Build, curate, buy, and sell lists of email addresses</li>
+      <li>Send mail on behalf of other actors for a fee
+        <ul>
+          <li>Traffic-PPI services looking to acquire traffic and infections</li>
+          <li>Phishers looking to steal personal information</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Spammers rent access to botnets to send bulk email
+    <ul>
+      <li>Need a large number of IP addresses to circumvent spam filters</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="spam-affiliate-marketing">Spam Affiliate Marketing</h3>
+
+<ul>
+  <li>Huge amounts of spam are related to affiliate marketing schemes
+    <ul>
+      <li>Scammers set up websites selling counterfeit goods</li>
+    </ul>
+  </li>
+  <li>Scammers are responsible for delivering products and collecting payments
+    <ul>
+      <li>Access to credit card processing infrastructure is crucial</li>
+      <li>Many scams have legitimate customer service departments!</li>
+    </ul>
+  </li>
+  <li>Spammers sign up as “affiliates” with scam campaigns
+    <ul>
+      <li>Spammers advertise the scams, and collect commision on successful sales</li>
+      <li>Commission is typically 30-50% of the final sale price</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="spam-conversion">Spam Conversion</h3>
+
+<ul>
+  <li>The conversion rate is the percent of spam messages that result in a final sale</li>
+  <li>Big questions
+    <ul>
+      <li>Why do spammers continue to send spam?</li>
+      <li>How many messages get past spam filters?</li>
+      <li>How much money does each successful transaction make?</li>
+    </ul>
+  </li>
+  <li>Measurement technique – infiltrate the spam generation/monetizing process and find out answers</li>
+</ul>
+
+<h3 id="spam-filter-effectiveness">Spam Filter Effectiveness</h3>
+
+<ul>
+  <li>A case study (Storm botnet)
+    <ul>
+      <li>What percentage of spam got through the filters?</li>
+      <li><img src="../assets/content_images/omscs/netsec/L03_img6.png" alt="img" /></li>
+      <li>Average: 0.014% – 1 in 7,142 attempted spams got through</li>
+      <li><img src="../assets/content_images/omscs/netsec/L03_img7.png" alt="img" /></li>
+      <li><img src="../assets/content_images/omscs/netsec/L03_img8.png" alt="img" />
+        <ul>
+          <li>Conversion rates (on messages that made it to inbox):
+            <ul>
+              <li>Pharmacy = 1 in 1,737</li>
+              <li>Postcard = 1 in 37</li>
+              <li>April Fool = 1 in 25</li>
+            </ul>
+          </li>
+          <li>Revenue from pharmacy:
+            <ul>
+              <li>Extrapolates to $9,500/day (and 8,500 new bot infections per day), or $3.5million per year</li>
+              <li>This is split between the affiliate program and the Storm operators (60/40 split)</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="spam-revenue-quiz">Spam Revenue Quiz</h2>
+
+<ul>
+  <li>Name the top three countries where spam directed visitors added items to their shopping cart.
+    <ul>
+      <li>USA</li>
+      <li>Canada</li>
+      <li>Philippines</li>
+    </ul>
+  </li>
+  <li><img src="../assets/content_images/omscs/netsec/L03_img9.png" alt="img" /></li>
+</ul>
+
+<h2 id="scamming-aint-easy">Scamming Ain’t Easy</h2>
+
+<ul>
+  <li>The scamming ecosystem
+    <ul>
+      <li>Network infrastructure and the key role of payment processors</li>
+    </ul>
+  </li>
+  <li>What sort of hosting infra do you need to run such a scam?</li>
+</ul>
+
+<h3 id="infra">Infra</h3>
+
+<ul>
+  <li>Domain Name (s)
+    <ul>
+      <li>Problem - Legit registrars will take down your name if they receive complaints</li>
+      <li>Solution - Some registrars are known to ignore complaints, but they carge more.</li>
+    </ul>
+  </li>
+  <li>DNS Servers
+    <ul>
+      <li>Problem - DNS Servers are an obvious choke-point for Law Enforcement</li>
+      <li>Solution - “Bulletproof” DNS is available on the market, but its expensive</li>
+    </ul>
+  </li>
+  <li>Web Servers
+    <ul>
+      <li>Problem - Web servers are an obvious choke-pointg for Law Enforcement</li>
+      <li>Solution - “Bulletproof” servers are available, but they’re expensive</li>
+    </ul>
+  </li>
+  <li>Some services offer resilient hosting with distributed web servers, domain randomization, and DNS fast-flux
+    <ul>
+      <li>But obviously, it’s expensive!</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="payments">Payments</h3>
+
+<ul>
+  <li>To sell products, you need to be able to accept payments</li>
+  <li>You’ll need:
+    <ul>
+      <li>Merchant bank account to deposit your payments</li>
+      <li>Relationship with a payment processing service
+        <ul>
+          <li>Handles credit card payments</li>
+          <li>Withdraws money from the buyers account via a card association network (e.g. Visa)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Downfall: most banks and processors won’t do business with scammers</li>
+  <li>Solution: Again, go to “bulletproof” vendors and eat expensive fees</li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

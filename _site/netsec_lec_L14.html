@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>NetSec Lecture Notes - Lesson 14 - Botnet Detection</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>NetSec Lecture Notes - Lesson 14 - Botnet Detection</h2>
+  <h1 id="botnet-detection">Botnet Detection</h1>
+<ul>
+  <li>Rules of  engagement have changed</li>
+  <li>In the past, enemies were easy to distinguish</li>
+  <li>New technology such as botnets and APTs have changed  this dynamic</li>
+</ul>
+
+<h2 id="network-monitoring">Network Monitoring</h2>
+<ul>
+  <li>Attack traffic used to be well-defined and obvious e.g.:
+    <ul>
+      <li>Payload contains exploit toa a known vulnerability</li>
+      <li>Volume/rate suggests DoS, Spam, etc.</li>
+    </ul>
+  </li>
+  <li>Firewalls and network intrusion detection systems
+    <ul>
+      <li>Designed to identify attack traffic</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="advanced-network-monitoring">Advanced Network Monitoring</h2>
+<ul>
+  <li>Traditional firewall/NIDS
+    <ul>
+      <li>Are bypassed by mobile devices compromised while outside network perimiter</li>
+    </ul>
+  </li>
+  <li>Attack traffic is now very subtle
+    <ul>
+      <li>e.g. botnet HTTP-based command and control traffic looks like normal web traffic</li>
+    </ul>
+  </li>
+  <li>Need more advanced network monitoring
+    <ul>
+      <li>Identify traffic beyond obvious exploit/attacks</li>
+      <li>In particular, botnet detection systems</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="bot-quiz">Bot Quiz</h2>
+<p><strong>Fill in the blanks with the correct answers</strong>
+A Bot is often called a <strong>zombie</strong> because it is a <strong>compromised</strong> computer controlled by malware without the <strong>consent</strong> and <strong>knowledge</strong> of the user.</p>
+
+<h2 id="botnet-quiz">Botnet Quiz</h2>
+<p><strong>Fill in the blanks with the correct answers</strong>
+A botnet is a <strong>network</strong> of bots controlled by a <strong>Bot Master</strong>.</p>
+<ul>
+  <li>More precisely, a coordinated group of malware instances that are controlled via command and control channels.  C&amp;C architectures include centralized (e.g. IRC, HTTP) and distributed (e.g. P2P)</li>
+</ul>
+
+<p>It is a key platform for <strong>fraud</strong> and other <strong>for-profit</strong> exploits.</p>
+
+<h2 id="botnet-tasks-quiz">Botnet Tasks Quiz</h2>
+<p><strong>Select all the tasks that botnets commonly perform</strong></p>
+<ul>
+  <li>More than 95% of all spam
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>All distributed denial of service attacks
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>Click fraud
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>Phishing and pharming attacks
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>Key logging and data/identity theft
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>Distributing other malware, e.g. spyware
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>Anonymized terrorist and criminal communication
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="why-traditional-security-measures-fail">Why Traditional Security Measures Fail</h2>
+<ul>
+  <li>Traditional Anti-Virus Tools
+    <ul>
+      <li>Bots use packer, rootkit, frequent updating to easily defeat AV tools</li>
+    </ul>
+  </li>
+  <li>Traditional IDS/IPS
+    <ul>
+      <li>Look at only specific aspects
+        <ul>
+          <li>e.g. poayload with exploit</li>
+        </ul>
+      </li>
+      <li>Do not have a big picture
+        <ul>
+          <li>Bots are for long-term use</li>
+        </ul>
+      </li>
+      <li><img src="../assets/content_images/omscs/netsec/L14_img1.png" alt="img" /></li>
+    </ul>
+  </li>
+  <li>Honeypot/Honeynet
+    <ul>
+      <li>Not scalable, mostly passively waiting</li>
+      <li>Bots can detect/discover honeypot/honeynet</li>
+      <li>Because it is usually a single host, it is not a good botnet detection tool</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="botnet-detection-challenges">Botnet Detection: Challenges</h2>
+<ul>
+  <li>Bots are stealthy on the infected machines
+    <ul>
+      <li>e.g. rootkit hides the malware</li>
+    </ul>
+  </li>
+  <li>Bot infection is usually a multi-faceted and multi-phased process
+    <ul>
+      <li>Only looking at one specific aspect likely to fail</li>
+    </ul>
+  </li>
+  <li>Bots are dynamically evolving
+    <ul>
+      <li>Static and signature-based approaches may not be effective</li>
+    </ul>
+  </li>
+  <li>Botnets can have very flexible designs of C2 channels
+    <ul>
+      <li>A solution very specific to a given botnet instance is not desirable</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="botnet-detection-guidelines">Botnet Detection: Guidelines</h2>
+<ul>
+  <li>Distinguish botnet activities from normal network traffic
+    <ul>
+      <li>Bot: non-human</li>
+      <li>Net: bots are connected, activities are coordinated</li>
+    </ul>
+  </li>
+  <li>Distinguis botnets from other (older) attacks
+    <ul>
+      <li>For profit (hosts used as resources)</li>
+      <li>Long-term use (updates to the malware)</li>
+      <li>Net (coordination)</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="botnet-detection-enterprise-networks">Botnet Detection: Enterprise Networks</h2>
+<ul>
+  <li>Deploy detection at gateway or edge router</li>
+  <li>Vertical correlation
+    <ul>
+      <li>Looking for correlated events across a time horizon given that a bot has multiple activities in its life cycle</li>
+      <li>e.g. BotHunter</li>
+    </ul>
+  </li>
+  <li>Horizontal correlation
+    <ul>
+      <li>Looking for similar, or correlated, behaviors across multiple  bots</li>
+      <li>e.g. Botsniffer, BotMiner</li>
+    </ul>
+  </li>
+  <li>Cause-Effect correlation
+    <ul>
+      <li>Inject traffic to elicit a response from a bot, to confirm that traffic is generated by bots vs by humans</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="bothunter">BotHunter</h2>
+<ul>
+  <li>Vertical dialog correlation</li>
+  <li>Example: Phatbot
+    <ul>
+      <li><img src="../assets/content_images/omscs/netsec/L14_img2.png" alt="img" /></li>
+    </ul>
+  </li>
+  <li>Egress point (internal or external)</li>
+  <li>Search for duplex communication sequences that map to infection lifecycle model</li>
+  <li>Stimulus does not require strict ordering, but does require temporal locality</li>
+  <li>Characteristics of Bot declarations
+    <ul>
+      <li>External stimulus alone cannot trigger bot alert</li>
+      <li>2x internal bot behaviors triggers bot alert</li>
+      <li><img src="../assets/content_images/omscs/netsec/L14_img3.png" alt="img" /></li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="architecture">Architecture</h3>
+<p><img src="../assets/content_images/omscs/netsec/L14_img4.png" alt="img" /></p>
+<ul>
+  <li>SCADE
+    <ul>
+      <li>Statistical Scan Anomaly Detection Engine
+        <ul>
+          <li>Custom malware specific weighted scan detection system for inbound and outbound sources</li>
+          <li>Bounded memory usage to the number of inside hosts, less vulnerable to DoS attacks</li>
+        </ul>
+      </li>
+      <li>Inbound (E1: Initial Scan Phase):
+        <ul>
+          <li>suspicious port scan detection using weighted score</li>
+          <li>fialed connection to vulnerable port = high weight</li>
+          <li>fialed connection to other port = low weight</li>
+        </ul>
+      </li>
+      <li>Outbound (E5: Victim Outbound Scan Phase):
+        <ul>
+          <li>S1 - Scan rate of V over time t</li>
+          <li>S2 - Scan failed connection rate (weighted) of V over t</li>
+          <li>S3 - Scan target entropy (low revisit rate implies bot search) over t</li>
+          <li>Combine model assessments: Or, Majority voting, AND scheme</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>SLADE
+    <ul>
+      <li>Statistical pay Load Anomaly Detection Engine
+        <ul>
+          <li>Suspicious payload detection: new “lossy” n-gram byte distribution analysis over a limited set of network services</li>
+          <li>Implements a lossy data structure to capture 4-gram hash space: default vector size = 2048 (versus n=4, 256<sup>4</sup> = 2<sup>32</sup>  = 4Gb)</li>
+          <li>Comparable accuracy as full n-gram scheme: low FP and FN</li>
+          <li>General performance comparable to PAYL (Wang 2004): to detect all 18 attacks, the false positive of PAYL is 4.02%, SLADE is 0.3601%</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Signature Engine
+    <ul>
+      <li>Signature set
+        <ul>
+          <li>Replaces all standard snort rules with five custom rulesets</li>
+        </ul>
+      </li>
+      <li>Scope: Dialog content
+        <ul>
+          <li>Known worm/bot exploit signatures, shell/code/script exploits, malware update/download, C&amp;C command exchanges, outbound scans</li>
+        </ul>
+      </li>
+      <li>Rule sources
+        <ul>
+          <li>Bleeding edge malware rule sets</li>
+          <li>Snort community rules</li>
+          <li>Cyber-TA custom bot-specific rules</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="botminer">BotMiner</h2>
+<ul>
+  <li>Why do we need another?
+    <ul>
+      <li>BotHunter based on specific infection lifecycles.</li>
+      <li>Botnets can change their C&amp;C content, protocols, structures, C&amp;C servers, infection models, etc.</li>
+    </ul>
+  </li>
+  <li>Goal is to have a botnet detection system that is procotol and structure-independent</li>
+  <li>Use both vertical and horizontal correlation
+    <ul>
+      <li>Bots are for long-term use</li>
+      <li>Botnet: communication and activities are coordinated/similar</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="architecture-1">Architecture</h3>
+<p><img src="../assets/content_images/omscs/netsec/L14_img5.png" alt="img" /></p>
+<ul>
+  <li>C-Plane is for monitoring C&amp;C traffic
+    <ul>
+      <li><img src="../assets/content_images/omscs/netsec/L14_img6.png" alt="img" /></li>
+      <li>Temporal related statistical distribution information in
+        <ul>
+          <li>Bytes per second</li>
+          <li>Flows per hour</li>
+        </ul>
+      </li>
+      <li>Spatial related statistical distribution information in
+        <ul>
+          <li>Bytes per packet</li>
+          <li>Packets per flow</li>
+        </ul>
+      </li>
+      <li>Clustering of C-flows done in two steps.  Coarse-grained and then fine-grained
+        <ul>
+          <li>Why?  Efficiency</li>
+          <li>Coarse-graned: Using reduced feature space: mean and variance of the distribution of FPH, PPF, BPP, BPC for each C-flow (2 * 4 = 8)
+            <ul>
+              <li>Efficient clustering algorithm: X-means</li>
+            </ul>
+          </li>
+          <li>Fine-grained clustering: Using full feature space (13 * 4 = 52)</li>
+        </ul>
+      </li>
+      <li>A-Plane is for monitoring malicious activities
+        <ul>
+          <li><img src="../assets/content_images/omscs/netsec/L14_img7.png" alt="img" /></li>
+          <li>Capture “similar activity patterns”</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Cross-plane correlation is for detecting machines that behave similarly in both control plane and malicious activities
+    <ul>
+      <li>Cross-check the clustering results of A-plane (activities) and C-plane (communications)
+        <ul>
+          <li>Intersections provide stronger evidence that a host is in a botnet: similar malicious activities AND C&amp;C patterns</li>
+          <li>The more intersections a host falls into the stronger evidence that it is a bot</li>
+        </ul>
+      </li>
+      <li>Clustering bots into the same botnet
+        <ul>
+          <li>If two hosts appear inthe same activity clusters and in at least one common C-cluster, they should be clustered together (as the same botnet)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="botnet-detection-quiz">Botnet Detection Quiz</h2>
+<p><strong>Which of these behaviors are indicative of botnets?</strong></p>
+<ul>
+  <li>Linking to an established C&amp;C server
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>Generating IRC traffic using a specific range of ports
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>Generating DNS requests
+    <ul>
+      <li>False</li>
+      <li>Generating DNS requests is not suspicious behavior.  Generating SIMULTANEOUS IDENTICAL DNS requests is suspicious</li>
+    </ul>
+  </li>
+  <li>Generating SMTP emails/traffic
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>Reducing workstation performance/Internet access to the level that it is noticeable to users
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="botminer-limitations-quiz">BotMiner Limitations Quiz</h2>
+<p><strong>What can botnets do to avoid C-plane clustering?</strong></p>
+<ul>
+  <li>Manipulate communication patterns</li>
+  <li>Introduce noise (in the form of random packets) to reduce similarity between C&amp;C flows.</li>
+</ul>
+
+<p><strong>What can botnets do to avoid A-plane monitoring?</strong></p>
+<ul>
+  <li>Perform slow spamming</li>
+  <li>Use undetectable activities (spam sent with Gmail, download exe from HTTPS server)</li>
+</ul>
+
+<h2 id="botnet-detection-on-the-internet">Botnet Detection on the Internet</h2>
+<ul>
+  <li>A botnet must use Internet protocols or services for efficiency, robustness, and stealth
+    <ul>
+      <li>Look-up services (e.g. DNS, P2P DHT)
+        <ul>
+          <li>Find C&amp;C servers and/or peers</li>
+        </ul>
+      </li>
+      <li>Hosting services (Web servers and proxies)
+        <ul>
+          <li>Storage and distribution/exchange of attack-related data, malware download</li>
+        </ul>
+      </li>
+      <li>Transport (e.g. BGP)
+        <ul>
+          <li>Route (or hide) attack from bots to victims</li>
+        </ul>
+      </li>
+      <li>Identify the abnormal use of Internet services that suggests botnet activities</li>
+      <li>This lesson will focus on DNS
+        <ul>
+          <li>USed by most bots for locating C&amp;C and hosting sites</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="botnet-use-of-dynamic-dns-services">Botnet Use of Dynamic DNS Services</h2>
+<p><img src="../assets/content_images/omscs/netsec/L14_img8.png" alt="img" /></p>
+<ul>
+  <li>Dynamic DNS providers preferred by BotMasters because they allow frequent changes of DNS mapping, allowing rotation of IP addresses as each one gets shot down</li>
+  <li>Detecting bot DNS traffic can be done probabilistically
+    <ul>
+      <li>e.g. a botnet DNS is looked up by hundreds of thousands of machines accross the internet, but is unknown to Google search.  This is a strong signal / anomaly</li>
+    </ul>
+  </li>
+  <li>If a domain is identified as being used for a botnet, a Dnstop alert can be issued.  DynDNS updates CName to point to GT sinkhole</li>
+</ul>
+
+<h3 id="how-else-can-this-be-detected">How else can this be detected?</h3>
+<ul>
+  <li>Observation 1: hard-coded C&amp;C domain (string)
+    <ul>
+      <li>Domain name purchases use traceable financial information, so there is an incentive to get as much mileage out of a 2LD as possible.  Multiple 3LDs can use DDNS service with one package deal.</li>
+      <li>Thus: financial and stealthy motives for botnet authors to “reuse” 2LD with numerous similar/clustered 3LDs.</li>
+      <li>Clustered 3LD look-ups
+        <ul>
+          <li>Cluster the 3LDs under a SLD based on their similarities on names, and subnets of resolved IPs</li>
+          <li>Sum up the look-ups to all domains within a cluster. Botnet domains tend to have <strong>waaaay</strong> higher totals when compared to normal traffic</li>
+        </ul>
+      </li>
+      <li><img src="../assets/content_images/omscs/netsec/L14_img9.png" alt="img" /></li>
+    </ul>
+  </li>
+  <li>Observation 2: DNS look-up behavior of botnets
+    <ul>
+      <li>After boot, bots immediately resolve their C&amp;C
+        <ul>
+          <li>Exponential arrival (spike) of bot DNS requests, because of time zones, at 9am/5pm schedules, etc.</li>
+        </ul>
+      </li>
+      <li>Normal DNS lookup behavior is a lot smoother
+        <ul>
+          <li>Human users don’t all immediately check the same server right after boot</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Other observations/features
+    <ul>
+      <li>Source IP dispersion in DNS look-ups
+        <ul>
+          <li>Local or global popularity of the domain</li>
+        </ul>
+      </li>
+      <li>Resolved IP dispersion
+        <ul>
+          <li>Distributed in many different networks?</li>
+        </ul>
+      </li>
+      <li>Number of times resolved IP changed</li>
+    </ul>
+  </li>
+</ul>
+
+<p>### Botnet DynDNS Detection at a Large ISP</p>
+<ul>
+  <li>Recursive DNS Monitoring at ISP</li>
+  <li>Analyze DNS traffic from internal hosts to a recursive DNS server(s) of the network</li>
+  <li>Detect abnormal patterns/growth of “popularity” of a domain name
+    <ul>
+      <li>Identify botnet C&amp;C domain and bots</li>
+      <li>Monitor for “new and suspicious” domain names that enjoy exponential or linear growth of interests/look-ups
+        <ul>
+          <li>Train a Bloom filter for N days to reccord domain names being looked-up, and a Markove model of all the domain name strings
+            <ul>
+              <li>On the N+1 day, consider a name “new” if it is not in the Bloom filter, and if it does not  fit the Markov model, it is also “suspicious”</li>
+            </ul>
+          </li>
+          <li>Treat the sequence of look-ups to each new and suspicious domain (on the N+1 day) as a time series</li>
+          <li>Apply linear and exponential regression techniques to analyze the growth of number of look-ups
+            <ul>
+              <li>A match of the growth patterns suggests botnet domains</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Common means of botnet propagation: (worm-like) exploit-based, email-based, and drive-by egg download
+    <ul>
+      <li>Exploit-based propagation
+        <ul>
+          <li>The number of infected machines grows exponentially in the initial phase</li>
+        </ul>
+      </li>
+      <li>Email-based propagation
+        <ul>
+          <li>Exponential or linear</li>
+        </ul>
+      </li>
+      <li>Drive-by egg download
+        <ul>
+          <li>Likely sublinear</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Anomalous domain names
+    <ul>
+      <li>Botnet-related domains usually contain random-looking (sub)strings</li>
+      <li>Many/most sensible domain names have been registered (for legitimate use)</li>
+      <li>In particular, botnet domain name 3LD often looks completely random, and the domain name tends to be very long</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="detection-of-targeted-and-advanced-threats">Detection of Targeted and Advanced Threats</h2>
+<ul>
+  <li>Zero-day exploits, custom-built malware</li>
+  <li>Low-and-slow</li>
+  <li>Lateral movement</li>
+  <li>Need multi-faceted monitoring and analysis
+    <ul>
+      <li>Malware analysis</li>
+      <li>Host-based monitoring, forensics, recovery</li>
+      <li>Network monitoring</li>
+      <li>Internet monitoring, threat analysis, attribution</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="apt-quiz">APT Quiz</h2>
+<p><strong>Which of the information should be considered in order to identify the source of an APT attack?</strong></p>
+<ul>
+  <li>Source IP address of TCP-based attack packets</li>
+  <li>Coding style of malware</li>
+  <li>Inclusion of special libraries with known authors</li>
+  <li>Motives of the attack</li>
+  <li>Language encoding</li>
+  <li>All of the above
+    <ul>
+      <li>True!</li>
+    </ul>
+  </li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

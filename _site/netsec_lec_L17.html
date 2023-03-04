@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>NetSec Lecture Notes - Lesson 17 - Machine Learning for Security</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>NetSec Lecture Notes - Lesson 17 - Machine Learning for Security</h2>
+  <h1 id="machine-learning-for-security">Machine Learning for Security</h1>
+<ul>
+  <li>Goal is to automatically identify new attacks</li>
+</ul>
+
+<h2 id="data-analysis-quiz">Data Analysis Quiz</h2>
+<ul>
+  <li>Model normal network and system behavior and identify deviations from the norm
+    <ul>
+      <li>Anomaly detection</li>
+    </ul>
+  </li>
+  <li>Combination of misuse and anomaly detection
+    <ul>
+      <li>Hybrid detection</li>
+    </ul>
+  </li>
+  <li>Detect known attacks using signatures of those attacks
+    <ul>
+      <li>Misuse detection</li>
+    </ul>
+  </li>
+  <li>Can detect known types of attacks without generating a lot of false positives
+    <ul>
+      <li>Misuse detection</li>
+    </ul>
+  </li>
+  <li>Have the ability to detect zero-day attacks
+    <ul>
+      <li>Anomaly detection</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="machine-learning-review">Machine Learning Review</h2>
+<ul>
+  <li>Given training examples, determine a function that can predict the output.  Then apply it to testing examples
+    <ul>
+      <li>Done by minimizing prediction error on the training set</li>
+    </ul>
+  </li>
+  <li>Data is drawn randomly from a real-world process, and split randomly into test and training sets</li>
+  <li>Very basic review of modeling process given here. Not transcribed here in detail.</li>
+</ul>
+
+<h3 id="generalization">Generalization</h3>
+<ul>
+  <li>How well do the features learned from the training set generalize to unseen test data?</li>
+</ul>
+
+<h3 id="performance-measures">Performance Measures</h3>
+<ul>
+  <li>Error rate
+    <ul>
+      <li>Fraction of false predictions</li>
+    </ul>
+  </li>
+  <li>Accuracy
+    <ul>
+      <li>Fraction of correct predictions</li>
+    </ul>
+  </li>
+  <li>Precision/recall
+    <ul>
+      <li>Example: binary classification problems</li>
+      <li>Precision is the fraction of correct predictions among all examples predicted to be positive</li>
+      <li>Recall is the fraction of correct predictions among all real positive examples</li>
+      <li>Can be generalized to multi-class cases</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="ml-types-quiz">ML Types Quiz</h2>
+<ul>
+  <li>The main task is to find patterns, structures, or knowledge in the unlabeled data
+    <ul>
+      <li>Unsupervised learning</li>
+    </ul>
+  </li>
+  <li>The task is to find a function or model that explains the data
+    <ul>
+      <li>Supervised learning</li>
+    </ul>
+  </li>
+  <li>Some of the data is labeled during acquisition
+    <ul>
+      <li>Semi-supervised learning</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="classification-problems">Classification Problems</h2>
+<ul>
+  <li>Brief, high-level coverage of classification and decision tree models.  It’s a tree, with rules for branching.</li>
+  <li>Not transcribed here in detail.</li>
+</ul>
+
+<h3 id="building-a-decision-tree">Building a Decision Tree</h3>
+<ul>
+  <li>First test all attributes and select the one that would function as the best root</li>
+  <li>Break up the training set into subsets based on the branches of the root node</li>
+  <li>Test the remaining attributes to see which ones fit best underneath the branches of the root node</li>
+  <li>Continue this process for all other branches until
+    <ul>
+      <li>all examples of a subset are one type (i.e. same class label)</li>
+      <li>there are no more attributes left (default value should b e majority classification)</li>
+    </ul>
+  </li>
+  <li>Determing which attribute is best (Entropy and Information Gain)
+    <ul>
+      <li>Entropy is the minimum number of bits needed to represent the examples according to their class labels, or roughly how “pure” the examples are.  That is, if the examples are evenly distributed into different classes, the entropy is the maximum and if the examples are all in a single class the entropy is minimum</li>
+      <li>The information gain is described as an equation, but meaans that a given Attribute A is better at separating samples S according to their classification.  That is, S are partitioned into “purer” subsets</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="decision-tree-quiz">Decision Tree Quiz</h2>
+<ul>
+  <li>Can supplement honeypot analysis
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>Can supplement penetration testing
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>Cannot highlight malicious traffic
+    <ul>
+      <li>False</li>
+    </ul>
+  </li>
+  <li>Cannot characterize known scanning activity
+    <ul>
+      <li>False</li>
+    </ul>
+  </li>
+  <li>Can detect previously unknown network anomalies
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="clustering">Clustering</h2>
+<ul>
+  <li>Construct a partition of training examples that optimizes the chosen partitioning criterion, e.g. a distance or similarity function</li>
+  <li>Start with seed clusters of one element</li>
+  <li>Assign samples to clusters based on distance measures</li>
+  <li>Find new centroids</li>
+  <li>Iterate above 3 steps until the clusters converge.  That is, no more changes in the clusters</li>
+</ul>
+
+<h2 id="define-the-ml-problem--quiz">Define the ML Problem  Quiz</h2>
+<p><strong>C&amp;C Protocol Detection</strong></p>
+<ul>
+  <li>Task - recognize and attribute C&amp;C communication on networks</li>
+  <li>Training - supervised learning</li>
+  <li>Performance measures - percentage of network communication correctly classified</li>
+  <li><strong>What type of data will we need for C&amp;C Protocol Detection</strong>
+    <ul>
+      <li>We will need known C&amp;C communication (labeled data)</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="classifiers">Classifiers</h2>
+<ul>
+  <li>Intrusion detection is fundamentally a classification problem, in that we’re trying to distinguish between legitimate and malicious network traffic</li>
+  <li><img src="../assets/content_images/omscs/netsec/L17_img1.png" alt="img" /></li>
+</ul>
+
+<h2 id="audit-data-preprocessing">Audit Data Preprocessing</h2>
+<ul>
+  <li>Goes through example of decomposing PCAP data into features, and fitting simple model to it.  Not transcribed here in detail.</li>
+</ul>
+
+<h2 id="mining-patterns">Mining Patterns</h2>
+<ul>
+  <li>Associations of features
+    <ul>
+      <li>e.g. <code class="highlighter-rouge">(service=http, flag=S0</code></li>
+      <li>Basic algorithm: association rules</li>
+    </ul>
+  </li>
+  <li>Sequential patterns in activity records</li>
+  <li>Adjusting and augmenting basic algorithms is often necessary
+    <ul>
+      <li>Goes into some depth on considering features like “service”, and how that can be done mathematically</li>
+      <li>It boils down to reduction in irrelevant patterns detected, to improve signal-to-noise ratio</li>
+    </ul>
+  </li>
+  <li>Compare and identify “intrusion-only” patterns</li>
+  <li>Parse each intrusion pattern
+    <ul>
+      <li>Identify the <em>anatomy</em> (reference and axis)  and <em>invariant</em> information of an attack</li>
+      <li>Apply count, percent, and average operations to add temporal and statistical features</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="dataset-selection-quiz">Dataset Selection Quiz</h2>
+<p><strong>List some considerations when selecting a dataset for training</strong></p>
+<ul>
+  <li>There is no perfect way of labelling data, therefore there really is no perfect IDS dataset</li>
+  <li>Selecting a correct baseline dataset for your network</li>
+  <li>Selecting a dataset that has a range of intrusion attacks</li>
+</ul>
+
+<h2 id="feature-construction-example">Feature Construction Example</h2>
+<ul>
+  <li>“syn flood” patterns (dst_host is reference attribute)
+    <ul>
+      <li><code class="highlighter-rouge">(flag=S0, service=http), (flag=S0, service=http) -&gt; (flag=S0, service=http) [0.6, 2s]</code></li>
+      <li>Add features:
+        <ul>
+          <li>count the connections to the same dst_host in the past 2 seconds, and among those connections:
+            <ul>
+              <li>the percentage with the same service</li>
+              <li>the percentage with S0</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="1998-darpa-evaluation">1998 DARPA Evaluation</h2>
+<ul>
+  <li>The data (prepared by MIT Lincoln Lab)
+    <ul>
+      <li>Total 38 attack types, in four categories:
+        <ul>
+          <li>DOS, e.g. SYN flood</li>
+          <li>Probing, e.g. port scan</li>
+          <li>R2L (remote intruder illegally gaining access to local systems), e.g. guessing a password</li>
+          <li>U2R (user illegally gaining root privilege), e.g. buffer overflow</li>
+        </ul>
+      </li>
+      <li>40% of attack types are in test data only, i.e. “new” to intrusion detection systems</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="features">Features</h3>
+<ul>
+  <li>Intrinsic features (inherent to any connection)
+    <ul>
+      <li>protocol (service)</li>
+      <li>protocol type (TCP, UDP, ICMP, etc)</li>
+      <li>duration of the connection</li>
+      <li>flag (connection established and terminated properly, SYN error, rejected, etc)</li>
+      <li># of wrong fragments</li>
+      <li># of urgent packets</li>
+      <li>whether the connection is from/to the same IP/port pair</li>
+    </ul>
+  </li>
+  <li>Content features (for TCP connections only)
+    <ul>
+      <li># of failed logins</li>
+      <li>successfully logged in or not</li>
+      <li># of root shell prompts</li>
+      <li><code class="highlighter-rouge">su root</code> attempted or not</li>
+      <li># of access to security control files</li>
+      <li># of compromised states (e.g. Jumping to address, path not found, etc)</li>
+      <li># of write access to files</li>
+      <li># of outbound commands</li>
+      <li># of hot (the sum of all the above hot indicators)</li>
+      <li>is a guest login or not</li>
+    </ul>
+  </li>
+  <li>Features constructed from mined patterns
+    <ul>
+      <li>Temporal and statistical “traffic” features that describe connetions within a time window
+        <ul>
+          <li># of connectiosn to the same destination host as the current connection in the past 2 seconds, and among these connections:
+            <ul>
+              <li># of rejected connections</li>
+              <li># of connections with SYN errors</li>
+              <li># of different services</li>
+              <li>% of connections that have the same service</li>
+              <li>% of unique services</li>
+            </ul>
+          </li>
+          <li># of connectiosn that have the same service as the current connection, and among these connections
+            <ul>
+              <li># of rejected connections</li>
+              <li># of connections with SYN errors</li>
+              <li># of different destination hosts</li>
+              <li>% of connections that have the same  destination host</li>
+              <li>% of unique destination hosts</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

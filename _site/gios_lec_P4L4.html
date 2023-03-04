@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>GIOS Lecture Notes - Part 4 Lesson 4 - Data Center Technologies</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>GIOS Lecture Notes - Part 4 Lesson 4 - Data Center Technologies</h2>
+  <hr />
+<h2 id="data-center-technologies">Data Center Technologies</h2>
+<h3 id="internet-services">Internet Services</h3>
+<ul>
+  <li>Internet service == any type of service provided via web interface</li>
+  <li>Generally have 3 layers
+    <ul>
+      <li>Presentation == static content</li>
+      <li>Business logic == dynamic content</li>
+      <li>Database tier == data store</li>
+    </ul>
+  </li>
+  <li>Those three are not necessarily separate processes on separate machines</li>
+  <li>Many available open source and proprietary technologies for each of the above</li>
+  <li>Middleware == supporting, integrative, or value-added software technologies
+    <ul>
+      <li>D&amp;R, security, accounting, provisioning, etc.  Tons of these</li>
+    </ul>
+  </li>
+  <li>In multiprocess configurations, some form of IPC must be used
+    <ul>
+      <li>RPC/RMI, Shared Memory, etc.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="internet-service-architectures">Internet Service Architectures</h3>
+<ul>
+  <li>For scale: multi-process, multi-node
+    <ul>
+      <li>“Scale out” architecture – deal with increases in incoming request rates
+        <ul>
+          <li>Can just launch the same service on new machines if more are needed.  e.g. “spinning up” cloud resources.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Boss-worker:
+    <ul>
+      <li>Front-end distributes requests to nodes</li>
+    </ul>
+  </li>
+  <li>All Equal:
+    <ul>
+      <li>All nodes executge any possible step in requst processing, for any request</li>
+      <li>Functionally homogeneous</li>
+    </ul>
+  </li>
+  <li>Specialized Nodes:
+    <ul>
+      <li>nodes execute some specific step(s) in request processing, for some request types</li>
+      <li>Functionally heterogeneous</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="homogeneous-architectures">Homogeneous Architectures</h3>
+<ul>
+  <li>Each node:
+    <ul>
+      <li>can do any processing step</li>
+      <li>can process any type of request</li>
+    </ul>
+  </li>
+  <li>Pros
+    <ul>
+      <li>Keeps front-end simple – doesn’t have to keep track of node capabilities</li>
+      <li>Doesn’t mean that each node has to store all data, just that each node can get to all data</li>
+    </ul>
+  </li>
+  <li>Cons
+    <ul>
+      <li>Little opportunity to benefit from caching</li>
+      <li>Front end can’t assign work based on locality</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="heterogeneous-architectures">Heterogeneous Architectures</h3>
+<ul>
+  <li>Different nodes are designated to perform different tasks or steps</li>
+  <li>Data doesn’t have to be uniformly accessible everywhere
+    <ul>
+      <li>Still possible to have data distributed in ways that are convenient or efficient</li>
+    </ul>
+  </li>
+  <li>Pros
+    <ul>
+      <li>Can take advantage of the benefits of locality and caching</li>
+    </ul>
+  </li>
+  <li>Cons
+    <ul>
+      <li>More complex front end
+        <ul>
+          <li>Must track information about node capability</li>
+          <li>Must parse requests enough to know how to hand work out to the correct nodes</li>
+        </ul>
+      </li>
+      <li>More complex management
+        <ul>
+          <li>Coordination of tasks</li>
+          <li>Coordination of data distribution</li>
+          <li>Load balancing is more complex</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="cloud-computing-poster-child-animoto">Cloud Computing Poster Child: Animoto</h3>
+<ul>
+  <li>Amazon
+    <ul>
+      <li>provisioned hardware resources for holiday sale season</li>
+      <li>resources idle the rest of the year
+        <ul>
+          <li>or used for other company tasks – analytics or similar</li>
+        </ul>
+      </li>
+      <li>Opened access to its resources via web-based APIs</li>
+      <li>Third party workloads on Amazon hardware, for a fee</li>
+      <li>This is the birth of Amazon Web Services (AWS) and Amazon’s Elastic Compute Cloud (EC2)</li>
+    </ul>
+  </li>
+  <li>Animoto rented compute instances in EC2
+    <ul>
+      <li>SAAS – Turns a series of pictures into a video.</li>
+      <li>Compute heavy, involves lots of image processing steps</li>
+      <li>Wanted to focus resources on algorithm development instead of acquisition of hardware</li>
+      <li>Was doing pretty well, required about 50 instances</li>
+      <li>In April 2008, became available to Facebook users</li>
+      <li>On a monday they had 50 instances, by Friday they needed 3400
+        <ul>
+          <li>350,000 new users in 3 days</li>
+        </ul>
+      </li>
+      <li>Could never have been achieved with traditional in-house machine deployment and provisioning tools</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="cloud-computing-requirements">Cloud Computing Requirements</h3>
+<p><img src="../assets/content_images/omscs/gios/p4l4_img1.png" alt="" /></p>
+<ul>
+  <li>Traditional Approach
+    <ul>
+      <li>buy and configure resources
+        <ul>
+          <li>determine capacity based on expected demand (peak)</li>
+        </ul>
+      </li>
+      <li>When demand exceeds capacity
+        <ul>
+          <li>dropped requests</li>
+          <li>lost opportunity</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/gios/p4l4_img2.png" alt="" /></p>
+<ul>
+  <li>Ideal Cloud
+    <ul>
+      <li>Capacity scales elastically with demand</li>
+      <li>Scaling is instantaneous, both up and down</li>
+      <li>Cost is proportional to demand, and also to revenue opportunity</li>
+      <li>All of this happens automatically</li>
+      <li>Can access these resources anytime, anywhere</li>
+      <li>One gotcha – you don’t own these resources</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="cloud-computing-requirements-summarized">Cloud Computing Requirements: Summarized</h4>
+<ul>
+  <li>On-demand, elastic resources and services</li>
+  <li>Fine-grained pricing based on usage</li>
+  <li>Professionally managed and hosted</li>
+  <li>API-based access</li>
+</ul>
+
+<h3 id="cloud-computing-overview">Cloud Computing Overview</h3>
+<ul>
+  <li>Shared resources
+    <ul>
+      <li>Infrastructure and software/services</li>
+      <li>Both of these are worthwhile, as the value prop of cloud computing is heavily reduced if you have to hire your own engineers to maintain and configure all the software and services yourself.  Far easier to rent both if you are going to rent the infrastructure.</li>
+    </ul>
+  </li>
+  <li>APIs for access and configuration
+    <ul>
+      <li>web-based, libraries, command line, etc.</li>
+    </ul>
+  </li>
+  <li>Billing/accounting services
+    <ul>
+      <li>Many models: spot, reservation, etc
+        <ul>
+          <li>there’s an entire marketplace around this</li>
+        </ul>
+      </li>
+      <li>Typically discrete quantities:
+        <ul>
+          <li>tiny, medium, XL, etc.</li>
+          <li>Too difficult to manage below a certain level of granularity</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>All managed by the cloud provider</li>
+</ul>
+
+<h3 id="why-does-cloud-computing-work">Why Does Cloud Computing Work?</h3>
+<ul>
+  <li>Law of Large Numbers
+    <ul>
+      <li>per customer there is large variation in resource needs over time</li>
+      <li>average across many customers is roughly constant</li>
+      <li>this means that a fixed-size cloud should be able to accommodate the varying “peaks” its customers experience</li>
+    </ul>
+  </li>
+  <li>Economies of Scale
+    <ul>
+      <li>unit cost of providing resources or service drops at “bulk”</li>
+      <li>things are always cheaper by the dozen</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="cloud-computing-vision">Cloud Computing Vision</h3>
+<ul>
+  <li>Although cloud computing is a (relatively) recent trend, the concept/vision for it is quite old</li>
+  <li>“If computers of the kind I have advocated become the computers of the future, then computing may some day be organized as a public utility, just as the telephone system is a public utility.  The computer utility could become the basis of a new and important industry.” –John McCarthy, MIT Centennial, 1961</li>
+  <li>By this logic, cloud computing should turn compute into a fungible utility, where we don’t know or care where the cycles are being run, nor on what kind of hardware</li>
+  <li>Limitations exist:
+    <ul>
+      <li>API lock-in, hardware dependence, latency, privacy, security, etc.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="cloud-deployment-models">Cloud Deployment Models</h3>
+<ul>
+  <li>Public
+    <ul>
+      <li>third party customers/tenants use infrastructure on top of provider hardware</li>
+      <li>infrastructure belongs to cloud provider</li>
+    </ul>
+  </li>
+  <li>Private
+    <ul>
+      <li>leverage technology and infrastructure internally</li>
+    </ul>
+  </li>
+  <li>Hybrid (Public + Private)
+    <ul>
+      <li>Commonly used for: failover, dealing with spikes, testing</li>
+    </ul>
+  </li>
+  <li>Community
+    <ul>
+      <li>Public cloud where third-party users are of a specific type</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="cloud-service-models">Cloud Service Models</h3>
+<p><img src="../assets/content_images/omscs/gios/p4l4_img3.png" alt="" /></p>
+
+<h3 id="requirements-for-the-cloud">Requirements for the Cloud</h3>
+<ul>
+  <li>Fungible Resources
+    <ul>
+      <li>Resources can easily be repurposed to support different customers with different requirements</li>
+      <li>Necessary to deal with variation in available machines.  Users shouldn’t see that</li>
+    </ul>
+  </li>
+  <li>Elastic, dynamic resource allocation methods</li>
+  <li>Scale: management at scale, scalable resource allocations</li>
+  <li>Dealing with failures
+    <ul>
+      <li>at scale, failures become inevitable.</li>
+      <li>dynamic, resilient failover mechanisms are required</li>
+    </ul>
+  </li>
+  <li>Multi-tenancy: performance and isolation
+    <ul>
+      <li>across both multiple workloads and multiple tenants</li>
+    </ul>
+  </li>
+  <li>Security
+    <ul>
+      <li>isolation of the state that is accessed</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="cloud-enabling-technologies">Cloud Enabling Technologies</h3>
+<ul>
+  <li>Virtualization
+    <ul>
+      <li>required to address fungibility</li>
+    </ul>
+  </li>
+  <li>Resource provisioning (scheduling)
+    <ul>
+      <li>Mesos, Yarn</li>
+    </ul>
+  </li>
+  <li>Big Data
+    <ul>
+      <li>Processing – Hadoop MapReduce, Spark</li>
+      <li>Storage
+        <ul>
+          <li>Distributed FS (“append only”)</li>
+          <li>NoSQL, distributed in-memory caches</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Software-defined
+    <ul>
+      <li>networking</li>
+      <li>storage</li>
+      <li>datacenters</li>
+    </ul>
+  </li>
+  <li>Monitoring
+    <ul>
+      <li>real time log processing (Flume, CloudWatch, Log Insight)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="the-cloud-as-a-big-data-engine">The Cloud as a Big Data Engine</h3>
+<ul>
+  <li>Modern society generates astronomical amounts of data.  The cloud democratizes access to compute resources that can handle problems at that scale.</li>
+  <li>Data storage layer</li>
+  <li>Data processing layer
+    <ul>
+      <li>easily describe parallel applications</li>
+    </ul>
+  </li>
+  <li>Caching layer</li>
+  <li>Language front-ends
+    <ul>
+      <li>e.g. querying</li>
+    </ul>
+  </li>
+  <li>Analytics libraries
+    <ul>
+      <li>e.g. ML</li>
+    </ul>
+  </li>
+  <li>Continuously streaming data
+    <ul>
+      <li>e.g. Kafka</li>
+      <li>new data streaming in all the time, service to handle that</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="example-big-data-stacks">Example Big Data Stacks</h4>
+<ul>
+  <li>Hadoop</li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/gios/p4l4_img4.png" alt="" /></p>
+
+<ul>
+  <li>Berkeley Data Analytics Stack (BDAS)</li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/gios/p4l4_img5.png" alt="" /></p>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>Software Dev Process Lecture Notes - Part 3 Lesson 3 - Design Patterns</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>Software Dev Process Lecture Notes - Part 3 Lesson 3 - Design Patterns</h2>
+  <hr />
+<h2 id="software-design-patterns">Software Design Patterns</h2>
+
+<h3 id="history-of-patterns">History of Patterns</h3>
+<ul>
+  <li>Prof discusses brief history of the people who came up with and developed the idea of reusable idioms in software dev.  Culminates in mention/endorsement of the Gang of Four book.</li>
+</ul>
+
+<h3 id="design-patterns">Design patterns</h3>
+<ul>
+  <li>
+    <p>Shows eye chart of many different patterns, of different types.  Indicates we will review just a couple of them in depth for this lesson.</p>
+  </li>
+  <li>
+    <p>Format of pattern (subset)</p>
+    <ul>
+      <li>How do you actually define a pattern?</li>
+      <li>NAme, Intent, Motivation, Applicability, Structure, consequences, Implementation, Sample Code, Related Patterns, and much more (tm).</li>
+      <li>For this lesson, we will look at only name, intent, applicability, structure, and sample code.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="factory-method-pattern">Factory Method Pattern</h3>
+<ul>
+  <li>Intent
+    <ul>
+      <li>Allows for creating objects without specifying their class, by invoking a factory method (i.e. a method whose main goal is to creata  class instances)</li>
+    </ul>
+  </li>
+  <li>Applicability
+    <ul>
+      <li>Class can’t anticipate the type of objects it must create</li>
+      <li>Class wants its subclasses to specify the type of objects it creates</li>
+      <li>Class needs control over the creation of its objects
+<img src="../assets/content_images/omscs/sdp/p3l3_img1.png" alt="" /></li>
+    </ul>
+  </li>
+  <li>Sample Code
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class ImageReaderFactory {
+  public static ImageReader createImageReader(InputStream is) {
+      int imageType = getImageType(is);
+      switch (imageType) {
+          case ImageReaderFactory.GIF
+              return new GifReader(is);
+          case
+              ImageReaderFactory.JPEG
+                  return new JpegReader(is);
+          //...
+      }
+  }
+}
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="strategy-pattern">Strategy Pattern</h3>
+<ul>
+  <li>Intent
+    <ul>
+      <li>Allows for switching between different algorithms for accomplishing a task</li>
+    </ul>
+  </li>
+  <li>Applicability
+    <ul>
+      <li>Different variants of an algorithm</li>
+      <li>Many related classes differ only in their behavior
+<img src="../assets/content_images/omscs/sdp/p3l3_img2.png" alt="" /></li>
+    </ul>
+  </li>
+  <li>Example
+    <ul>
+      <li>Program
+        <ul>
+          <li>Input: text file</li>
+          <li>Output: filtered file</li>
+          <li>Four filters
+            <ul>
+              <li>No filtering</li>
+              <li>only words that start with “t”</li>
+              <li>only words longer than 5 characters</li>
+              <li>only words that are palindromes</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Sample Code
+```
+//Algorithm interface
+interface CheckStrategy {
+  public boolean check(String s);
+}</li>
+</ul>
+
+<p>//Algorithm instances
+class All implements CheckStrategy {
+    @Override
+    public boolean check(String s) {
+        return true;
+    }
+}</p>
+
+<p>class StartWithT implements CheckStrategy {
+    @Override
+    public boolean check(String s) {
+        if( s == null || s.length() == 0) {
+            return false;
+        }
+        return s.charAt(0) == ‘t’;
+    }
+}</p>
+
+<p>class LongerThan5 implements CheckStrategy {
+    @Override
+    public boolean check(String s) {
+        if(s == null) {
+            return false;
+        }
+        return s.length() &gt; 5;
+    }
+}</p>
+
+<p>class Palindrome implements CheckStrategy {
+    @Override
+    public boolean check(String s) {
+        if(s == null) {
+            return false;
+        }
+        int length = s.length();
+        if(length &lt; 2) {
+            return true;
+        }
+        int half = length/2;
+        for(int i = 0; i &lt; half; ++i) {
+            if(s.charAt(i) != s.charAt(length - 1 - i)) {
+                return false;
+            }
+        }
+        return true;
+    }
+}</p>
+
+<p>class Context {
+    private CheckStrategy strategy;</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public Context() {
+    this.strategy = new All();
+}
+
+public void changeStrategy(CheckStrategy strategy) {
+    this.strategy = strategy;
+}
+
+public void filter(String filename) throws IOException {
+    BufferedReader infile = new BufferedReader(new FileReader(filename));
+    String buffer = null;
+    while((buffer = infile.readLine()) != null) {
+        StringTokenizer words = new StringTokenizer(buffer);
+        while( words.hasMoreTokens() ) {
+            String word = words.nextToken();
+            if (strategy.check(word)) {
+                System.out.println(word);
+            }
+        }
+    }
+} }
+</code></pre></div></div>
+
+<p>public class StrategyPattern {</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public static void main(String[] args) throws IOException {
+    Context context = new Context();
+    String filename = "foo.txt";
+
+    System.out.println("\n* Default:");
+    context.filter(filename);
+
+    System.out.println("\n* Longer than 5:");
+    context.changeStrategy(new LongerThan5());
+    context.filter(filename);
+
+    System.out.println("\n*Palindromes:");
+    context.changeStrategy(new Palindrome());
+    context.filter(filename);
+} }
+</code></pre></div></div>
+
+<p>```</p>
+
+<h3 id="other-common-patterns">Other Common Patterns</h3>
+<ul>
+  <li>Visitor
+    <ul>
+      <li>A way of separating an algorithm from an object structure on which it operates</li>
+    </ul>
+  </li>
+  <li>Decorator
+    <ul>
+      <li>A wrapper that adds functionality to a class: stackable!</li>
+    </ul>
+  </li>
+  <li>Iterator
+    <ul>
+      <li>Access elements of a collection without knowing underlying representation</li>
+    </ul>
+  </li>
+  <li>Observer
+    <ul>
+      <li>Notify dependents when object changes</li>
+    </ul>
+  </li>
+  <li>Proxy
+    <ul>
+      <li>Surrogate controls access to an object</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="choosing-a-pattern">Choosing a Pattern</h3>
+<ul>
+  <li>Approach
+    <ul>
+      <li>Understand your design context</li>
+      <li>Examine the patterns catalogue</li>
+      <li>Identify and study related patterns</li>
+      <li>Apply suitable pattern</li>
+    </ul>
+  </li>
+  <li>Pitfalls
+    <ul>
+      <li>Selecting wrong patterns</li>
+      <li>Abusing patterns (astronaut behavior)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="negative-design-patterns">Negative Design Patterns</h3>
+<ul>
+  <li>How not to do things</li>
+  <li>Also called anti-patterns and bad smells</li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

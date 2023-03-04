@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>NetSec Lecture Notes - Lesson 12 - Cloud Computing - VM Monitoring</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>NetSec Lecture Notes - Lesson 12 - Cloud Computing - VM Monitoring</h2>
+  <h1 id="cloud-computing---vm-monitoring">Cloud Computing - VM Monitoring</h1>
+<ul>
+  <li>Definition of cloud computing: a model for enabling convenient, on-demand network access to a shared pool of configurable computing resources (e.g. networks, servers, storage, applications, and services) that can be rapidly provisioned and released with minimal management effort or service provider interaction</li>
+  <li>Note: the cloud computing industry represents a large ecoystem of many models, vendors, and market niches.  This definition attempts to encompass all of thevarious cloud approaches</li>
+</ul>
+
+<h2 id="cloud-characteristics-quiz">Cloud Characteristics Quiz</h2>
+<p><strong>Given our definition of cloud computing fill in the 5 essential cloud characteristics</strong>
+	* On demand self service
+	* Broad or wide network access
+	* Resource pooling or sharing
+	* Measured service
+	* Rapid elasticity</p>
+
+<h2 id="cloud-service-models">Cloud Service Models</h2>
+<ul>
+  <li>Software As A Service
+    <ul>
+      <li>Use the provider’s applications running on a cloud infrastructure</li>
+    </ul>
+  </li>
+  <li>Platform As A Service
+    <ul>
+      <li>Consumer-created applications using programming languages and tools supported by the provider</li>
+    </ul>
+  </li>
+  <li>Infrastructure As A Service
+    <ul>
+      <li>Capability provided to the consumer to provision processing, storage, networks, and other fundamental computing resources</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="services-quiz">Services Quiz</h2>
+<p><strong>Given the definitions of SaaS, IaaS, PaaS determine the service category for each of the products listed</strong></p>
+<ul>
+  <li>Google Apps
+    <ul>
+      <li>PaaS</li>
+    </ul>
+  </li>
+  <li>Amazon Web Services
+    <ul>
+      <li>IaaS</li>
+    </ul>
+  </li>
+  <li>Salesforce
+    <ul>
+      <li>PaaS</li>
+    </ul>
+  </li>
+  <li>Knowledge Tree
+    <ul>
+      <li>SaaS</li>
+    </ul>
+  </li>
+  <li>Microsoft Azure
+    <ul>
+      <li>IaaS</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="cloud-deployment-models">Cloud Deployment Models</h2>
+<ul>
+  <li>Private
+    <ul>
+      <li>The cloud infrastructure is operated solely for an organization</li>
+    </ul>
+  </li>
+  <li>Community
+    <ul>
+      <li>The cloud infrastructure is shared by several organizations and supports a specific community that has shared concerns</li>
+    </ul>
+  </li>
+  <li>Public
+    <ul>
+      <li>The cloud infrastructure is made available to the general public or a large industry group</li>
+    </ul>
+  </li>
+  <li>Hybrid
+    <ul>
+      <li>The cloud infrastructure is a composition of two or more clouds (private, community, or public)</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="common-cloud-characteristics-quiz">Common Cloud Characteristics Quiz</h2>
+<p><strong>List some of the characteristics that all four cloud models share  according to the NIST framework</strong></p>
+<ul>
+  <li>Massive scale</li>
+  <li>Homogeneity</li>
+  <li>Virtualization</li>
+  <li>Resilient computing</li>
+  <li>Low cost software</li>
+  <li>Geographic distribution</li>
+  <li>Service orientation</li>
+  <li>Advanced security technologies</li>
+</ul>
+
+<h2 id="nist-risk-identified-quiz">NIST Risk Identified Quiz</h2>
+<p><img src="../assets/content_images/omscs/netsec/L12_img1.png" alt="img" /></p>
+
+<h2 id="analyzing-cloud-security">Analyzing Cloud Security</h2>
+<ul>
+  <li>Key Issues
+    <ul>
+      <li>Trust, multi-tenancy, encryption, compliance</li>
+    </ul>
+  </li>
+  <li>Clouds are massively complex systems
+    <ul>
+      <li>Simple primitives and common functional units.</li>
+      <li>Complexity largely comes from sheer scale</li>
+    </ul>
+  </li>
+  <li>Cloud security is a tractable problem
+    <ul>
+      <li>There are both advantages and challenges</li>
+    </ul>
+  </li>
+  <li>Cloud security advantages
+    <ul>
+      <li>Shifting public data to an external cloud reduces the exposure of the internal sensitive data</li>
+      <li>Cloud homogeneity makes security auditing/testing simpler</li>
+      <li>Clouds enable automated security management</li>
+      <li>Redundancy / Disaster Recovery</li>
+    </ul>
+  </li>
+  <li>Cloud security challenges
+    <ul>
+      <li>Trusting vendor’s security model</li>
+      <li>Customer inability to respond to audit findings</li>
+      <li>Obtaining support for investigations</li>
+      <li>Indirect administrator accountability</li>
+      <li>Proprietary implementations can’t be examined</li>
+      <li>Loss of physical control</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="security-relevant-cloud-components">Security Relevant Cloud Components</h2>
+<ul>
+  <li>Cloud provisioning services
+    <ul>
+      <li>Advantages
+        <ul>
+          <li>Rapid reconstitution of services</li>
+          <li>Enables availability
+            <ul>
+              <li>Provision of multiple data centers</li>
+            </ul>
+          </li>
+          <li>Advanced honeynet capabilities</li>
+        </ul>
+      </li>
+      <li>Challenges
+        <ul>
+          <li>Impact of compromising the provisioning service</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Cloud data storage services
+    <ul>
+      <li>Advantages
+        <ul>
+          <li>Data fragmentation and dispersal</li>
+          <li>Automated replication</li>
+          <li>Provision of data zones (e.g. by country)</li>
+          <li>Encryption at rest and in transit</li>
+          <li>Automated data retention</li>
+        </ul>
+      </li>
+      <li>Challenges
+        <ul>
+          <li>Isolation management / data multi-tenancy</li>
+          <li>Storage controller
+            <ul>
+              <li>Single point of failure / compromise?</li>
+            </ul>
+          </li>
+          <li>Exposure of data to foreign governments</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Cloud processing infrastructure
+    <ul>
+      <li>Advantages
+        <ul>
+          <li>Ability to secure masters and push out secure images</li>
+        </ul>
+      </li>
+      <li>Challenges
+        <ul>
+          <li>Application multi-tenancy</li>
+          <li>Reliance on hypervisors</li>
+          <li>Process isolation / Application sandboxes</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Cloud support services
+    <ul>
+      <li>Advantages
+        <ul>
+          <li>On demand security controls (e.g. authentication, logging, firewalls)</li>
+        </ul>
+      </li>
+      <li>Challenges
+        <ul>
+          <li>Additional risk when integrated with customer applications</li>
+          <li>Needs certification and accreditation as a separate application</li>
+          <li>Code updates</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Cloud network and perimiter security
+    <ul>
+      <li>Advantages
+        <ul>
+          <li>Distributed denial of service protection</li>
+          <li>VLAN capabilities</li>
+          <li>Perimiter security (IDS, firewall, authentication)</li>
+        </ul>
+      </li>
+      <li>Challenges
+        <ul>
+          <li>Virtual zoning with application mobility</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Elastic elements: Storage, processing, and virtual networks
+    <ul>
+      <li>Advantages</li>
+      <li>Challenges</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="summary-of-cloud-security-advantages">Summary of Cloud Security Advantages</h2>
+<ul>
+  <li>Data fragmentation and dispersal</li>
+  <li>Dedicated security team</li>
+  <li>Greater investment in security infrastructure</li>
+  <li>Fault tolerance and reliability</li>
+  <li>Greater resiliency</li>
+  <li>Hypervisor protection against network attacks</li>
+  <li>Possible reduction of Certification and Accreditation activities (Access to pre-accredited clouds)</li>
+  <li>Simplification of compliance analysis</li>
+  <li>Data held by unbiased party (cloud vendor assertion)</li>
+  <li>Low-cost disaster recovery and data storage solutions</li>
+  <li>On-demand security controls</li>
+  <li>Real-time detection of system tampering</li>
+  <li>Rapid reconstitution of services</li>
+  <li>Advanced honeynet capabilities</li>
+</ul>
+
+<h2 id="summary-of-cloud-security-challenges">Summary of Cloud Security Challenges</h2>
+<ul>
+  <li>Data dispersal and international privacy laws
+    <ul>
+      <li>EU Data Protection Directive and U.S. Safe Harbor program</li>
+      <li>Exposure of data to foreign government and data subpoenas</li>
+    </ul>
+  </li>
+  <li>Need for isiolation management</li>
+  <li>Multi-tenancy</li>
+  <li>Logging challenges</li>
+  <li>Data ownership issues</li>
+  <li>Quality of service guarantees</li>
+  <li>Dependence on secure hypervisors</li>
+  <li>Attraction to hackers (high value target)</li>
+  <li>Secuirty of virtual OSs in the cloud</li>
+  <li>Possibility for massive outages</li>
+  <li>Public cloud vs internal cloud security</li>
+  <li>Lack of public SaaS version control</li>
+  <li>Encryption needs for cloud computing
+    <ul>
+      <li>Encrypting access to the cloud resource control interface</li>
+      <li>Encrypting administrative access to OS instances</li>
+      <li>Encrypting access to applications</li>
+      <li>Encrypting application data at rest</li>
+    </ul>
+  </li>
+  <li>Issues with moving PII and sensitive data to the cloud
+    <ul>
+      <li>Privacy impact assessments</li>
+    </ul>
+  </li>
+  <li>Using SLAs to obtain cloud security
+    <ul>
+      <li>Suggested requirements for cloud SLAs</li>
+      <li>Issues with cloud forensics</li>
+    </ul>
+  </li>
+  <li>Contingency planning and disaster recovery for cloud implementations</li>
+  <li>Handling compliance
+    <ul>
+      <li>FISMA</li>
+      <li>HIPAA</li>
+      <li>SOX</li>
+      <li>PCI</li>
+      <li>SAS 70 Audits</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="cloud-security-quiz">Cloud Security Quiz</h2>
+<ul>
+  <li>Most data in transit is encrypted
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>Most data at rest is encrypted
+    <ul>
+      <li>False</li>
+    </ul>
+  </li>
+  <li>All data at rest should be encrypted
+    <ul>
+      <li>False</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="foundational-elements-of-cloud-computing">Foundational Elements of Cloud Computing</h2>
+<ul>
+  <li>Primary technologies
+    <ul>
+      <li>Virtualization</li>
+      <li>Grid technology</li>
+      <li>Service Oriented Architectures</li>
+      <li>Distributed Computing</li>
+      <li>Broadband networks</li>
+      <li>Browser as a platform</li>
+      <li>Free and Open Source Software</li>
+    </ul>
+  </li>
+  <li>Other technologies
+    <ul>
+      <li>Autonomic Systems</li>
+      <li>Web 2.0</li>
+      <li>Web application frameworks</li>
+      <li>Service Level Agreements</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="virtualization-quiz">Virtualization Quiz</h2>
+<p>Virtualizaiton requires at least <strong>one</strong> instance(s) of an application or resource that is to be shared by different organizations.
+Sharing between organizations is accomplished by assigning a <strong>logical name</strong> to the resource and then giving each request a <strong>pointer</strong> to the resource</p>
+
+<h2 id="virtualization-quiz-2">Virtualization Quiz 2</h2>
+<p>Virtualization involves creating a virtual machine using <strong>existing hardware</strong> and <strong>operating systems</strong>.  The virtual machine is <strong>logically isolated</strong> from the host hardware.</p>
+
+<h2 id="virtualization-quiz-3">Virtualization Quiz 3</h2>
+<p><img src="../assets/content_images/omscs/netsec/L12_img2.png" alt="img" /></p>
+
+<h2 id="platform-virtualization">Platform Virtualization</h2>
+<ul>
+  <li>The most important technology for cloud computing is virtualization</li>
+  <li>Cloud computing relies on separating your applications from the underlying infrastructure – Steve Herrod, CTO at VMware</li>
+  <li>Key is the “hypervisor” or “virtual machine monitor”
+    <ul>
+      <li>Enables guest OSs to run in isolation of other OSs</li>
+      <li>Run multiple types of OSs</li>
+    </ul>
+  </li>
+  <li>Increases utilization of physical servers</li>
+  <li>Enables portability of virtual servers between physical servers</li>
+  <li>Increases security of physical host server</li>
+</ul>
+
+<h2 id="kernel-level-attacks-and-security-tools">Kernel-Level Attacks and Security Tools</h2>
+<p><img src="../assets/content_images/omscs/netsec/L12_img3.png" alt="img" /></p>
+<ul>
+  <li>Kernel has higher privilege than userland, so it can detect malware running at user-level
+    <ul>
+      <li>If the attack is at kernel level, this protection is lost</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="hypervisor-based-approaches">Hypervisor Based Approaches</h3>
+<p><img src="../assets/content_images/omscs/netsec/L12_img4.png" alt="img" /></p>
+<ul>
+  <li>Hypervisor has higher privilege than guest kernel</li>
+  <li>Security VM is separated from User VM</li>
+  <li>Introspection is used to access contents of user VM</li>
+  <li>Active monitoring places hooks and invokes security monitor</li>
+</ul>
+
+<h2 id="virtualbox-security-quiz">VirtualBox Security Quiz</h2>
+<p><strong>Which of the following steps is considered safe when working with virtual machines?</strong></p>
+<ul>
+  <li>Set the clipboard sharing between the VM and the host to bidirectional
+    <ul>
+      <li>False</li>
+    </ul>
+  </li>
+  <li>Allow the VM to read and write files on the host machine with the same privileges as the host machine
+    <ul>
+      <li>False</li>
+    </ul>
+  </li>
+  <li>Disconnect the VM from the internet when opening files
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="monitoring-memory">Monitoring Memory</h2>
+<ul>
+  <li>One of the most essential tasks of VM security is memory analysis</li>
+  <li>The only reliable source of the current state of a computer system is memory</li>
+  <li>Nearly endless data for security, forensics, etc
+    <ul>
+      <li>Running and (some) killed processes</li>
+      <li>Encryption keys and decrypted data</li>
+      <li>Network sockets and data</li>
+      <li>OS-level accounting information</li>
+      <li>User input (e.g. key strokes, mouse movement)</li>
+      <li>Screen captures and graphical elements</li>
+      <li>And much more</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/netsec/L12_img5.png" alt="img" /></p>
+<ul>
+  <li>Passive monitoring: Viewing memory in A<sub>n</sub> from S without any timing synchronization between the two virtual machines</li>
+  <li>Active monitoring: Viewing memory in  A<sub>n</sub> from S with event notification being sent from  A<sub>n</sub> to S to permit monitoring at relevant times</li>
+  <li>Locating valuable data: find critical data structures within the raw memory view for the monitoring task
+    <ul>
+      <li>e.g. finding the process list</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="passive-monitoring">Passive Monitoring</h3>
+<ul>
+  <li>Monitoring application periodically views memory from another virtual machine
+    <ul>
+      <li>Technique known as VM introspection</li>
+    </ul>
+  </li>
+  <li>Address and symbol mapping can be performed by a VM introspection library
+    <ul>
+      <li>e.g. libVMI</li>
+      <li>Convert pointer addressed into something useful</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/netsec/L12_img6.png" alt="img" /></p>
+
+<h3 id="understanding-memory-contents--libvmi">Understanding Memory Contents – libVMI</h3>
+<ul>
+  <li>when reading raw memory, it’s literally just 1s and 0s.
+    <ul>
+      <li>Need to understand the abstraction layers on top of this</li>
+    </ul>
+  </li>
+  <li>libVMI previously called XenAccess
+    <ul>
+      <li>started at Georgia Tech!</li>
+    </ul>
+  </li>
+  <li>Open source VM intropsection library</li>
+  <li>Access to virutal addresses, kernel symmbols, and more</li>
+  <li>Released in Spring 2006</li>
+</ul>
+
+<h4 id="libvmi-features">libVMI Features</h4>
+<ul>
+  <li>Read and write VM memory</li>
+  <li>Virtual memory translation
+    <ul>
+      <li>Using various methods (DTB, PTD, kernel symbol)</li>
+    </ul>
+  </li>
+  <li>Find and map guest OS data structures</li>
+  <li>Place monitoring event-hooks into the guest
+    <ul>
+      <li>Exceptions, page faults, etc</li>
+      <li>Pause guest and transfer conrol to callback function (hook)</li>
+      <li>Hookable events:
+        <ul>
+          <li>Memory r/w/x events on defined regions</li>
+          <li>Register r/w events CR0/CR3/CR4/MSR registers</li>
+          <li>Interrupt events</li>
+        </ul>
+      </li>
+      <li>Single step through instructions</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="active-monitoring">Active Monitoring</h3>
+<ul>
+  <li>Event Driven
+    <ul>
+      <li>Enforcing security policy</li>
+      <li>Preventing attacks</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/netsec/L12_img7.png" alt="img" /></p>
+
+<h4 id="active-monitoring-challenges">Active Monitoring Challenges</h4>
+<ul>
+  <li>High overhead
+    <ul>
+      <li>Invocation cost:
+        <ul>
+          <li>Requires switching to hypervisor when security tool is invoked</li>
+          <li>Especially for fine-grained monitoring</li>
+        </ul>
+      </li>
+      <li>Introspection Cost:
+        <ul>
+          <li>Accessing untrusted VM memory requires calls to hypervisor for mapping pages to security VM</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="secure-in-vm-monitoring-sim">Secure In-VM Monitoring (SIM)</h2>
+<ul>
+  <li>Can we have the best of both worlds?  Security of out-of-VM monitoring with efficiency and performance of in-VM monitoring?
+    <ul>
+      <li>Yes!  Georgia Tech has developed SIM approach</li>
+    </ul>
+  </li>
+  <li>Bringing security to traditional in-VM approaches</li>
+  <li>Addresses security and performance requirements together
+    <ul>
+      <li>Same security as out-of-VM approaches</li>
+      <li>Performance close to traditional in-VM approaches</li>
+    </ul>
+  </li>
+  <li>Utilize hardware virtualization features
+    <ul>
+      <li>No hyperfisor intervention during monitor invocation</li>
+      <li>Untrusted VM reads/writes are at native speed</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="requirements-of-sim">Requirements of SIM</h3>
+<ul>
+  <li>Fast invocation
+    <ul>
+      <li>Invocation of monitor happens without any privilege changes</li>
+    </ul>
+  </li>
+  <li>Data read/write at native speed
+    <ul>
+      <li>Native instructions should be able to read/write data directly</li>
+    </ul>
+  </li>
+  <li>Isolation of monitor code and data</li>
+  <li>Secure invocation for event-handling</li>
+  <li>Monitor’s execution does not rely on untrusted code and data</li>
+</ul>
+
+<h3 id="sim-design">SIM Design</h3>
+<ul>
+  <li>Security requiremnt: Isolation
+    <ul>
+      <li>Achieved by using separate paged virtual addresses</li>
+      <li><img src="../assets/content_images/omscs/netsec/L12_img8.png" alt="img" /></li>
+    </ul>
+  </li>
+  <li>Performance requirement: Fast invocation
+    <ul>
+      <li>Achieved by having no hypervisor intervention</li>
+      <li><img src="../assets/content_images/omscs/netsec/L12_img9.png" alt="img" /></li>
+      <li>Modify CR3 register contents directly using Intel VT</li>
+      <li>Use Intel intrinsic “Last Branch Record” in invocation checker.  With last branch record, we know the last several instructions leading to the entry gate</li>
+      <li><img src="../assets/content_images/omscs/netsec/L12_img10.png" alt="img" /></li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="sim-monitor-invocation-overhead">SIM Monitor Invocation Overhead</h3>
+<ul>
+  <li>Micro benchmarking
+    <ul>
+      <li>Measure time required between executing hook and returning back from SIM monitor</li>
+      <li>Use null handlers, so that only switching time is measured</li>
+      <li>SIM Approach
+        <ul>
+          <li>Avg time: 0.469 microseconds</li>
+          <li>Std. Dev: 0.051 microseconds</li>
+        </ul>
+      </li>
+      <li>Out-of-VM Approach
+        <ul>
+          <li>Avg time: 5.055 microseconds</li>
+          <li>Std. Dev: 0.132 microseconds</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

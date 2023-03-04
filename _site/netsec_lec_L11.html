@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>NetSec Lecture Notes - Lesson 11 - Mobile Malware</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>NetSec Lecture Notes - Lesson 11 - Mobile Malware</h2>
+  <h1 id="mobile-malware">Mobile Malware</h1>
+<h2 id="mobile-device-quiz">Mobile Device Quiz</h2>
+<p><strong>According to Wikipedia, which of these devices is a mobile device?</strong></p>
+<ul>
+  <li>Smart phone
+    <ul>
+      <li>False</li>
+    </ul>
+  </li>
+  <li>Smart phone held by a person
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>Self driving car
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>Robot
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>We won’t use that definition, as it is unhelpful.</li>
+  <li>For our purposes a mobile device == a portable, wireless device small enough to be used while held in the hand</li>
+</ul>
+
+<h2 id="forensics-quiz">Forensics Quiz</h2>
+<p><strong>Which of hte following characteristics are associated with mobile devices (M) and which are for stationary computers (C)</strong></p>
+<ul>
+  <li>Specialized hardware
+    <ul>
+      <li>M</li>
+    </ul>
+  </li>
+  <li>Standardized hardware
+    <ul>
+      <li>C</li>
+    </ul>
+  </li>
+  <li>Many different (versions of) operating systems
+    <ul>
+      <li>M</li>
+    </ul>
+  </li>
+  <li>Usually runs Windows, MAC OS, or Linux
+    <ul>
+      <li>C</li>
+    </ul>
+  </li>
+  <li>Large storage capability
+    <ul>
+      <li>C</li>
+    </ul>
+  </li>
+  <li>Large number of accessories: cameras, GPS
+    <ul>
+      <li>M</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/netsec/L11_img1.png" alt="img" /></p>
+
+<h2 id="ios-malware">iOS Malware</h2>
+<ul>
+  <li>Very common platform.</li>
+  <li>Many apps are malware designed to steal user data</li>
+  <li>Malware apps can stell get onto user devices even after kicked off from the app store</li>
+  <li>Apple allows users to purchase and download apps through iTunes, and cable it over to devices.  Device checks with iTunes if it was purchased properly.
+    <ul>
+      <li>Attackers can MiTM this process by capturing an authorization code from iTunes, and then develop a program to simulate iTunes to phones, and trick the phone into using a malicious app that didn’t come from the app store</li>
+      <li>Called “FairPlay MiTM”</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="android-malware">Android Malware</h2>
+<p><img src="../assets/content_images/omscs/netsec/L11_img2.png" alt="img" /></p>
+<ul>
+  <li>AccuTrack
+    <ul>
+      <li>This application turns an Android smartphone into a GPS tracker</li>
+    </ul>
+  </li>
+  <li>Ackposts
+    <ul>
+      <li>This Trojan steals contact information from the compromised device and uploads them to a remote server</li>
+    </ul>
+  </li>
+  <li>Acknetdoor
+    <ul>
+      <li>This trojan opens a backdoor on the infected device andsends the IP address to a remote server</li>
+    </ul>
+  </li>
+  <li>Steek/Fatakr
+    <ul>
+      <li>Is a fraudulent app advertising an online income solution.  Some of the samples have the capability to steal privacy related information and send SMS messages</li>
+    </ul>
+  </li>
+  <li>Tapsnake/Droisnake
+    <ul>
+      <li>Posts the phones location to a web service</li>
+    </ul>
+  </li>
+  <li>ZertSecurity
+    <ul>
+      <li>This malicious apps try to trick a compromised user to insert his banking account details which will then be sent to the attackers</li>
+    </ul>
+  </li>
+  <li>Zitmo/Citmo
+    <ul>
+      <li>Tries to steal confidential banking authentication codes (mTAN messages) sent to the infected device</li>
+    </ul>
+  </li>
+  <li>Many more
+    <ul>
+      <li>Long list shown here, not transcribed</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="trends">Trends</h3>
+<p><img src="../assets/content_images/omscs/netsec/L11_img3.png" alt="img" /></p>
+
+<h3 id="free-antivirus-apps">Free Antivirus Apps</h3>
+<ul>
+  <li>Comodo Security &amp; Antivirus</li>
+  <li>CM Security Antivirus AppLock</li>
+  <li>360 Security - Antivirus Boost</li>
+  <li>Sophos Free Antivirus and Security</li>
+  <li>Malwarebytes Anti-Malware</li>
+  <li>Bitdefender Antivirus Free</li>
+</ul>
+
+<h3 id="anti-virus-android">Anti-Virus Android</h3>
+<ul>
+  <li>Due to architecture of phones (sandboxing, limited cpu, etc), they’re inherently less vulnerable than computers.  That gap is decreasing over time, though</li>
+  <li>Quotes:
+    <ul>
+      <li>“Even security companies know the risk is low – that’s why apps are packaged with other selling points.” - AndroidCentral</li>
+      <li>“Symantec sees an important role to playi n helping to protect data and mobile devices from being exposed to risk…”</li>
+      <li>“While Symantec sees its purpose in the mobile landscape as providing security against malware, fraud and scams; we also protect devicest against loss and theft – loss of the device itself, as well as the information on it.  In addition, Symantec helps businesses protect and manage their data being stored or transmitted through the mobile devices of their employees”</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="lifetime-of-ios-malware">Lifetime of iOS Malware</h2>
+<p><img src="../assets/content_images/omscs/netsec/L11_img4.png" alt="img" /></p>
+
+<h2 id="a-toolchain-attack-xcodeghost">A Toolchain Attack: XcodeGhost</h2>
+<ul>
+  <li>XcodeGhost (2015)
+    <ul>
+      <li>Malware found in unofficial distributions of Xcode targeted at Chinese developers</li>
+      <li>Apps compiled with these versions of Xcode are infected with XcodeGhost</li>
+      <li>Collect information on devices and upload it to C&amp;C server</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="example-attack-on-app-store-jekyll">Example Attack on App Store: Jekyll</h2>
+<ul>
+  <li>Jekyll (2013)
+    <ul>
+      <li>Deliberately create a vulnerable app</li>
+      <li>Exploit the intended vulnerabilities, e.g. with the crafted input, to introduce new execution paths via ROP, send SMS, email, Tweet, etc
+        <ul>
+          <li>App Store review, without the correct input, cannot reveal these malicious paths</li>
+          <li>Example of differing control flow with/without special input
+            <ul>
+              <li><img src="../assets/content_images/omscs/netsec/L11_img5.png" alt="img" /></li>
+            </ul>
+          </li>
+          <li>Capabilities include
+            <ul>
+              <li>Install/uninstall apps</li>
+              <li>Get list of installed apps, running apps, front most apps</li>
+              <li>Launch an installed app</li>
+              <li>Send/receive SMS</li>
+              <li>Make phone call, monitor incoming call</li>
+              <li>Get device ID, Apple ID, ad ID</li>
+              <li>Take photo</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="toolchain-attacks-quiz">Toolchain Attacks Quiz</h2>
+<ul>
+  <li>What code did the attackers modify? – The Xcode compiler and linker</li>
+  <li>The code modified the UI Window class and the UIDevice class, adding extra files to any app created with XCodeGhost</li>
+  <li>What kind of information can an infected app obtain about the device that is running the app?
+    <ul>
+      <li>Current time</li>
+      <li>App’s name</li>
+      <li>App’s bundle identifier</li>
+      <li>The device’s name and type</li>
+      <li>System’s language and country</li>
+      <li>Network type</li>
+      <li>Device UUID</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="hardening-the-toolchain-quiz">Hardening the Toolchain Quiz</h2>
+<p><strong>List the four areas of the C based toolchain where hardening can occur</strong></p>
+<ul>
+  <li>Configuration</li>
+  <li>Preprocessor</li>
+  <li>Compiler</li>
+  <li>Linker</li>
+</ul>
+
+<h2 id="mobile-malware-detection">Mobile Malware Detection</h2>
+<ul>
+  <li>Kirin
+    <ul>
+      <li>Very simple approach</li>
+      <li>System that checks for supsicious combinations of permissions</li>
+      <li>Definition of 9 (manually compiled) rules</li>
+      <li>Basic support for multi-app analysis</li>
+    </ul>
+  </li>
+  <li>RiskRanker
+    <ul>
+      <li>Simple static analysis tool</li>
+      <li>Based on manually-defined suspicious features
+        <ul>
+          <li>DVM code loading (from assets)</li>
+          <li>Call to crypto-related APIs before loading native code</li>
+          <li>Sensitive calls w/o users’ interaction</li>
+        </ul>
+      </li>
+      <li>It found a zero-day: AnserverBot</li>
+    </ul>
+  </li>
+  <li>DroidRanger
+    <ul>
+      <li>Based on both static &amp; dynamic analysis</li>
+      <li>It uses manually defined heuristics</li>
+      <li>Features
+        <ul>
+          <li>Manifest information, packages, location of used resources</li>
+          <li>Loading of native code (from where?)</li>
+          <li>Sensitive API tracing</li>
+          <li>Syscall-level tracing</li>
+        </ul>
+      </li>
+      <li>It found two zero-days: DroidKungFu, Plankton</li>
+    </ul>
+  </li>
+  <li>DREBEN
+    <ul>
+      <li>Lightweight static analysis tool</li>
+      <li>SVM with high-dimensional vector space (545k+)
+        <ul>
+          <li>used hardware componens</li>
+          <li>requested permissions</li>
+          <li>API calls</li>
+          <li>filtered intents</li>
+          <li>network addresses</li>
+        </ul>
+      </li>
+      <li>It runs on real devices (~10 seconds/app)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="clone-detection">Clone Detection</h3>
+<ul>
+  <li>Most malware samples are repackaged versions of legitimate apps
+    <ul>
+      <li>Why?
+        <ul>
+          <li>Most effective way to write &amp; distribute malware</li>
+          <li>The “Cool App” is already written and well-advertised</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Static analysis tools
+    <ul>
+      <li>DroidMOSS (based on fuzzy hashing of methods)</li>
+      <li>DNADroid (similarity based on PDG (program dependency g raphs))</li>
+      <li>PiggyApp (focus on PiggyBacked apps)</li>
+      <li>AdRob (investigate AD-related issues)</li>
+    </ul>
+  </li>
+  <li>Behavior analysis tools
+    <ul>
+      <li>Generic sandboxes
+        <ul>
+          <li>Andrubis</li>
+          <li>Mobile Sandbox</li>
+          <li>APK Analyzer</li>
+        </ul>
+      </li>
+      <li>Syscall-level analysis
+        <ul>
+          <li>CopperDroid (based on QEMU modifications)</li>
+          <li>CrowDroid (cloud-based anomaly detection)</li>
+          <li>PREC (anomaly detection against per-app model)
+            <ul>
+              <li>Practical Root Exploit Containment</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="information-leakage-detection">Information Leakage Detection</h2>
+<ul>
+  <li>PiOS
+    <ul>
+      <li>It performs static analysis on iOS apps to detect information leakages</li>
+      <li>One of the few works for iOS (many challenges)
+        <ul>
+          <li>Initially the code is encrypted (memory dump required)</li>
+          <li>Analysis on ARM assembly (no bytecode)</li>
+          <li>Dynamic dispatch implemetned with indirect jumps</li>
+        </ul>
+      </li>
+      <li>Statically analyzed 1,400 apps; More than half leaked device ID</li>
+    </ul>
+  </li>
+  <li>TaintDroid
+    <ul>
+      <li>Modifications to the Android framework to performa dynamic taint tracking</li>
+      <li>Support for variable-level and message-level taints</li>
+      <li>Only 14% performance overhead</li>
+      <li>15 apps out of 30 leaked location info</li>
+    </ul>
+  </li>
+  <li>WhyPer
+    <ul>
+      <li>Are the requested permissions aligned with user’s expectations?</li>
+      <li>Compare app’s permissions against its app-store description</li>
+      <li>Based on NLP techniques</li>
+      <li>Limited to permissions related to camera, microphone, and contact list</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="data-flow-analysis">Data Flow Analysis</h2>
+<p><img src="../assets/content_images/omscs/netsec/L11_img6.png" alt="img" /></p>
+<ul>
+  <li>Source-to-sink flows
+    <ul>
+      <li>Sources: Location, Calendar, Contacts, Device ID, etc.</li>
+      <li>Sinks: Internet, SMS, Disk, etc</li>
+    </ul>
+  </li>
+  <li>Malware/Greyware analysis
+    <ul>
+      <li>Data flow summaries enable enterprise-specific policies</li>
+    </ul>
+  </li>
+  <li>API Misuse and data theft detection</li>
+  <li>Automatic generation of app privacy policies
+    <ul>
+      <li>Avoid liability, protect consumer privacy</li>
+    </ul>
+  </li>
+  <li>Vulnerability discovery</li>
+</ul>
+
+<h3 id="challenges">Challenges</h3>
+<ul>
+  <li>Android is 3.4M+ lines of complex code
+    <ul>
+      <li>Uses reflection, callbacks, native code</li>
+    </ul>
+  </li>
+  <li>Scalability
+    <ul>
+      <li>Whole system analysis is impractical</li>
+    </ul>
+  </li>
+  <li>Soundness
+    <ul>
+      <li>Avoid missing flows</li>
+    </ul>
+  </li>
+  <li>Precision
+    <ul>
+      <li>Minimize false positives</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="stamp-approach">STAMP Approach</h3>
+<p><img src="../assets/content_images/omscs/netsec/L11_img7.png" alt="img" /></p>
+<ul>
+  <li>Given that analyzing the full Android stack is impractical, the STAMP approach is to abstract the Android part of the stack into models and focus on the App itself
+    <ul>
+      <li>Model Android/Java
+        <ul>
+          <li>Sources and sinks</li>
+          <li>Data structures</li>
+          <li>Callbacks</li>
+          <li>500+ models</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="data-flows">Data Flows</h3>
+<ul>
+  <li>30+ types of sensitive data, including
+    <ul>
+      <li>Account data</li>
+      <li>Audio</li>
+      <li>Calendar</li>
+      <li>Call log</li>
+      <li>Camera</li>
+      <li>Contacts</li>
+      <li>Device ID</li>
+      <li>Whole-program anlaysis
+        <ul>
+          <li>context sensitive</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>10+ types of data sinks / exit points, including:
+    <ul>
+      <li>Internet (socket)</li>
+      <li>SMS</li>
+      <li>Email</li>
+      <li>System Logs</li>
+      <li>Webview/Browser</li>
+      <li>File System</li>
+      <li>Broadcast Message</li>
+    </ul>
+  </li>
+  <li>Each pair of source+sink is a flow type
+    <ul>
+      <li>396 flow types</li>
+      <li>Unique flow type count = sources * sinks</li>
+    </ul>
+  </li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

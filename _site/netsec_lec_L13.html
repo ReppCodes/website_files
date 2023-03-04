@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>NetSec Lecture Notes - Lesson 13 - Property-Preserving Encryption - Oblivious RAM</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>NetSec Lecture Notes - Lesson 13 - Property-Preserving Encryption - Oblivious RAM</h2>
+  <h1 id="property-preserving-encryption---oblivious-ram">Property-Preserving Encryption - Oblivious RAM</h1>
+<ul>
+  <li>Going to continue focus on the cloud, and discuss challenges of data privacy protection</li>
+</ul>
+
+<h2 id="how-do-data-breaches-happen">How Do Data Breaches Happen?</h2>
+<ul>
+  <li>In a cloud environment, users interact with data in applications stored in cloud infrastructure
+    <ul>
+      <li>e.g. Doctors/Nurses accessing patient medical data on a hosted EMR system</li>
+    </ul>
+  </li>
+  <li>Data is often the most valuable target to an attacker</li>
+  <li>How can we protect the data?
+    <ul>
+      <li>Encryption!</li>
+    </ul>
+  </li>
+  <li>Challenge, though, is that the applications can’t use encrypted data, so they must also have a key to it.  How to get both protection and usability?</li>
+</ul>
+
+<h2 id="encryption-quiz">Encryption Quiz</h2>
+<ul>
+  <li>Computations performed on encrypted data matches the result of the computation on the plaintext
+    <ul>
+      <li>Homomorphic</li>
+    </ul>
+  </li>
+  <li>Encrypted data is in the same order as the plaintext
+    <ul>
+      <li>Property Preserving</li>
+    </ul>
+  </li>
+  <li>A secret key that allows someone to learn the function that is being encrypted
+    <ul>
+      <li>Functional</li>
+    </ul>
+  </li>
+  <li>Several parties can compute a function using inputs that are kept private
+    <ul>
+      <li>Secure Computation</li>
+    </ul>
+  </li>
+  <li>Encyrpted data that can be searched using encrypted keywords
+    <ul>
+      <li>Searchable</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="property-preserving-encryption-ppe">Property Preserving Encryption (PPE)</h2>
+<ul>
+  <li>PPE is widely deployed</li>
+  <li>PPE is Popular because:
+    <ul>
+      <li>Deployability
+        <ul>
+          <li>No change to application and database servers is needed</li>
+        </ul>
+      </li>
+      <li>Expressiveness
+        <ul>
+          <li>Supports most common SQL queries</li>
+        </ul>
+      </li>
+      <li>Efficiency
+        <ul>
+          <li>~25% overhead</li>
+        </ul>
+      </li>
+      <li>Security
+        <ul>
+          <li>Mixed bag.  We will discuss further</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="ppe-leak-quiz-one">PPE Leak Quiz One</h2>
+<ul>
+  <li>Standard Encryption
+    <ul>
+      <li>Leaks nothing except size of input</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/netsec/L13_img1.png" alt="img" />
+<img src="../assets/content_images/omscs/netsec/L13_img2.png" alt="img" /></p>
+
+<h2 id="ppe-leakage">PPE Leakage</h2>
+<ul>
+  <li>What does this leakage mean for real applications?</li>
+  <li>Renders data susceptible to inference attacks if stolen</li>
+  <li>Example given is encrypted private medical information, when combined with plaintext public information, can be used to infer PHI/PII</li>
+</ul>
+
+<h2 id="attacks-on-equality-preserving-encryption">Attacks on Equality-Preserving Encryption</h2>
+<h3 id="frequency-analysis-attack">Frequency Analysis Attack</h3>
+<p><img src="../assets/content_images/omscs/netsec/L13_img3.png" alt="img" /></p>
+
+<h3 id="ℓp-optimization-attack">ℓ<sub>p</sub>-Optimization Attack</h3>
+<ul>
+  <li>Minimize a cost function that measures the difference between encrypted and auxiliary histogram</li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/netsec/L13_img4.png" alt="img" /></p>
+
+<h3 id="case-study">Case Study</h3>
+<ul>
+  <li>In case study with medical records, this approach was very effective</li>
+  <li>Sex of 100% of the patients for 95% of hospitals studied was decrypted</li>
+  <li>Mortality Risk of 100% of the patients for 99% of hospitals studied was decrypted</li>
+  <li>Major Diagnostic Category of 40% of the patients for 28% of hospitals studied was decrypted</li>
+  <li>Death of 100% of the patients for 100% of hospitals studied was decrypted</li>
+  <li>Age of 10% of the patients for 85% of hospitals studied was decrypted</li>
+  <li>Length of Stay of 83% of the patients for 50% of hospitals studied was decrypted</li>
+</ul>
+
+<h2 id="attacks-on-order-preserving-encryption">Attacks on Order-Preserving Encryption</h2>
+<h3 id="cumulative-attack">Cumulative Attack</h3>
+<ul>
+  <li>Linear Sum Assignment Problem</li>
+  <li>Takes O(n<sup>3</sup>) time using Hungarian Algorithm</li>
+  <li>Cumulative attack exploits both order and frequency</li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/netsec/L13_img5.png" alt="img" /></p>
+<ul>
+  <li>Basically, by combining order and frequency, the attacker can tell for each ciphertext <code class="highlighter-rouge">c</code> what proportion of values are less than <code class="highlighter-rouge">c</code>
+    <ul>
+      <li>Leverages Cumulative Distribution Function of encrypted data to better match encrypted values to plaintext values</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="case-study-1">Case Study</h3>
+<ul>
+  <li>In case study with medical records, this approach was very effective</li>
+  <li>Length of Stay of 100% of the patients for 100% of hospitals studied was decrypted</li>
+  <li>Age of 83% of the patients for 99% of hospitals studied was decrypted</li>
+</ul>
+
+<h3 id="attack-recap">Attack Recap</h3>
+<p><img src="../assets/content_images/omscs/netsec/L13_img6.png" alt="img" /></p>
+
+<h2 id="oblivious-ram-oram">Oblivious RAM (ORAM)</h2>
+<ul>
+  <li>Suppose we don’t trust our cloud provider</li>
+  <li>We could encrypt our data on the cloud storage server, and retrieve+decrypt it whenever we want to use it</li>
+  <li>That still  leaks the access pattern of how we use that data</li>
+  <li>Oblivious RAM
+    <ul>
+      <li>Obliviousness
+        <ul>
+          <li>For any fixed size request sequence, the associated storage accesses observed (by the cloud)  are statistically independent of the requests</li>
+        </ul>
+      </li>
+      <li>Techniques
+        <ul>
+          <li>Operates on fixed size data blocks</li>
+          <li>Encrypt blocks with ciphertext indistinguishability</li>
+          <li>Dummy accesses, re-encryption, shuffling, etc</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Some  ORAM Systems
+    <ul>
+      <li>Tree-based: PathORAM</li>
+      <li>Layered-based: LayeredORAM</li>
+      <li>Large messages-based: PractialOS</li>
+      <li>Partition-based: ObliviStore</li>
+      <li><img src="../assets/content_images/omscs/netsec/L13_img7.png" alt="img" /></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="oram-quiz">ORAM Quiz</h2>
+<ul>
+  <li>Client must have a private source of randomness
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>Data does not have to be encrypted, since there is no access pattern
+    <ul>
+      <li>False</li>
+    </ul>
+  </li>
+  <li>Each access to the remote storage must have aread and a write
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

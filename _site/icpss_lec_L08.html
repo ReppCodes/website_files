@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>ICPSS Lecture Notes - Lesson 8 - Industrial Network Design and Architecture</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>ICPSS Lecture Notes - Lesson 8 - Industrial Network Design and Architecture</h2>
+  <h1 id="industrial-network-design-and-architecture">Industrial Network Design and Architecture</h1>
+
+<h2 id="differences-in-network-architectures-by-function">Differences in Network Architectures by Function</h2>
+<ul>
+  <li>Industrial Network == any network that supports the interconnectivity of and communication between devices that make up or support an ICS
+    <ul>
+      <li>Can be LAN or WAN depending on type of ICS</li>
+    </ul>
+  </li>
+  <li>Historically discussions about network architecture have mostly been about business networks</li>
+  <li>Business networks are:
+    <ul>
+      <li>highly interconnected</li>
+      <li>have various wireless connectivity options</li>
+      <li>extremely dynamic in nature</li>
+      <li>BYOD exacerbates this</li>
+      <li>So does remote access, such as VPN</li>
+      <li>Lots of internet-facing services</li>
+    </ul>
+  </li>
+  <li>Business network security focuses on the classic CIA, but availability is usually lowest priority out of those 3
+    <ul>
+      <li>Structurally, industrial networks are often similar, but availability is paramount</li>
+    </ul>
+  </li>
+  <li>ICS is usually hard-realtime, bandwidth and latency are critical</li>
+  <li>This dictates which topologies are appropriate (e.g. ring or mesh) and may even call for purpose-built networking hardware</li>
+  <li>Redundandancy is a path to availability.  One way to accomplish this is with multiple ethernet connections
+    <ul>
+      <li>Redundancy may necessitate different routing or switching protocols, to enable efficiency in the presence of redundant network paths</li>
+    </ul>
+  </li>
+  <li>Lower-level protocols in Industrial networks are often more specialiazed
+    <ul>
+      <li>e.g. Foundation fieldbus protocol</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="network-topologies">Network Topologies</h2>
+<ul>
+  <li>Industrial networks are usually distributed in nature, and vary considerably
+    <ul>
+      <li>As opposed to business networks, where IP and ethernet dominate</li>
+    </ul>
+  </li>
+  <li>Business networks are often implemented in many different topologies, such as mesh or star topologies</li>
+  <li>Industrial networks will also often use bus or ring topologies
+    <ul>
+      <li>Have fallen out of favor for business networks</li>
+      <li>Ring topology supports high redundancy needed in industrial networks</li>
+      <li>Bus topology represents shared message transmission domain</li>
+    </ul>
+  </li>
+  <li>Network topology will have strong impacts on security and reliability, as well as ability to segment the network properly</li>
+</ul>
+
+<h2 id="network-segmentation">Network Segmentation</h2>
+<p><img src="../assets/content_images/omscs/icpss/L08_img1.png" alt="img" /></p>
+<ul>
+  <li>Many easons for segmenting industrial networks:
+    <ul>
+      <li>Top 2 are:
+        <ul>
+          <li>Performance</li>
+          <li>Security</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Segmentation usually done at layer 3 of protocol stack (network layer)
+    <ul>
+      <li>Can also be at layer 2 via VLAN</li>
+    </ul>
+  </li>
+  <li>Hierarchical network segmentation design means that communication between two networks may require traversal across multiple
+    <ul>
+      <li>e.g. in above picture going from Process Network B1a to Process Network B2c involves:
+        <ul>
+          <li>Process Network B1a -&gt; Control Network B1 -&gt; Supervisory Control Netwokr B -&gt; Control Network B2 -&gt; Process Network B2c</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="types-of-communication-flow-control">Types of Communication Flow Control</h3>
+<ul>
+  <li>Absolute
+    <ul>
+      <li>No communication is allowed (i.e. all traffic is blocked in both directions)</li>
+    </ul>
+  </li>
+  <li>Conditional
+    <ul>
+      <li>Only explicitly defined traffic is allowed (e.g. via Access Control Lists, filters, etc)</li>
+    </ul>
+  </li>
+  <li>Bidirectional
+    <ul>
+      <li>Traffic is allowed in both directions.</li>
+      <li>Conditions may be enforced in both directions</li>
+    </ul>
+  </li>
+  <li>Unidirectional
+    <ul>
+      <li>Traffic is only allowed in one direction (e.g. via a data diaode or unidirectional gateway)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="higher-layer-segmentation">Higher Layer Segmentation</h3>
+<p><img src="../assets/content_images/omscs/icpss/L08_img2.png" alt="img" /></p>
+<ul>
+  <li>While network segmentation is usually done at Layer 3 ( via subnets) or Layer 2 (via VLANs), it can also be done at any layer in the stack</li>
+  <li>This is called protocol filtering, or network whitelisting
+    <ul>
+      <li>It defines the network behaviors that are allowed</li>
+      <li>Defense in depth!</li>
+    </ul>
+  </li>
+  <li>Note, however, that as network segmentation increases, the overall end-to-end latency increases</li>
+</ul>
+
+<h3 id="physical-segmentation-vs-logical-segmentation">Physical Segmentation vs Logical Segmentation</h3>
+<p><img src="../assets/content_images/omscs/icpss/L08_img3.png" alt="img" /></p>
+<ul>
+  <li>Refers to the use of two separate physical network devices to perform the isolation between networks</li>
+  <li>The two networks show above are completely airgapped</li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/icpss/L08_img4.png" alt="img" /></p>
+<ul>
+  <li>Refers to the use of logical functions within the same network device to achive isolation between networks</li>
+  <li>In this example two different vlans are used in a single switch in a trunk connection to separate these networks</li>
+  <li>In industrial networks, physical segmentation is still very widely used.</li>
+  <li>Physical layer controls are also popular in highly critical areas, due to frequent use of multicast for low-latency communication</li>
+</ul>
+
+<h2 id="network-services">Network Services</h2>
+<ul>
+  <li>e.g. identity, access management, or domain services</li>
+  <li>Services are usually already in place for business network, but extending those same servers to the industrial network introduces risk
+    <ul>
+      <li>Thus, separate servers for those services should be maintained for those networks</li>
+      <li>This decouples risk between the zones</li>
+    </ul>
+  </li>
+  <li>In general, abide by the principle of least route, which states that in purpose-built networks, the nodes should only be given the connectivity needed to perform its function</li>
+</ul>
+
+<h2 id="wireless-networks">Wireless Networks</h2>
+<p><img src="../assets/content_images/omscs/icpss/L08_img5.png" alt="img" /></p>
+<ul>
+  <li>Wireless networks may be used at any point within an industrial network</li>
+  <li>Wireless networks are (obviously) more difficult to physically contain
+    <ul>
+      <li>Any device with an appropriate transceiver that is within range can receive and send wireless signals.  No cabling in necessary.</li>
+      <li>Conduct thorough radio frequency surveys to monitor this risk.</li>
+    </ul>
+  </li>
+  <li>The myriad of use cases for wireless in industrial networks has caused a proliferation of industrial wireless protocols
+    <ul>
+      <li>One such, wireless HART, is shown in the implementation above</li>
+      <li>A common use case (again, obviously) is to support connectivity for remote or physically difficult devices such as field devices
+        <ul>
+          <li>This makes power a consideration.  Often power is extracted from the same line used for communication (e.g. power over ethernet)</li>
+          <li>This means power availability (such as battery life) directly impacts the functioning of the relevant process.  Dead batteries on your sensors might mean a real bad time</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="remote-access">Remote Access</h2>
+<ul>
+  <li>Often necessary, sometimes to support vendors or similar</li>
+  <li>All access points are an attack vector, and should only be used when necessary</li>
+  <li>Best practices are:
+    <ul>
+      <li>Minimze attack vectors
+        <ul>
+          <li>Only provide one path for remote access</li>
+        </ul>
+      </li>
+      <li>Principles of least privilege
+        <ul>
+          <li>Only allow remote access to targeted resources</li>
+        </ul>
+      </li>
+      <li>Consider further segmentation
+        <ul>
+          <li>In service of least privilege.</li>
+          <li>Wall off remotely accessible systems from others</li>
+        </ul>
+      </li>
+      <li>Application control</li>
+      <li>No direct access
+        <ul>
+          <li>To critical or important systems</li>
+        </ul>
+      </li>
+      <li>Strong security policy
+        <ul>
+          <li>Should be equal to or better than the policy in place for on-site access</li>
+        </ul>
+      </li>
+      <li>Avoid remote storage of credentials</li>
+      <li>Ability to terminate connection locally</li>
+      <li>Log everything</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="network-performance">Network Performance</h2>
+<ul>
+  <li>Four components of network performance are:
+    <ul>
+      <li>Bandwidth</li>
+      <li>Throughput</li>
+      <li>Latency</li>
+      <li>Jitter</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="latency-and-jitter">Latency and Jitter</h3>
+<ul>
+  <li>Latency is the amount of time it takes for a packet to traverse a network from its source to its destination
+    <ul>
+      <li>Usually represented as a round trip time (RTT)</li>
+      <li>When traversing segmented networks, as shown above, each network hop will add latency
+        <ul>
+          <li>The deeper into a packet a device must read to make a routing decision, the more latency will be added by the hop
+            <ul>
+              <li>E.g. a layer 2 switch will add less latency than a layer 3 router, which will in turn add less latency than an application-layer firewall</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Jitter is the variability in latency over time, as large amounts of data are transmitted across a network
+    <ul>
+      <li>Can often be more disruptive to real-time communication across a network than latency alone</li>
+      <li>If it is severe enough, timing will be lost.  This is unacceptable in the context of sensors, for example</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="bandwidth-and-throughput">Bandwidth and Throughput</h3>
+<ul>
+  <li>Bandwidth refers to the total amount of data that can be transmitted from one point to another in a given period of time
+    <ul>
+      <li>Often measured in megabits per second or gigabits per second</li>
+      <li>Depending on the type of network there may be contention</li>
+      <li>Not usually a concern in industrial networks, as most industrial uses require very little bandwidth to operate
+        <ul>
+          <li>Obviously some exceptions, especially newer devices</li>
+        </ul>
+      </li>
+      <li>However, industrial network designs must accomodate bursts of event-related data that can occur during disturbances</li>
+    </ul>
+  </li>
+  <li>Throughput refers to the volume of data that can flow through a network
+    <ul>
+      <li>Impacted by a variety of factors, such as medium, interference, device capabilities, selected protocols, etc.</li>
+      <li>Commonly measured in packets per second</li>
+      <li>The correlation between bandwidth and throughput is dependent on many things, including size of packets and the protocols used</li>
+      <li>A device that can transfer data at the full capability of the network is said to support “line rate throughput”</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="typeclassquality-of-service">Type/Class/Quality of Service</h3>
+<ul>
+  <li>When you have multiple nodes, contention can cause unwanted delays on the network</li>
+  <li>Quality of Service (QoS) refers to the ability to differentiate and prioritize some traffic over other traffic
+    <ul>
+      <li>e.g. prioritizing real time communication over others</li>
+      <li>Type of Service (Layer 3) and Class of Service (Layer 2) provide the mechanisms for identifying the types of traffic, and are used by QoS to shape traffic</li>
+      <li>Every network device a packet encounters must process that traffic, and cause varying degrees of latency</li>
+      <li>though modern devices are very fast and usually do not add much, though it can add up especially with higher-layer logic</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="safety-instrumented-systems-sis">Safety Instrumented Systems (SIS)</h2>
+<ul>
+  <li>Many ICS systems and Components are monitored by SIS</li>
+  <li>SIS consist of many of the same types of devices as normal ICS</li>
+  <li>SIS are designed to identify unsafe state, and put the system into a safe state</li>
+  <li>Designed for maximum reliability and include diagnostics and redundancy.
+    <ul>
+      <li>SIS must be available</li>
+    </ul>
+  </li>
+  <li>SIS may be integrated or hardwired in</li>
+  <li>Co-existing SIS and OT devices introduces security risk
+    <ul>
+      <li>Important comply with the principle of least privilege</li>
+      <li>Important to consider failures and unsafe states</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="wide-area-connectivity-wan">Wide Area Connectivity (WAN)</h2>
+<ul>
+  <li>Some ICS such as the power grid are connected over WAN
+    <ul>
+      <li>substations, pipelines, oil rigs, etc</li>
+    </ul>
+  </li>
+  <li>Can be implemented over public infrastructure, or leased capabilities</li>
+  <li>May be satelite, run wires, or over airwaves</li>
+  <li>Must be given the same security considerations as all networks we’ve already discussed
+    <ul>
+      <li>Actually more, due to increased attack surface from physical accessibility</li>
+    </ul>
+  </li>
+  <li>Smart grid distributed PMUs are given as example, requiring GPS connectivity</li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

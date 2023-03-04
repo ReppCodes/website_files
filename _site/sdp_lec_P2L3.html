@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>Software Dev Process Lecture Notes - Part 2 Lesson 3 - Android</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>Software Dev Process Lecture Notes - Part 2 Lesson 3 - Android</h2>
+  <hr />
+<h2 id="android-programming">Android Programming</h2>
+<ul>
+  <li>Android runs in Dalvik VM.  Runtime for Java, optimized for mobile</li>
+  <li>Basic architecture (descending order)
+<img src="../assets/content_images/omscs/sdp/p2l3_img1.png" alt="" /></li>
+</ul>
+
+<h3 id="activities">Activities</h3>
+<ul>
+  <li>A single screen with a UI (e.g. phone dialer)</li>
+  <li>Independent units, work together to form a cohesive whole</li>
+  <li>Create an activity by extending the Activity class in the Android framework</li>
+</ul>
+
+<h3 id="services">Services</h3>
+<ul>
+  <li>A component that performas a usually long-running activity in the background, not interacting with the user.
+    <ul>
+      <li>No UI, obviously</li>
+    </ul>
+  </li>
+  <li>Create a service by extending the Service class in the Android framework</li>
+  <li>A way to tell the system something needs to keep happening even if app is closed</li>
+</ul>
+
+<h3 id="content-provider">Content Provider</h3>
+<ul>
+  <li>provides a structured interface to a set of data</li>
+  <li>sqlite data is android setup for database.  frequently this is where you tie to with content provider</li>
+  <li>sometimes also used by app to share data with other apps
+    <ul>
+      <li>e.g. address book / contacts app sharing with other apps that want it</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="broadcast-receiver">Broadcast Receiver</h3>
+<ul>
+  <li>Receiver that can be registered to receive system or application events</li>
+  <li>sounds like a ‘listener’ to me</li>
+</ul>
+
+<h3 id="intents">Intents</h3>
+<ul>
+  <li>Connect above components</li>
+  <li>Abstract description of an operation to be performed</li>
+  <li>consists of 2 main parts
+    <ol>
+      <li>action to be performed (e.g. “call”)</li>
+      <li>data action operates on (e.g. “phone number”)</li>
+    </ol>
+  </li>
+  <li>Provide developers with a way to perform late binding between applications at runtime</li>
+  <li>How can this be done?
+    <ul>
+      <li>Binding
+        <ol>
+          <li>direct(activity)</li>
+          <li>direct(service)</li>
+          <li>broadcast (delivered to all receivers)
+            <ul>
+              <li>this is why when you click a phone number you have to pick which app takes it.  you broadcasted a call intent and each receiver chimed in that it could take it</li>
+            </ul>
+          </li>
+        </ol>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="manifests">Manifests</h3>
+<ul>
+  <li>An XML file that declares all of the components of your app (broadcast receivers can be declared either here or at runtime)</li>
+  <li>All the permissions required for your app to work</li>
+  <li>Specifies the entry point for your app (which activity must be started to start the app)</li>
+  <li>Declares version of the app</li>
+  <li>Declares the lowest Android SDK for which the app is valid</li>
+</ul>
+
+<h3 id="android-activity-lifecycle">Android Activity Lifecycle</h3>
+<p><img src="../assets/content_images/omscs/sdp/p2l3_img2.png" alt="" /></p>
+<ul>
+  <li>Apps get interrupted all the time.   Apps must be able to deal with this.  Gracefully if possible.</li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

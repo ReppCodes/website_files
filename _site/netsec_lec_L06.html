@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>NetSec Lecture Notes - Lesson 6 - Web Session Management</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>NetSec Lecture Notes - Lesson 6 - Web Session Management</h2>
+  <h1 id="web-session-management">Web Session Management</h1>
+<h2 id="sessions">Sessions</h2>
+<ul>
+  <li>Session is a sequence of requests and responses from one browser to one (or more) sites
+    <ul>
+      <li>Session can be long (e.g. Gmail) or short</li>
+      <li>Without session management, users would constantly re-authenticate</li>
+    </ul>
+  </li>
+  <li>Session management: authorize user once; all subsequent requests are tied to user</li>
+</ul>
+
+<h2 id="use-session-tokens">Use Session Tokens</h2>
+<p><img src="../assets/content_images/omscs/netsec/L06_img1.png" alt="img" /></p>
+
+<p>### Storing Session Tokens</p>
+<ul>
+  <li>Browser cookie:
+    <ul>
+      <li>Set-Cookie: SessionToken=loremipsum</li>
+      <li>Problem is that a browser can send cookie with every request, even when it’s not valid.  Gives rise to CSRF attacks.</li>
+    </ul>
+  </li>
+  <li>Embed in all URL links:
+    <ul>
+      <li><code class="highlighter-rouge">https://site.com/checkout?SessionToken=loremipsum</code></li>
+      <li>If application is not secure or user posts a link somewhere, can leak tokens</li>
+    </ul>
+  </li>
+  <li>In a hidden form field
+ 	* <code class="highlighter-rouge">&lt;input type="hidden" name="sessionid" value="loremipsum"</code>
+ 	* Downside is that every user action must result in submission of a form or you lose the token</li>
+  <li>Best method is a combination of all 3
+    <ul>
+      <li>Browser cookie, embed in URL, hidden form field</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="http-referer-header">HTTP Referer Header</h2>
+<ul>
+  <li>Shows the page you are coming from - your referer</li>
+  <li>Problem
+    <ul>
+      <li>Referer leaks URL session token to 3rd parties</li>
+    </ul>
+  </li>
+  <li>Solution: referer suppression
+    <ul>
+      <li>Referer header not sent when HTTP site refers to an HTTP site in HTML5
+        <ul>
+          <li><code class="highlighter-rouge">a rel="noreferrer" href=www.example.com</code></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="session-token-security---logout-procedure">Session token Security - Logout Procedure</h2>
+<ul>
+  <li>Web sites must provide alogout function</li>
+  <li>Let user login as a different user</li>
+  <li>Prevent others from abusing content</li>
+  <li>What happens during logout?
+    <ul>
+      <li>Delete SessionToken from client</li>
+      <li>Mark session token as expired on server</li>
+      <li>Problem: Many websites do the first but not the second
+        <ul>
+          <li>Especially risky for sites who fall back to HTTP after login</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="session-token-quiz">Session Token Quiz</h2>
+<ul>
+  <li>The token must be stored somewhere
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>Tokens expire, but there should still be mechanisms to revoke them if necessary
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>Token size, like cookie size, is not a conern
+    <ul>
+      <li>False</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="session-hijacking">Session Hijacking</h2>
+<ul>
+  <li>A major threat in web security.</li>
+  <li>Attacker waits for user to login, then sniffs the packets and steals the session token</li>
+</ul>
+
+<h3 id="beware-of-predictable-tokens">Beware of predictable tokens</h3>
+<ul>
+  <li>Example 1: Incremented Counter
+    <ul>
+      <li>User logs in, gets counter value, can increment to view sessions of other users</li>
+    </ul>
+  </li>
+  <li>Example 2: Weak MAC token
+    <ul>
+      <li>Weak MAC exposes secret key from a few cookies, gets counter value, can view sessions of other users</li>
+      <li>Weak crypto bad</li>
+    </ul>
+  </li>
+  <li>There are APIs and libraries for doing this properly</li>
+</ul>
+
+<h3 id="session-token-theft">Session Token Theft</h3>
+<ul>
+  <li>Even if a token is randomly generated, still risk in having a live token stolen</li>
+  <li>Example 1: Login over HTTPS, but subsequent HTTP
+    <ul>
+      <li>Enables cookie theft at wireless cafe (e.g. Firesheep)</li>
+      <li>Other ways network attacher can steal token:
+        <ul>
+          <li>Token sent over HTTP</li>
+          <li>Man in the middle attacks on SSL</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Example 2: Cross Site Scripting exploits
+    <ul>
+      <li>Amplified by poor logout procedures
+        <ul>
+          <li>Logout <em>must</em> invalidate token on server</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Mitigations
+    <ul>
+      <li>Binding SessionToken to client’s computer
+        <ul>
+          <li>A common idea: embed machine specific data in sessionID
+            <ul>
+              <li>Don’t use IDs that can change, like userAgent or IP.  Frankly, there really isn’t a good value to use.</li>
+              <li>Better to just use random token</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="session-fixation-attacks">Session Fixation Attacks</h3>
+<ul>
+  <li>Suppose attacker can set the user’s session toke
+    <ul>
+      <li>For URL token, trick user into clicking URL</li>
+      <li>For cookie tokens, set using XSS exploits</li>
+    </ul>
+  </li>
+  <li>Example:
+    <ul>
+      <li>Attacker gets anonymous session token for site.com</li>
+      <li>Sends URL to user with attacker’s session token</li>
+      <li>User clicks on URL and logs into site.com
+        <ul>
+          <li>This elevates attacker’s token to logged-in token</li>
+        </ul>
+      </li>
+      <li>Attacker uses elevated token to hijack user’s session</li>
+    </ul>
+  </li>
+  <li>Mitigation
+    <ul>
+      <li>When elevating user from anonymous to logged-in always issue a new session token
+        <ul>
+          <li>After login, token changes to value unknown to attacker.  Attacker’s token is not elevated.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="session-hijacking-quiz">Session Hijacking Quiz</h2>
+<ul>
+  <li>Active session hijacking involves disconnecting the user from the server once that user is logged on.  Social engineering is required to perform this type of hijacking
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>In passive session hijacking the attacker silently captures the credentials of a user.  Social engineering is required to perform this type of hijacking
+    <ul>
+      <li>False</li>
+      <li>Social engineering is not required</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="summary">Summary</h2>
+<ul>
+  <li>Always assume cookie data retrieved from client is adversarial</li>
+  <li>Session tokens are split across multiple client state mechanisms
+    <ul>
+      <li>Cookies, hidden form fields, URL parameters</li>
+      <li>Cookies by themselves are insecure (CSRF, cookie overwrite)</li>
+      <li>Session tokens must be unpredictable and resist theft</li>
+    </ul>
+  </li>
+  <li>Ensure logout invalidates session on server</li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

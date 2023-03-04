@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>GIOS Lecture Notes - Part 2 Lesson 5 - Thread Performance Considerations</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>GIOS Lecture Notes - Part 2 Lesson 5 - Thread Performance Considerations</h2>
+  <hr />
+<h2 id="which-threading-model-is-better">Which Threading Model is Better?</h2>
+<ul>
+  <li>Boss-worker vs Pipeline from previous lecture
+    <ul>
+      <li>Depending on circumstances, either model might come out ahead in prior example
+<img src="../assets/content_images/omscs/gios/p2l5_img1.png" alt="" /></li>
+      <li>ERRATA: avg. time to complete order for boss worker should be: ((5120) + (5240) + 360) / 11</li>
+      <li>This shows that selecting based on avg completion time or total time to complete all orders results in a different model “winning”.  Also, these results would change based on order and thread number configuration</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="are-threads-useful-redux">Are Threads Useful (redux)</h2>
+<ul>
+  <li>Threads are useful because of:
+    <ul>
+      <li>parallelization - speed up</li>
+      <li>specialization - hot cache</li>
+      <li>efficiency - lower memory requirement and cheaper synchronization</li>
+    </ul>
+  </li>
+  <li>Threads hide latency of IO operations even on single CPU rigs</li>
+  <li>How to evaluate depends on your use case (aka metrics)
+    <ul>
+      <li>For a matrix multiply application
+        <ul>
+          <li>we care about execution time</li>
+        </ul>
+      </li>
+      <li>For a web service application
+        <ul>
+          <li>we care about number of client requests processed over time</li>
+          <li>we care about response time</li>
+          <li>Avg, min, max, distribution of above must all be considered</li>
+        </ul>
+      </li>
+      <li>For hardware
+        <ul>
+          <li>we care about higher utilization (e.g. CPU)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="performance-metrics-introduction">Performance Metrics Introduction</h2>
+<ul>
+  <li>Metrics == a measurement standard that:
+    <ul>
+      <li>Can be measured and quantified
+        <ul>
+          <li>Examples: Execution time</li>
+        </ul>
+      </li>
+      <li>of the system we’re interested in
+        <ul>
+          <li>Example: software implementation of a problem</li>
+        </ul>
+      </li>
+      <li>can be used to evaluate the system behavior
+        <ul>
+          <li>its improvement compared to other implementations</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Big list of possible metrics
+    <ul>
+      <li>Execution time</li>
+      <li>Throughput
+        <ul>
+          <li>how many jobs will be completed over a period of time</li>
+          <li>can be measured at multiple scales.  single box, whole DC, etc</li>
+        </ul>
+      </li>
+      <li>Request rate</li>
+      <li>CPU utilization</li>
+      <li>Wait time
+        <ul>
+          <li>when will job start being executed</li>
+        </ul>
+      </li>
+      <li>Platform efficiency
+        <ul>
+          <li>How well resources are utilized to deliver throughput</li>
+          <li>Important because money made on job completion, but money spent on more resources</li>
+        </ul>
+      </li>
+      <li>Performance / $
+        <ul>
+          <li>How much can be done with additional expenditure</li>
+        </ul>
+      </li>
+      <li>Performance / Watt
+        <ul>
+          <li>Same as above, but with expenditure measured in electricity used</li>
+        </ul>
+      </li>
+      <li>Percentage of SLA violations
+        <ul>
+          <li>How often do we miss our provided SLAs?</li>
+        </ul>
+      </li>
+      <li>Client-perceived performance
+        <ul>
+          <li>Example given is in video applications, humans can only see 30FPS.  Getting above 30FPS isn’t worth as much as never dipping below that level.</li>
+        </ul>
+      </li>
+      <li>Aggregate performance
+        <ul>
+          <li>May be less concerned with individual outliers, and more concerned with average of any above metric for all tasks</li>
+        </ul>
+      </li>
+      <li>Average resource usage
+        <ul>
+          <li>Extends beyond just CPU.  Consider memory, file system, etc.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Ideally, metrics would be obtained from experiments with real software deployment, real machines, real workloads.  However, that is often not an option.
+    <ul>
+      <li>In these cases, we resort to toy experiments representative of realistic settings</li>
+      <li>Supplement these with simulation of desired environment and settings</li>
+      <li>These are referred to as a TESTBED</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="thread-usefulness-again">Thread Usefulness (again)</h2>
+<ul>
+  <li>Depends on metrics</li>
+  <li>Depends on workload</li>
+  <li>Configuration drives what the useful implmentation will be
+    <ul>
+      <li>Toy shop example above</li>
+      <li>In related fields
+        <ul>
+          <li>a different type of graph might result in a different shortest path algorithm performing best</li>
+          <li>Different file patterns might result in different file systems performing best (e.g frequency of reads vs writes)</li>
+        </ul>
+      </li>
+      <li>IT DEPENDS!
+        <ul>
+          <li>almost always the right answer, but almost never accepted</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="multi-process-vs-multi-threaded">Multi Process vs Multi Threaded</h2>
+<h3 id="how-to-best-provide-concurrency">How to best provide concurrency</h3>
+<ul>
+  <li>Multiple threads vs multiple processes
+    <ul>
+      <li>Example: Web Server
+        <ul>
+          <li>concurrent processing of client requests</li>
+          <li>Steps in a simple web server
+            <ol>
+              <li>client/browser sends request</li>
+              <li>web server accepts request</li>
+              <li>server processing steps
+                <ul>
+                  <li>This is the big decision point.</li>
+                  <li>Steps vary a lot in type and scale.</li>
+                  <li>They may block or not depending on system state.</li>
+                </ul>
+              </li>
+              <li>respond by sending file (or error message)</li>
+            </ol>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Multi Process Web Server
+    <ul>
+      <li>One easy way to achieve concurrency is to have multiple instance of the same process
+        <ul>
+          <li>Pros
+            <ul>
+              <li>Simple programming.  Figure out steps once and then reuse.</li>
+            </ul>
+          </li>
+          <li>Cons
+            <ul>
+              <li>High memory usage</li>
+              <li>Costly context switch</li>
+              <li>Hard/costly to maintain shared state across processes</li>
+              <li>Tricky port setup</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Multi Threaded Web Server
+    <ul>
+      <li>Multiple execution contexts, multiple threads, all processing a request in parallel</li>
+      <li>Example given shows all threads executing all steps.  Alternative implementations would be boss-workers or pipeline, all would work here
+        <ul>
+          <li>Pros
+            <ul>
+              <li>shared address space</li>
+              <li>shared state</li>
+              <li>cheap context switch</li>
+            </ul>
+          </li>
+          <li>Cons
+            <ul>
+              <li>Not a simple implementation</li>
+              <li>requires synchronization</li>
+              <li>requires underlying support for threads (not really an issue today, but used to be)</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="event-driven-model">Event Driven Model</h2>
+<ul>
+  <li>Single address space</li>
+  <li>single process</li>
+  <li>single thread of control</li>
+  <li>Event dispatcher checks for incoming events in a loop, invokes handlers</li>
+  <li>Events may correspond to
+    <ul>
+      <li>receipt of request</li>
+      <li>completion of send</li>
+      <li>comnpletion of disk read</li>
+    </ul>
+  </li>
+  <li>Dispatcher == state machine
+    <ul>
+      <li>external events</li>
+      <li>call handler == jump to appropriate code for event received</li>
+      <li>handler will jump back to dispatcher loop when done</li>
+    </ul>
+  </li>
+  <li>Handler == sequence of code that responds to events
+    <ul>
+      <li>run to completion</li>
+      <li>if they need to block they initiate blocking operation and pass control back to dispatch loop
+        <h3 id="concurrency-in-event-driven-model">Concurrency in Event Driven model</h3>
+      </li>
+    </ul>
+  </li>
+  <li>MP and MT = 1 request per execution context (either process or thread)</li>
+  <li>Event Driven = many requests interleaved in an execution context
+    <ul>
+      <li>Single thread switches what it’s doing</li>
+      <li>Example Stage 1
+        <ul>
+          <li>client c1 =&gt; appears, gets to IO, waits on IO</li>
+          <li>client c2 =&gt; appears, gets to recv, wait on recv</li>
+          <li>client c3 =&gt; appears, currently in accept connection</li>
+        </ul>
+      </li>
+      <li>Example Stage 2
+        <ul>
+          <li>client c1 =&gt; progresses to send, wait on send</li>
+          <li>client c2 =&gt; progresses to read, wait on disk IO</li>
+          <li>client c3 =&gt; progresses to recv, wait on recv</li>
+        </ul>
+      </li>
+      <li>Each of these 3 will progress whenever not blocked, while others are blocked (or just schedule between them while none are blocked)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="why-use-event-driven-model">Why use Event Driven model?</h3>
+<ul>
+  <li>on 1 CPU we said before “threads hide latency”
+    <ul>
+      <li>if t.idle &gt; 2* t_ctx_switch then we should switch to hide latency</li>
+      <li>if t_idle == 0 then context switching just wastes cycles that could have been used for request processing</li>
+    </ul>
+  </li>
+  <li>process request until waiting is necessary, then and only then we switch to another request</li>
+  <li>In the case of multiple CPUs this still works, especially when we have more requests than CPUs
+    <ul>
+      <li>For example, we could have an Event Driven process on each CPU
+        <ul>
+          <li>However, must have mechanisms to direct right events to right CPU.  These mechanisms exist, but details left for the student, not covered.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="how-to-use-event-driven-model">How to use Event Driven model</h3>
+<ul>
+  <li>At lowest level we need network and disk read/write, usually represented as sockets and files</li>
+  <li>both of those are, internally, represented as file descriptors</li>
+  <li>event == input on file descriptor (FD)</li>
+  <li>Which file descriptor?
+    <ul>
+      <li>select() call takes a range of FD and returns first that has input on it</li>
+      <li>poll() another option</li>
+      <li>But both have to scan through all FD until they find one that matches</li>
+      <li>epoll() is newer API eliminates some of the wasted search effort</li>
+    </ul>
+  </li>
+  <li>Pros
+    <ul>
+      <li>single address space</li>
+      <li>single flow of control
+        <ul>
+          <li>still jumping all over, so complicated control flow, even if there is only one</li>
+        </ul>
+      </li>
+      <li>smaller memory requirement</li>
+      <li>no context switching</li>
+      <li>no synchronization</li>
+      <li>simpler programming</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="problems-with-event-driven-model">Problems with Event Driven Model</h3>
+<ul>
+  <li>A single blocking IO call or handler can block the whole damn thing</li>
+  <li>One solution is to use asynchronous IO Operations (or syscalls)
+    <ul>
+      <li>process/thread makes system call</li>
+      <li>OS obtains all relevant info from stack, and either learns where to return results or tells caller where to get results later</li>
+      <li>process/thread can continue and come back later to get results</li>
+      <li>Requires support from kernel (e.g. KLT) and/or device (e.g. DMA)</li>
+      <li>Will cover this more later, but for now we need to know that they unblock the central calling process</li>
+      <li>Fits well with event driven model</li>
+      <li>But what to do if Async IO calls aren’t available?
+        <ul>
+          <li>Even today, fancier hardware IO might not support async</li>
+          <li>Helpers to the rescue!
+            <ul>
+              <li>designated for blocking IO operations only</li>
+              <li>pipe/socket based communication with event dispatcher
+                <ul>
+                  <li>select/poll still ok because it’s still an FD</li>
+                </ul>
+              </li>
+              <li>helper blocks, but main event loop (and process) will not!</li>
+              <li>This is the AMPED model proposed in Pai paper!
+                <ul>
+                  <li>Used processes because multithreading was not supported on some target systems at the time</li>
+                  <li>In theory could also be AMTED and use threads</li>
+                </ul>
+              </li>
+              <li>Pros
+                <ul>
+                  <li>resolves portability limitations of basic event driven model</li>
+                  <li>smaller footprint than regular worker thread</li>
+                  <li>Will have helper only for number of concurrent blocking operations, as opposed to for every single request.</li>
+                </ul>
+              </li>
+              <li>Cons
+                <ul>
+                  <li>applicable only to certan classes of applications</li>
+                  <li>obstacles with event routing on multi CPU systems</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="flash-event-driven-web-server">Flash: Event-Driven Web Server</h3>
+<ul>
+  <li>An event-driven webserver (AMPED)</li>
+  <li>with asymetric helper processes</li>
+  <li>helpers used for disk reads
+    <ul>
+      <li>from the static site web 1.0 days</li>
+    </ul>
+  </li>
+  <li>pipes used for communication with dispatcher</li>
+  <li>helper reads file in memory (via mmap)</li>
+  <li>dispatcher checks (via mincore) if pages are in mapped memory to decide whether to use ‘local’ handler or pass request to helper
+    <ul>
+      <li>this check represents some overhead, but results in big savings as it allows us to avoid blocking IO operation whenever file is found in memory</li>
+    </ul>
+  </li>
+  <li>Flash performs application-level caching of both data and computation at multiple levels
+    <ul>
+      <li>e.g. files and pathname translations</li>
+      <li>trades space for time in a smart way</li>
+    </ul>
+  </li>
+  <li>Flash also performs some optimizations that take advantage of the hardware, notably the Network Interface Card (NIC)
+    <ul>
+      <li>Alignment of data for direct memory access (DMA)</li>
+      <li>Use of DMA with scatter-gather =&gt; vector IO operations</li>
+      <li>These are common optimizations now, but were novel when Pai paper was written</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="apache-web-server">Apache Web Server</h3>
+<ul>
+  <li>Popular open source web server</li>
+  <li>Compared against in Pai paper, different architecture than Flash
+<img src="../assets/content_images/omscs/gios/p2l5_img2.png" alt="" /></li>
+  <li>Core == basic server skeleton</li>
+  <li>Modules == 1 per functionality</li>
+  <li>Flow of control is similar to event driven model
+    <ul>
+      <li>each request passes through all modules</li>
+    </ul>
+  </li>
+  <li>BUT
+    <ul>
+      <li>combination of MP and MT</li>
+      <li>each process == boss/worker with dynamic thread pool</li>
+      <li>Number of processes can also be dynamically adjusted
+        <ul>
+          <li>tuned by number of outstanding connections, number of pending requests, CPU usage, etc</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="experimental-methodology">Experimental Methodology</h2>
+<ul>
+  <li>Experiments should be constructed so they can support the argument you are trying to make</li>
+  <li>Define comparison points
+    <ul>
+      <li>What systems are you comparing?
+        <ul>
+          <li>Pai paper
+            <ul>
+              <li>MP (each process single thread)</li>
+              <li>MT (boss-worker)</li>
+              <li>Single Process Event Driven (SPED)</li>
+              <li>Zeus (SPED with 2 processes)</li>
+              <li>Apache (v1.3.1 MP)</li>
+              <li>Compare all against Flash (AMPED model)</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Define inputs
+    <ul>
+      <li>What workloads will be used?
+        <ul>
+          <li>Pai paper
+            <ul>
+              <li>Realistic request workload
+                <ul>
+                  <li>distribution of web page accesses over time</li>
+                </ul>
+              </li>
+              <li>Controlled, reproducible workload
+                <ul>
+                  <li>trace-based (from real web servers)</li>
+                </ul>
+              </li>
+              <li>CS web server trace (Rice University)
+                <ul>
+                  <li>very large, did not fit in memory</li>
+                </ul>
+              </li>
+              <li>Owlnet trace (Rice University)
+                <ul>
+                  <li>smaller, would usually fit in memory</li>
+                </ul>
+              </li>
+              <li>Synthetic workload
+                <ul>
+                  <li>assess best and worst case scenarios</li>
+                  <li>assess what if scenarios</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Define metrics
+    <ul>
+      <li>How will you measure performance?
+        <ul>
+          <li>Pai paper
+            <ul>
+              <li>Bandwidth == bytes/time
+                <ul>
+                  <li>total bytes transferred from files / total time</li>
+                </ul>
+              </li>
+              <li>Connection Rate == request/time
+                <ul>
+                  <li>total client connection / total time</li>
+                </ul>
+              </li>
+              <li>Evaluate both as a function of file size</li>
+              <li>larger file size =&gt; amortize per connection cost =&gt; higher bandwidth</li>
+              <li>larger file size =&gt; more work per connection =&gt; lower connection rate</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="experimental-results">Experimental Results</h2>
+<ul>
+  <li>Best case Numbers
+    <ul>
+      <li>synthetic load
+        <ul>
+          <li>n requests for same file</li>
+          <li>therefore always cached</li>
+        </ul>
+      </li>
+      <li>Measure bandwidth
+        <ul>
+          <li>bw = n * bytes(F)/time</li>
+          <li>file size of 0-200kb
+            <ul>
+              <li>vary work per request</li>
+              <li>assume as we increase filesize bandwidth will increase</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>results show curves for all servers compared</li>
+      <li>Observations
+        <ul>
+          <li>when file size is small, bandwidth is low.  as file size increases, bandwidth increases.  true for all</li>
+          <li>SPED has best performance</li>
+          <li>Flash AMPED extra check for memory presence</li>
+          <li>Zeus has anomaly due to misalignment for DMA operations</li>
+          <li>MT/MP take hits on extra sync and context switching</li>
+          <li>Apache lacks optimizations</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Owlnet Trace
+    <ul>
+      <li>Observations
+        <ul>
+          <li>trends similar to best case</li>
+          <li>small trace, mostly fits in cache</li>
+          <li>sometimes blocking IO is required
+            <ul>
+              <li>when this happens SPED will block</li>
+              <li>but Flash’s helpers resolve the problem</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>CS Trace
+    <ul>
+      <li>Observations
+        <ul>
+          <li>larger trace, mostly requires IO</li>
+          <li>SPED worst =&gt; lack of async IO</li>
+          <li>MT better than MP
+            <ul>
+              <li>memory footprint</li>
+              <li>cheaper (faster) synchronization</li>
+            </ul>
+          </li>
+          <li>Flash best
+            <ul>
+              <li>smaller memory footprint</li>
+              <li>more memory for caching</li>
+              <li>as a result of caching, fewer requests lead to blocking IO</li>
+              <li>no synchronization needed</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="impact-of-optimizations">Impact of optimizations</h4>
+<p><img src="../assets/content_images/omscs/gios/p2l5_img3.png" alt="" /></p>
+<ul>
+  <li>Flash with optimizations
+    <ul>
+      <li>path == directory lookup caching</li>
+      <li>path and mmap == directory lookup and file cached</li>
+      <li>all == directory lookup and file and header cached</li>
+    </ul>
+  </li>
+  <li>Optimizations are important!
+    <ul>
+      <li>Apache likely would have fared much better if optimizations had been included for it</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="summary-of-performance-results">Summary of Performance Results</h4>
+<ul>
+  <li>When data is in cache
+    <ul>
+      <li>SPED » AMPED Flash
+        <ul>
+          <li>Flash has an unnecessary test for memory presence</li>
+        </ul>
+      </li>
+      <li>SPED and AMPED Flash » MT/MP
+        <ul>
+          <li>MT/MP have overhead for sync and context switching</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>With disk-bound workload
+    <ul>
+      <li>AMPED Flash » SPED
+        <ul>
+          <li>SPED blocks because it does not have support for async IO</li>
+        </ul>
+      </li>
+      <li>AMPED Flash » NT/MP
+        <ul>
+          <li>more memory efficient and less context switching</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>There are still challenges with Event Driven architecture
+    <ul>
+      <li>Hard to take advantage of multiple cores</li>
+      <li>Hard to route signals to correct core</li>
+      <li>Processing itself may not be suitable for this architecture</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="design-relevant-experiments">Design Relevant Experiments</h2>
+<ul>
+  <li>Much thought and planning must go into deisgn</li>
+  <li>Relevant experiment
+    <ul>
+      <li>Will lead to statements about a solution that are credible and impactful to others</li>
+    </ul>
+  </li>
+  <li>Example: Web Server Experiment
+    <ul>
+      <li>Clients care about response time</li>
+      <li>Operators care about throughput</li>
+      <li>Possible goals
+        <ul>
+          <li>show that you improve both response time and throughput that’s great!</li>
+          <li>improving response time only is good</li>
+          <li>improving resposne time at the cost of throughput might</li>
+          <li>maintains response time when request rate increases</li>
+        </ul>
+      </li>
+      <li>goals drive selection of metrics and confiugation of experiments</li>
+    </ul>
+  </li>
+  <li>Rule of thumb for picking metrics
+    <ul>
+      <li>standard metrics in industry are a good starting point
+        <ul>
+          <li>gives you a broader audience</li>
+        </ul>
+      </li>
+      <li>metrics answering the why/what/who questions?
+        <ul>
+          <li>why am I doing this?</li>
+          <li>what do I hope to show or accomplish?</li>
+          <li>who cares?</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Picking the right configuration space
+    <ul>
+      <li>system resources will drive this
+        <ul>
+          <li>hardware (CPU, memory)</li>
+          <li>software (# of threads, queue sizes)</li>
+        </ul>
+      </li>
+      <li>Workload
+        <ul>
+          <li>e.g. web server: request rate, concurrent requests ,file size, access pattern</li>
+        </ul>
+      </li>
+      <li>Pick!
+        <ul>
+          <li>choose a subset of configuration parameters that are most impactful on the selected metrics</li>
+          <li>pick ranges for each variable factor (must also be relevant)</li>
+          <li>pick relevant workload!
+            <ul>
+              <li>but also include best and worst case scenarios
+                <ul>
+                  <li>they also bring value as they highlight limitations and opportunities that may exist</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>Pick useful combinations of factors
+            <ul>
+              <li>many just reiterate the same point.  After a bit of confirmation this is just a waste</li>
+              <li>Vary one factor at a time to draw reasonable results</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Consider the baseline and competition
+    <ul>
+      <li>compare system to
+        <ul>
+          <li>state of the art</li>
+          <li>or most common practice</li>
+          <li>ideal best/worst case scenarios</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="advice-on-running-experiments">Advice on Running Experiments</h2>
+<ul>
+  <li>Now it is easy! (and fun)
+    <ul>
+      <li>run test cases n times</li>
+      <li>compute metrics</li>
+      <li>represent results
+        <ul>
+          <li>graph selection matters a lot, won’t go into detail but look at class papers for examples</li>
+        </ul>
+      </li>
+      <li>Draw real conclusions, and lay them out!</li>
+    </ul>
+  </li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

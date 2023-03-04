@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>NetSec Lecture Notes - Lesson 7 - HTTPS</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>NetSec Lecture Notes - Lesson 7 - HTTPS</h2>
+  <h1 id="https">HTTPS</h1>
+<ul>
+  <li>HTTPS: Hyper Text Protocol Secure = all communication between your browser and a website is encrypted</li>
+  <li>Basically HTTP over SSL (Secure Socket Layer)
+    <ul>
+      <li>SSL now called TLS (Transport Layer Security)</li>
+    </ul>
+  </li>
+  <li>As opposed  to HTTP, which is a clear text protocol</li>
+  <li>Creates a secure channel over an insecure network</li>
+  <li>Is reasonable protection against man in them iddle attacks</li>
+  <li>Can still provide security even when only one side of the communication is secure</li>
+</ul>
+
+<h2 id="why-is-https-not-used-for-all-web-traffic">Why is HTTPS not used for all web traffic?</h2>
+<ul>
+  <li>Crypto slows down web servers (but not by much if done right)</li>
+  <li>Some ad networks do not support HTTPS
+    <ul>
+      <li>Reduced ad revenue for publishers</li>
+      <li>Stats given are from 2015, probably way out of date</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="https-quiz">HTTPS Quiz</h2>
+<ul>
+  <li>Select all of the items that can be encrypted by HTTPS
+    <ul>
+      <li>Request URL
+        <ul>
+          <li>True</li>
+        </ul>
+      </li>
+      <li>Query parameters
+        <ul>
+          <li>True</li>
+        </ul>
+      </li>
+      <li>Headers
+        <ul>
+          <li>True</li>
+        </ul>
+      </li>
+      <li>Cookies
+        <ul>
+          <li>True</li>
+        </ul>
+      </li>
+      <li>Host addresses</li>
+      <li>Port numbers</li>
+      <li>The amount of transferred data</li>
+      <li>Length of the session</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="https-threat-model-network-attacker">HTTPS Threat Model: Network Attacker</h2>
+<ul>
+  <li>Controls network infrastructure: Routers, DNS</li>
+  <li>Eavesdrops, injects, blocks, and modifies packets</li>
+  <li>Examples:
+    <ul>
+      <li>Wireless network at internet cafe</li>
+      <li>Internet access at hotels (untrusted ISP)</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="ssltls-overview">SSL/TLS Overview</h2>
+<ul>
+  <li>Uses public key crypto</li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/netsec/L07_img1.png" alt="img" /></p>
+
+<h3 id="certificate-authority">Certificate Authority</h3>
+<ul>
+  <li>Key challenge is how does Alice obtain Bob’s public key?
+    <ul>
+      <li>Standard is to use certificates issued by an authority</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/netsec/L07_img2.png" alt="img" />
+<img src="../assets/content_images/omscs/netsec/L07_img3.png" alt="img" /></p>
+
+<h3 id="certificates-on-the-web">Certificates on the Web</h3>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>* Subject's commonName can be:
+	* An explicit name, e.g. cc.gatech.edu
+	* A wildcard cert, e.g. \*.gatech.edu
+* Matching Rule:
+	* \* must occur in leftmost component, does not match "."
+	* For example: "\*.a.com" matches "x.a.com" but not "y.x.a.com" * Browsers accept certificates from a large number of CAs
+* Top level CAs ~ 60
+* Intermediate CAs ~ 1200 * Browser handshake ![img](../assets/content_images/omscs/netsec/L07_img4.png)
+</code></pre></div></div>
+
+<h2 id="https-in-the-browser-the-lock-icon">HTTPS In the Browser: The Lock Icon</h2>
+<ul>
+  <li>Intended Goal:
+    <ul>
+      <li>Provide the user with identity of page origin</li>
+      <li>Indicate to user that page contents were not viewed or modified by a network attacker</li>
+    </ul>
+  </li>
+  <li>Indicates that all elements on the page were fetched using HTTPS</li>
+  <li>For all elements:
+    <ul>
+      <li>HTTPS cert issued bya CA trusted by the browser</li>
+      <li>HTTPS cert is valid (not expired)</li>
+      <li>Domain in URL matches:
+        <ul>
+          <li>CommonName or SubjectAlternativeName in cert</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="https-disadvantages-quiz">HTTPS Disadvantages Quiz</h2>
+<ul>
+  <li>Which of the following are real disadvantages to using HTTPS
+    <ul>
+      <li>Browser caching won’t work properly</li>
+      <li>You need to buy an SSL certificate
+        <ul>
+          <li>True</li>
+          <li>Outdated, thanks LetsEncrypt</li>
+        </ul>
+      </li>
+      <li>Mixed modes issue - loading insecure content on a secure site
+        <ul>
+          <li>True</li>
+        </ul>
+      </li>
+      <li>HTTPS uses a lot of serverr esources</li>
+      <li>Proxy caching problems - public caching cannot occur
+        <ul>
+          <li>True</li>
+        </ul>
+      </li>
+      <li>HTTTPS introduces latencies</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="problems-with-https-and-the-lock-icon">Problems with HTTPS and the Lock Icon</h2>
+<ul>
+  <li>Upgrade from HTTPS to HTTPS
+    <ul>
+      <li>SSL stripping attack prevents browser from upgrading, but won’t display any certificate errors
+        <ul>
+          <li>aka HTTP downgrading attack</li>
+          <li>Solution is to use HSTS (Strict Transport Security)
+            <ul>
+              <li>Policy set for max of 1 year, on server</li>
+              <li>Header tells browser to always connect over HTTPS</li>
+              <li>Subsequent visits must be over HTTPS (self signed certs result in an error)
+                <ul>
+                  <li>Browser refuses to connect over HTTP or if self-signed cert, requires that entire site be served over HTTPS</li>
+                </ul>
+              </li>
+              <li>HSTS flag deleted when users “clears private data”: a tradeoff between security and privacy</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Forged certificates
+    <ul>
+      <li>Wrong issuance</li>
+      <li>DigiNotar example</li>
+      <li>Many other examples</li>
+      <li>Breaks the whole cert trust model</li>
+      <li>Functions like a man in the middle attack</li>
+      <li><img src="../assets/content_images/omscs/netsec/L07_img5.png" alt="img" /></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="solutions-to-certificate-issues">Solutions to Certificate Issues</h2>
+<ul>
+  <li>Dynamic HTTP public-key pinning
+    <ul>
+      <li>Let a site declare CAs that can sign its sert (similar to HSTS)</li>
+      <li>On subsequent HTTPS visits, browser rejects certs issued by other CAs</li>
+      <li>TOFU: Trust On First Use</li>
+      <li>There’s an HPKP extension (HTTP header from server) to facilitate this</li>
+    </ul>
+  </li>
+  <li>Certificate Transparency
+    <ul>
+      <li>Idea: CAs must advertise a public log of all certs they issued</li>
+      <li>Browser will only use a cert if it is published on log server
+        <ul>
+          <li>Efficient implementation using Merkle hash trees</li>
+        </ul>
+      </li>
+      <li>Companies can scan logs to look for invalid issuance</li>
+    </ul>
+  </li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

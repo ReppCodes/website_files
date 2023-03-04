@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>Software Dev Process Lecture Notes - Part 3 Lesson 1 - Software Architecture</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>Software Dev Process Lecture Notes - Part 3 Lesson 1 - Software Architecture</h2>
+  <hr />
+<h2 id="software-architecture">Software Architecture</h2>
+
+<h3 id="what-is-software-architecture">What is Software Architecture</h3>
+<ul>
+  <li>Elemants, form, rationale (what, how, why)
+    <ul>
+      <li>Perry and Wolf</li>
+    </ul>
+  </li>
+  <li>A level of design that involves 4 main things
+    <ul>
+      <li>Shaw and Garland
+        <ol>
+          <li>description of elements fromw hich systems are built</li>
+          <li>interactions amont those elements</li>
+          <li>patterns that guide their composition</li>
+          <li>constraints on these patterns</li>
+        </ol>
+      </li>
+    </ul>
+  </li>
+  <li>Set of principal design decisions about the system</li>
+  <li>Blueprint of a software system
+    <ul>
+      <li>Structure</li>
+      <li>Behavior</li>
+      <li>Interactions</li>
+      <li>Non-functional properties</li>
+    </ul>
+  </li>
+  <li>Temporal aspect
+    <ul>
+      <li>A SWA is not defined at once, but iteratively, over time</li>
+      <li>At any point in time there is a SWA, but it will change over time</li>
+      <li>Design decisions are made, unmade, and changed over a system’s lifetime</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="prescriptive-vs-descriptive-architecture">Prescriptive vs Descriptive Architecture</h3>
+<ul>
+  <li>A prescriptive architecture captrues the design decisions made prior to the system’s construction
+    <ul>
+      <li>AKA as-conceived SWA</li>
+    </ul>
+  </li>
+  <li>A descriptive architecture describes how the system has actually been built
+    <ul>
+      <li>AKA as-implemented SWA</li>
+    </ul>
+  </li>
+  <li>Why is there a gap between these two things?</li>
+</ul>
+
+<h3 id="architectural-evolution">Architectural Evolution</h3>
+<ul>
+  <li>When a system evolves, ideally its prescriptive architecture should be modified first
+    <ul>
+      <li>In practice, this rarely happens
+        <ul>
+          <li>Developers’ sloppiness</li>
+          <li>Short deadlines</li>
+          <li>Lack of documented prescriptive architecture</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="architectural-degradation">Architectural Degradation</h3>
+<ul>
+  <li>Architectural drift
+    <ul>
+      <li>introduction of architectural design decisions orthogonal to a system’s prescriptive architecture</li>
+    </ul>
+  </li>
+  <li>Architectural erosion
+    <ul>
+      <li>introduction of architectural design decisions that violate a system’s prescriptive architecture</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="architectural-recovery">Architectural Recovery</h3>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>* Drift and erosion -&gt; degraded architecture
+* Options
+	* Keep tweaking the code (bad idea)
+	* Architectural recovery: determine SWA from implementation and fix it
+</code></pre></div></div>
+
+<h3 id="software-architecture-elements">Software Architecture Elements</h3>
+<ul>
+  <li>Elements
+    <ul>
+      <li>A software architecture typically is not a monolith</li>
+      <li>A composition and interplay of different elements
+        <ul>
+          <li>Processing elements</li>
+          <li>Data elements</li>
+          <li>Interaction elements</li>
+          <li>Processing + data = components
+            <ul>
+              <li>Software component - architectural entity that encapsulates a subset of the system’s functionality and/or data</li>
+              <li>restricts access to that subset via an explicitly defined interface</li>
+            </ul>
+          </li>
+          <li>interaction = connectors
+            <ul>
+              <li>Software connector - architectural entity effecting and regulating interaction among components</li>
+            </ul>
+          </li>
+          <li>components + connectors = configuration
+            <ul>
+              <li>Architectural configuation (aka topology) - association between components and connectors of a software system architecture
+<img src="../assets/content_images/omscs/sdp/p3l1_img1.png" alt="" /></li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="deployment-architectural-perspective">Deployment Architectural Perspective</h3>
+<ul>
+  <li>Shows configuration laid out onto the actual hardware each piece will run on.</li>
+  <li>Allows better assessment of some things.  E.g. will the hardware running a given piece of the configuration have enough memory/compute/power?
+<img src="../assets/content_images/omscs/sdp/p3l1_img2.png" alt="" /></li>
+</ul>
+
+<h3 id="software-architecture-styles">Software Architecture Styles</h3>
+<ul>
+  <li>An architectural style defines a family of systems in terms of a pattern of structural organization; a vocabulary of components and connectors, with constraints on how they can be combined
+    <ul>
+      <li>Shaw and Garlan 1996</li>
+    </ul>
+  </li>
+  <li>Basically, a named collection of architectural design decisions applicable in a given context</li>
+  <li>Pipes and Filters
+    <ul>
+      <li>a style in which a chain of processing elements arranged such that the output of one element is the input of another element</li>
+    </ul>
+  </li>
+  <li>Event-driven
+    <ul>
+      <li>consists of event emitters and event consumers. consumers are notified when events of interest occur and have to respond to them</li>
+    </ul>
+  </li>
+  <li>Publish-subscribe
+    <ul>
+      <li>a style in which senders of messages do not send to specific receives.  instead they broadcast with tags, and subscribers are interested in specific tags and will only ingest messages with those tags.</li>
+    </ul>
+  </li>
+  <li>Client-server
+    <ul>
+      <li>a style in which computers in a network assume on of two roles (client or server).  the server provides resources and functionality.  the client initiates contact with the server and requests the use of those resources and functionality</li>
+    </ul>
+  </li>
+  <li>peer-to-peer
+    <ul>
+      <li>a decentralized and distributed network system, in which individual independent nodes in the network act as independent agents that are both supplies and consumers of information.</li>
+    </ul>
+  </li>
+  <li>representational state transfer (REST)
+    <ul>
+      <li>a hybrid architectural style for distributed hybrid media systems.  characterized by a uniform connector interface.  very popular style, very widely used.</li>
+    </ul>
+  </li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

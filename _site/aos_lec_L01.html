@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>AOS Lecture Notes - Lesson 1 - Introduction to AOS</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>AOS Lecture Notes - Lesson 1 - Introduction to AOS</h2>
+  <h1 id="principle-of-abstraction">Principle of Abstraction</h1>
+
+<h2 id="introduction">Introduction</h2>
+
+<ul>
+  <li>Most computers will have multiple applications open.  How do they all work together?</li>
+  <li>OS’s have evolved over time.  We will see some of how the current state of the art has come about.</li>
+  <li>Abstractions!
+    <ul>
+      <li>hardware resources</li>
+      <li>OS functionality</li>
+      <li>OS abstractions</li>
+    </ul>
+  </li>
+  <li>By end of the lesson, we will be ready to discuss the primary OS abstractions</li>
+  <li>
+    <p>Lots of review of basics OS stuff.  Going to omit many of these slides from notes</p>
+  </li>
+  <li>Abstraction is an interface that allows us to hide all the details</li>
+</ul>
+
+<h2 id="the-power-of-abstractions">The power of abstractions</h2>
+
+<ul>
+  <li>Google Earth, at some level, is electrons and holes.</li>
+  <li>An ascending list of all the abstractions might be:
+    <ul>
+      <li>Transistors</li>
+      <li>Logic Gates</li>
+      <li>Sequential and combination logic elements</li>
+      <li>machine organization (data path and control)</li>
+      <li>Instruction set architecture
+        <ul>
+          <li>abstraction defined by a processor (Intel Inside, yo)</li>
+        </ul>
+      </li>
+      <li>System software
+        <ul>
+          <li>OS, compilers, etc</li>
+        </ul>
+      </li>
+      <li>Applications
+        <ul>
+          <li>high level language that leverages <strong>all</strong> lower layers</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Application is written at the top of the hierarchy, and traverses the stack below it.  The stack below it provides all it needs for successful and safe execution
+    <ul>
+      <li><img src="../assets/content_images/omscs/aos/L01_img1.png" alt="img" /></li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="hardware-resources">Hardware Resources</h1>
+
+<ul>
+  <li>OS role is to control access to the physical hardware</li>
+  <li>Hardware ranges from smartphone to cloud servers, but really they’re all pretty similar in terms of internal organization
+    <ul>
+      <li>same for all manifestations
+        <ul>
+          <li>CPU is connected by a conduit we call the Bus</li>
+          <li>Memory has instructions and data needed for CPU to execute.  CPU uses Bus to access memory</li>
+          <li>Storage is needed for persistence of files, and other data.  Also accessed by CPU via a Controller, attached to the Bus</li>
+          <li>Peripherals such as mic/keyboard/etc all accessed via Controllers attached the Bus</li>
+          <li>Network is interfaced through Controller/Bus, same as everything else</li>
+          <li>Bus is a conduit for communication, serves the purpose of connecting CPU to other components</li>
+          <li>Depending on sophistication/speed of device may have various other capabilities
+            <ul>
+              <li>e.g. network or storage may access memory directly (DMA)</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Second example given, with a system bus in addition to the IO bus
+        <ul>
+          <li>System bus is for synchronous communication between CPU and Memory</li>
+          <li>IO bus is for the devices to communicate with the CPU</li>
+          <li>The intent is that the individual needs of these devices is less than the cumulative bandwidth for the CPU to communicate with the memory.  System bus &gt; IO bus</li>
+          <li>System bus connects via a bridge to the IO bus</li>
+          <li>Bridge is a specialized IO processor for scheduling the devices to communicate with the memory (DMA) or the CPU</li>
+          <li>Other high end devices, such as frame buffer for a graphics display, that may hang off the system bus to take advantage of its high-speed nature</li>
+          <li><img src="../assets/content_images/omscs/aos/L01_img2.png" alt="img" /></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="os-functionality">OS Functionality</h1>
+
+<ul>
+  <li>Section begins with a ‘quiz’ that lists some of the functionalities provided by an OS
+    <ul>
+      <li>OS is a resource manager</li>
+      <li>OS provides a consistent interface to the hardware resources (CPU, memory, etc)</li>
+      <li>OS schedules applications on the CPU</li>
+    </ul>
+  </li>
+  <li>What is an OS?
+    <ul>
+      <li>Protected access to hardware resources</li>
+      <li>Arbitrates among competing requests</li>
+      <li><img src="../assets/content_images/omscs/aos/L01_img3.png" alt="img" /></li>
+      <li>OS provides well defined APIs for accessing hardware resources managed by the OS
+        <ul>
+          <li>resources are provided as services</li>
+          <li>applications make requests for resources to the OS</li>
+          <li>services are provided as responses to those API calls</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>What happens when you click the mouse on your computer?
+    <ul>
+      <li>It generates a CPU interrupt
+        <ul>
+          <li>using an interrupt line, one of the lines on the bus</li>
+          <li><img src="../assets/content_images/omscs/aos/L01_img4.png" alt="img" /></li>
+        </ul>
+      </li>
+      <li>CPU is running whatever else.  An interrupt is a hardware mechanism for alerting the processor that something external requires the attention of the CPU.  OS fields the interrupt.</li>
+      <li>OS schedules itself to run on the CPU to handle the interrupt, figures out what its intended for, and passes it to the intended recipient program for action.</li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="managing-the-cpu-and-memory">Managing the CPU and Memory</h1>
+
+<ul>
+  <li>Recall the initial imagery from beginning of this lecture, where a computer is running multiple apps seemingly simultaneously, and all of them must play nicely with each other.</li>
+  <li>OS must protect these applications from one another and themselves, while staying out of the way as much as possible.</li>
+</ul>
+
+<h2 id="catering-to-resource-requirements">Catering to Resource Requirements</h2>
+
+<ul>
+  <li>Resource needs of applications
+    <ul>
+      <li>cpu</li>
+      <li>memory</li>
+      <li>peripheral devices</li>
+    </ul>
+  </li>
+  <li>App launch time
+    <ul>
+      <li>OS doesn’t know much about the app, but at least has enough information to create memory footprint
+        <ul>
+          <li>this is provided by the OS loader</li>
+          <li><img src="../assets/content_images/omscs/aos/L01_img5.png" alt="img" /></li>
+        </ul>
+      </li>
+      <li>app asks for additional resources at runtime, OS will serve as broker for running applications</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="modern-operating-systems">Modern Operating Systems</h2>
+
+<ul>
+  <li>Program
+    <ul>
+      <li>static image loaded into memory</li>
+    </ul>
+  </li>
+  <li>Process
+    <ul>
+      <li>a program in execution</li>
+      <li>program + state of the running program (which evolves as the program executes)</li>
+      <li>in the simplest examples, there is a single thread of control coursing through the program</li>
+      <li>However, picture two (or many) threads of control running parallel through the program</li>
+      <li>The OS must arbitrate between competing requests from these threads</li>
+      <li>Therefore a process = program + state of all threads executing in the program</li>
+    </ul>
+  </li>
+  <li>Memory related OS abstraction
+    <ul>
+      <li>address space for each process distinct from one another</li>
+      <li>implement the abstraction using hardware capabilities</li>
+    </ul>
+  </li>
+</ul>
+
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>ICPSS Lecture Notes - Lesson 11 - Hacking Industrial Control Systems</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>ICPSS Lecture Notes - Lesson 11 - Hacking Industrial Control Systems</h2>
+  <h1 id="hacking-industrial-control-systems">Hacking Industrial Control Systems</h1>
+<h2 id="motives-and-consequences">Motives and Consequences</h2>
+<ul>
+  <li>Industrial networks are responsible for continuous and batch processing and other manufacturing operations of almost every scale</li>
+  <li>Consequences can range from benign disruptions to deliberate sabotage</li>
+  <li>List of potential impacts is almost innumerable
+    <ul>
+      <li>Local impacts include:
+        <ul>
+          <li>impact to quality and business reputation</li>
+          <li>loss of produciton</li>
+          <li>loss of intellectual property</li>
+          <li>penalties for regulatory noncompliance</li>
+        </ul>
+      </li>
+      <li>Regional impacts include:
+        <ul>
+          <li>economic (micro) impact</li>
+          <li>mechanical stress/failure</li>
+          <li>catastrophic equipment failure</li>
+          <li>localized loss of life</li>
+        </ul>
+      </li>
+      <li>Global impacts include:
+        <ul>
+          <li>generalized panic</li>
+          <li>economic (macro) impact</li>
+          <li>widespread loss of life</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>A SIS may ensure safety, but it shares too much attack surface with the rest of the Industrial network, and do not ensure security.
+    <ul>
+      <li>Simple MITM can beat them</li>
+      <li>Quote to remember “do not assume that safety leads to security, or security leads to safety”</li>
+    </ul>
+  </li>
+  <li>Compliance also doesn’t necessarily lead to security</li>
+</ul>
+
+<h2 id="common-targets">Common Targets</h2>
+<ul>
+  <li>Each system is unique in composition, but share many components.  Detailed knowledge helps the attacker, but there’s enough shared surface to do damage</li>
+  <li>For example, a very common target is SCADA servers
+    <ul>
+      <li>Attack vector could be a control network</li>
+      <li>Attack method could be exploitation of trusted connections within control network</li>
+      <li>Can result in plant shutdown</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="common-attack-methods">Common Attack Methods</h2>
+<ul>
+  <li>Similar to above, some methods are evergreen when hitting ICS</li>
+  <li>Man In the Middle (MITM)</li>
+  <li>Denial of Service (DoS)
+    <ul>
+      <li>when some malicious event attempts to make a resource unavailable</li>
+      <li>Can be very impactful</li>
+    </ul>
+  </li>
+  <li>Replay Attacks
+    <ul>
+      <li>attacker will eavesdrop on a channel, and can replay traffic which may contain data, commands, or login information</li>
+      <li>requires an indepth knowledge of ICS operations to fully exploit, but even a naive attacker can do damage or get lucky</li>
+    </ul>
+  </li>
+  <li>The reasons these are common are:
+    <ul>
+      <li>insecure communicatio nrpotocols</li>
+      <li>little device-to-device authentication</li>
+      <li>delicate communication stacks in embedded devices</li>
+    </ul>
+  </li>
+  <li>The vectors used to compomise an Engineering Workstation (EWS) are not much different than those used previously with the HMI
+    <ul>
+      <li>Typically a single hose with strong permissions</li>
+      <li>Can configure access control mechanisms</li>
+      <li>Can update the primary control equipment</li>
+      <li>May contain sensitive documentation</li>
+    </ul>
+  </li>
+  <li>Blended attacks
+    <ul>
+      <li>More sophisticated attacks will combine elements of multiple types of malware, and employ multiple attack vectors to increase the potency and threat of the attack</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="examples-of-weaponzed-industrial-cyber-threats">Examples of Weaponzed Industrial Cyber Threats</h2>
+<ul>
+  <li>First documented ICS cyber-attack “in the wild” was Stuxnet</li>
+  <li>Cyber-attacks against industrial networks were, at one time, purely theoretical
+    <ul>
+      <li>obviously, no longer true</li>
+    </ul>
+  </li>
+  <li>There have been several high-profile attacks since Stuxnet
+    <ul>
+      <li>Shamoon (DistTrack)
+        <ul>
+          <li>publicized due to its highly destructive nature.  no precision, just wiped everything it could spread to</li>
+        </ul>
+      </li>
+      <li>Flame (Flamer or Skywiper)
+        <ul>
+          <li>showed signs of being a derivative of Stuxnet, but with the goal of espionage instead of sabotage</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="stuxnet">Stuxnet</h2>
+<ul>
+  <li>Stuxnet is still the “gold standard”, poster child of ICS malware
+    <ul>
+      <li>was very precise, sabotaging specific ICS devices</li>
+    </ul>
+  </li>
+  <li>Early versions of Stuxnet were released as early as November 2007</li>
+  <li>First real example of weaponzed computer malware</li>
+  <li>Extremely complex and intelligent collection of malware</li>
+  <li>Armed with 4 0-days, targeting windows machines</li>
+  <li>Compromised systems with specific softawre and specific PLCs</li>
+  <li>Deployed 7 different propagation methods
+    <ul>
+      <li>for those using removable media, would remove itself after the media infected 3 new hosts</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="dissecting-stuxnet">Dissecting Stuxnet</h3>
+<ul>
+  <li>It is the first rootkit targeting ICS</li>
+  <li>It can self-update even when cut off from the C2 servers
+    <ul>
+      <li>by enumerating and remembering a p2p network</li>
+    </ul>
+  </li>
+  <li>Can inject code into PLCs, and also hide itself within PLCs</li>
+  <li>Adapts to its environment</li>
+  <li>Uses system-level hardcoded creds</li>
+  <li>Install malicious Windows drivers, using compromised certs</li>
+  <li>Complete details still unknown</li>
+</ul>
+
+<h3 id="lessons-learned-from-stuxnet">Lessons Learned from Stuxnet</h3>
+<ul>
+  <li>Previous belief: control systems can be effectively isolated from other networks
+    <ul>
+      <li>Lesson learned: a strong perimeter defence can be bypassed by a curious operator</li>
+    </ul>
+  </li>
+  <li>Previous belief: PLCs and RTUs lack the necessary attack surface to make them vulnerable
+    <ul>
+      <li>Lesson learned: PLCs can and have been targeted and infected by malware</li>
+    </ul>
+  </li>
+  <li>Previous belief: highly specialized devices benefit from “security through obscurity”
+    <ul>
+      <li>Lesson learned: A highly specalized attack against an industrial control system can occur</li>
+    </ul>
+  </li>
+  <li>Previous belief: firewalls and IDS/IPS are sufficient to protect a control system network from attack
+    <ul>
+      <li>Lesson learned: Zero-day vulnerabilities obviate the efficacy of traditional security</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="industrial-application-layer-attacks">Industrial Application Layer Attacks</h2>
+<p><img src="../assets/content_images/omscs/icpss/L11_img1.png" alt="img" /></p>
+<ul>
+  <li>Do not always require that a specific vulnerability be exploited, because these applications are designed to have large degrees of control by default.  This is in contrast to consumer systems, where applications generally have limited permissions
+    <ul>
+      <li>In the above example image, attacks can be launched simply by issuing modbus commands.  No escalation or control flow hijack necessary.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="cannibalistic-mutant-underground-malware">Cannibalistic Mutant Underground Malware</h2>
+<h3 id="malware-with-a-mind">Malware with a mind!</h3>
+<ul>
+  <li>Conditional logic to direct activity based on its surroundings</li>
+  <li>Update itself in the wild</li>
+  <li>Self-destruction of certain code blocks</li>
+  <li>self-updates of others
+    <ul>
+      <li>Stuxnet did this with p2p communication.  When a machine with an older version of Stuxnet bumped into a machine with a newer version, it took the update and updated itself</li>
+      <li>Malware morphs to avoid detection</li>
+    </ul>
+  </li>
+  <li>Can also check for presence of other known malware and adjust itself if others are found to help avoid detection</li>
+  <li>Stuxnet showed how this can be built, but with a very narrow goal</li>
+  <li>The next one may be less specifically targeted</li>
+</ul>
+
+<h3 id="dealing-with-an-infection">Dealing with an Infection</h3>
+<ul>
+  <li>Upon detecting an infection, you may not want to immediately clean the system of infected malware</li>
+  <li>There may be subsequent levels of infection that exist, yet are dormant and may be activated as a result</li>
+  <li>There could also be valuable information</li>
+  <li>First step is to logically isolate the infected host so that it can no longer cause any harm</li>
+  <li>Allow malware to communicate over C2 channels with host isolated, to learn</li>
+  <li>Collect as much forensic detail as possible (system logs, network traffic,  memory analysis data)</li>
+  <li>Approach the situation with dilligence and perform a thorough investigation</li>
+  <li>A bare metal reload may be necessary where a device is completely erased
+    <ul>
+      <li>even this may not be enough, UEFI or other such compromise may be unrecoverable</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="smart-grid-specific-attacks">Smart Grid Specific Attacks</h2>
+<ul>
+  <li>Starting with reconnaisance and then scanning, the architecture of the grid can begin to be mapped</li>
+  <li>Once a target system is identified enumeration, penetration, and infection occur</li>
+  <li>Once breached, the attacker can continue to enumerate and prapagate</li>
+</ul>
+
+<h3 id="motive">Motive</h3>
+<ul>
+  <li>Smart grid attacks are most easily classified by their intent, because of the smart grid’s diversity and complexity</li>
+  <li>Most common motives fora cyber attack against a grid infrastructure:
+    <ul>
+      <li>theft of information for profit or reconaissance</li>
+      <li>denial of service</li>
+    </ul>
+  </li>
+  <li>By looking at attacks by motive rather than attack processes, a broader risk assessment can be determined</li>
+  <li>Remediation occurs at a higher level</li>
+</ul>
+
+<h3 id="theft-of-information">Theft of Information</h3>
+<ul>
+  <li>A lot of valuable information in smart grid</li>
+  <li>Personal information about smart grid customers
+    <ul>
+      <li>finance and billing</li>
+    </ul>
+  </li>
+  <li>Information about energy consumption</li>
+  <li>SCADA and automation systems within the grid also provide a blueprint to the inner workings of the grid operations</li>
+</ul>
+
+<h3 id="denial-of-service">Denial of Service</h3>
+<ul>
+  <li>ICS within smart grid are not  (supposed to be) publicly accessible
+    <ul>
+      <li>Thus, traditional DoS by just flooding packets at a public endpoint are not applicable here</li>
+    </ul>
+  </li>
+  <li>However, they are also not usually “modern” systems
+    <ul>
+      <li>Usually running outdated and unpatched operating systems</li>
+    </ul>
+  </li>
+  <li>Often have low-bandwidth networks</li>
+  <li>Running real-time, very fragile industrial protocols</li>
+  <li>Thus, actually more susceptible to a Denial of Service attack</li>
+</ul>
+
+<h3 id="manipulation-of-service">Manipulation of Service</h3>
+<ul>
+  <li>Goal of a manipulation of service attack is to preserve the availability of a service while affecting or altering its operation</li>
+  <li>Examples:
+    <ul>
+      <li>spoofing GPS time synchronization to de-synchronize distribution phasor readings</li>
+      <li>Stuxnet attack, which penetrated and altered the specific control instructions</li>
+    </ul>
+  </li>
+  <li>The manipulation of some data sources could be catastrophic
+    <ul>
+      <li>example: by manipulating the low-voltage and high-voltage sides of a transformer an attacker can physically destroy it</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="common-industrial-targets">Common Industrial Targets</h2>
+<ul>
+  <li>Example 1: Manipulate feeder measurements to target yard protection, impacting yard safety</li>
+  <li>Example 2: Manipulate current load measurement to target energy management system, impacting load management systems</li>
+  <li>Other examples given
+    <ul>
+      <li><img src="../assets/content_images/omscs/icpss/L11_img2.png" alt="img" /></li>
+    </ul>
+  </li>
+  <li>The interconnectedness of the smart grid allows attacks to propaagate, making most systems viable targets</li>
+  <li>The large scale distribution of systems makes it challenging to effectively segment these systems</li>
+  <li>While common attack methodologies apply to the smart grid, the attack surface is much larger</li>
+  <li>When application-layer protcols are used over TCP/IP, additional vulnerabilities occur</li>
+</ul>
+
+<h2 id="vulnerability">Vulnerability</h2>
+<ul>
+  <li>After enumeration, various attack methodologies can be used, often exploiting vulnerabilities</li>
+  <li>Some of these vulnerabilities are specific to a device and require effort to identify and exploit</li>
+  <li>Some are “vulnerabilities” that are inherent within the protocols usedby these legacy systems</li>
+  <li>Many smart grid devices possess vulnerabilities that can be determined through analysis and reverse engineering of that device
+    <ul>
+      <li>Utilizing a variety of open source development and debugging tools</li>
+      <li>Looking for weaknesses such as heap or stack overflows</li>
+      <li>Many white hat tools and agencies exist to facilitate this process</li>
+    </ul>
+  </li>
+  <li>Reverse engineering device code is effective but resource-intensive</li>
+  <li>There are many well-known, fully disclosed ICDS vulnerabilities that haven’t been patched</li>
+  <li>Many of these vulnerabilities have been exploited either in a proof of concept environment or through the development of actual exploit code</li>
+  <li>2016 report from Kaspersky found that:
+    <ul>
+      <li>188,8019 hosts with ICS components available via the Internet</li>
+      <li>92%(172,982) remotely available ICS hosts have vulnerabilities</li>
+      <li>The number of vulnerabilities in ICS components has increased tenfold during the past five years</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="turning-a-vulnerability-into-a-compromise">Turning a Vulnerability into a Compromise</h3>
+<ul>
+  <li>When a vulnerability is identified it can be used to build a targeted exploit</li>
+  <li>Information about thevulnerability can allow an attacker to craft an attack to compromise the target system</li>
+  <li>This process is illustrated in detail by <a href="scadahacker.com">SCADA Hacker</a></li>
+</ul>
+
+<h2 id="attack-tools">Attack Tools</h2>
+<ul>
+  <li>There are many tools available used to secure or hack networks</li>
+  <li>Most are well-known, gneeral-purpose cybersecurity tools, although recently some Smart Grid specific tools have also been developed</li>
+  <li>Many of the tools and frameworks are available as open-source</li>
+</ul>
+
+<h3 id="social-engineer-toolkit">Social Engineer Toolkit</h3>
+<ul>
+  <li>An open-source penetration testing framework designed for social engineering</li>
+</ul>
+
+<h3 id="nessus">Nessus</h3>
+<ul>
+  <li>Vulnerability scanner</li>
+</ul>
+
+<h3 id="nexpose">Nexpose</h3>
+<ul>
+  <li>Vulnerability management software</li>
+</ul>
+
+<h3 id="openvas">OpenVAS</h3>
+<ul>
+  <li>A framework for vulnerability scanning and management</li>
+</ul>
+
+<h3 id="canvas">Canvas</h3>
+<ul>
+  <li>Network security assessment tool suite</li>
+</ul>
+
+<h3 id="agora-scada">Agora SCADA+</h3>
+<ul>
+  <li>A collection of many publicly available SCADA vulnerabilities in one exploit pack</li>
+</ul>
+
+<h3 id="smart-meter-tools">Smart Meter Tools</h3>
+<ul>
+  <li>SecureState’s “Termeneter”</li>
+  <li>InGuardians “OptiGuard”</li>
+  <li>Two tools available to hack smart meters through optical interfaces</li>
+</ul>
+
+<h2 id="cps-sensory-channel-attacks">CPS Sensory Channel Attacks</h2>
+<ul>
+  <li>Reminder of closed-loop feedback setup</li>
+  <li>Recall, sensors serve as input for CPS’s</li>
+  <li>Depending on the type of sensor, the data rate can be very low</li>
+  <li>Theorized that sensors can also be used like network interfaces, possibly to transfer malware</li>
+  <li>There has been work that sought to explore such attacks</li>
+  <li>The work focuses on different sensory channels
+    <ul>
+      <li>Visible light</li>
+      <li>Infrared</li>
+      <li>Acoustic</li>
+      <li>Seismic</li>
+    </ul>
+  </li>
+  <li>The model here is that we assume the system has flawed code, and we attempt to determine the technical feasibility of such attacks, and to illustrate examples</li>
+</ul>
+
+<h3 id="visible-light-channel">Visible Light Channel</h3>
+<ul>
+  <li>Widely used sensory channel</li>
+  <li>Utilized in various applications including:
+    <ul>
+      <li>Automatic brightness control for LCDs</li>
+      <li>Light detection and ranging (LIDAR)</li>
+    </ul>
+  </li>
+  <li>In some recent studies, they are utilized as side channels to transfer sensitive data</li>
+</ul>
+
+<h3 id="infrared-channel">Infrared Channel</h3>
+<ul>
+  <li>A number of remote controller systems utilize the infrared channel</li>
+  <li>iRobot Create and Turtle bot use it for:
+    <ul>
+      <li>Navigation assistance</li>
+      <li>Obstacle avoidance</li>
+    </ul>
+  </li>
+  <li>Microsoft Kinect uses IR beams:
+    <ul>
+      <li>To create a 3d map of the room</li>
+      <li>For user interaction</li>
+    </ul>
+  </li>
+  <li>Since it is not visible, it can support covert channels</li>
+</ul>
+
+<h3 id="acoustic-channel">Acoustic Channel</h3>
+<ul>
+  <li>Used by many robotic systems and military applications
+    <ul>
+      <li>Obstacle avoidance</li>
+      <li>Map buildings</li>
+    </ul>
+  </li>
+  <li>Primary method: emit a short burst osund wave and measure its physical characteristics (e.g., speed, amplitude) from reflection from obstacles via transducers</li>
+  <li>Relatively easy to recognize different vehiclse, aircraft, missiles based on their sonic signatures</li>
+</ul>
+
+<h3 id="seismic-channel">Seismic Channel</h3>
+<ul>
+  <li>Popular in smartphones and tablets to enhance the user experience
+    <ul>
+      <li>Accelerometers are used for presenting landscape or portrait views
+        <ul>
+          <li>Used for remote controllers for game consoles, e.g. Wii</li>
+          <li>Also used for authentication, e.g. Bump app for file sharing</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="evaluation-of-sensory-channel-threats-to-cps">Evaluation of Sensory Channel Threats to CPS</h3>
+<ul>
+  <li>Sensory channels can be used in three different ways
+    <ul>
+      <li>To trigger an existing malware on the host CPS device</li>
+      <li>To transfer malware through the channel itself</li>
+      <li>Combined with other sensory channels as well as traditional channels (e.g RF)</li>
+    </ul>
+  </li>
+  <li>How fast can we trigger?
+    <ul>
+      <li>Using various embedded platforms, the transfer rate was determined empirically to see if there could be support to trigger existing dormant malware</li>
+      <li>Study 1:
+        <ul>
+          <li>Platform: Telosb</li>
+          <li>Channel: Light</li>
+          <li>Observed Rate (bps): 85-100</li>
+        </ul>
+      </li>
+      <li>Study 2:
+        <ul>
+          <li>Platform: MicaZ (MTS400CC)</li>
+          <li>Channel: Light</li>
+          <li>Observed Rate (bps): 2-3</li>
+        </ul>
+      </li>
+      <li>Study 3:
+        <ul>
+          <li>Platform: MicaZ (MTS310CB)</li>
+          <li>Channel: Light
+            <ul>
+              <li>Observed Rate (bps): 50-65</li>
+            </ul>
+          </li>
+          <li>Channel: Acoustic
+            <ul>
+              <li>Observed Rate (bps): 2-3</li>
+            </ul>
+          </li>
+          <li>Channel: Seismic
+            <ul>
+              <li>Observed Rate (bps): 50-65</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Study 4:
+        <ul>
+          <li>Platform: iRobot Create</li>
+          <li>Channel: Infrared</li>
+          <li>Observed Rate (bps): 30-45</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="exploiting-visible-light-channel">Exploiting Visible Light Channel</h3>
+<ul>
+  <li>Testbed:
+    <ul>
+      <li>implemented a sample Morse code encoder app on HTC Inspire Smartphone with Android 2.3.5</li>
+      <li>implemented a Morse code decoder on the mote</li>
+      <li>MTS310CB sensor board</li>
+    </ul>
+  </li>
+  <li>Purpose: secret trigger/malware transfer
+    <ul>
+      <li>Successfully transferred the word “MALWARE”</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="exploiting-acoustic-channel">Exploiting Acoustic Channel</h3>
+<ul>
+  <li>Testbed:
+    <ul>
+      <li>MicaZ sensors (buzzer and receiver)</li>
+      <li>MTS310BC sensor board</li>
+      <li>implemented Morse coder/decoder applications on motes</li>
+    </ul>
+  </li>
+  <li>Purpose: secret trigger/malware transfer
+    <ul>
+      <li>Successfully transferred the word “ATTACK”</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="exploiting-seismic-channel">Exploiting Seismic Channel</h3>
+<ul>
+  <li>Testbed:
+    <ul>
+      <li>Implemented an incoming call app via vibration on HTC Inspire Smartphone with Android 2.3.5</li>
+      <li>Implemented a simple program on the mote for receiving the trigger</li>
+      <li>Accelerometer (ADXL 202JE) on MTS310CB sensor board used</li>
+    </ul>
+  </li>
+  <li>Purpose: secret trigger / malware transfer with the vibrations</li>
+</ul>
+
+<h3 id="exploiting-infrared-channel">Exploiting Infrared Channel</h3>
+<p><img src="../assets/content_images/omscs/icpss/L11_img3.png" alt="img" /></p>
+<ul>
+  <li>Attack: Unauthorized control of an access-restricted program module</li>
+  <li>Exploited simplevulnerable services in iRobot Create via its infrared channel</li>
+  <li>Created custom malware for iRobot</li>
+  <li>Goal: gain internal access to a protected program via infrared channel</li>
+</ul>
+
+<h2 id="is-conventional-security-the-solution">Is Conventional Security the Solution?</h2>
+<ul>
+  <li>No</li>
+  <li>Current security solutions are limited to protecting the CPS components networked via traditional means (e.g. RF)</li>
+  <li>Similarly, security services on the host CPS devices are not suitable for sensory channel threats</li>
+  <li>One effective way for defense is to use Intrusion Detection Systems (IDS’s)
+    <ul>
+      <li>Analyze the sensor traffic looking at data via signature-based or anomaly-based detection methods</li>
+    </ul>
+  </li>
+  <li>Given sensory channels are novel attack surface:
+    <ul>
+      <li>There is no current signature for CPS devices</li>
+      <li>Anomalies not defined yet for CPS realm</li>
+    </ul>
+  </li>
+  <li>For sensory channels, physical conditions of the medium, values, characteristics of the received sensory data need to be understood well</li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/icpss/L11_img4.png" alt="img" /></p>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>NetSec Lecture Notes - Lesson 10 - Advanced Malware Analysis</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>NetSec Lecture Notes - Lesson 10 - Advanced Malware Analysis</h2>
+  <h1 id="advanced-malware-analysis">Advanced Malware Analysis</h1>
+
+<h2 id="malware-prevalence">Malware Prevalence</h2>
+<ul>
+  <li>“Safe” websites not safe to visit
+    <ul>
+      <li>Reading USAToday.com may result in malware on your computer</li>
+      <li>How?
+        <ul>
+          <li>USAToday’s network may be compromised</li>
+          <li>Malicious scripts may be bundled with ads or content, and may redirect the user’s browser to download malicious software</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Case study: Alexa top sites
+    <ul>
+      <li>Ranked list of all domains - 252 milliion</li>
+      <li>Top 25k of these were examined each day, systematically</li>
+      <li>Network traffic was monitored for drive-by download</li>
+      <li>39 of these domains resulted in drive-by downloads
+        <ul>
+          <li>87% of these sites involved exploits for Java</li>
+          <li>46% of sites served exploits via ad networks</li>
+        </ul>
+      </li>
+      <li>7.8 million users were served malicious content
+        <ul>
+          <li>1.2 million likely compromised</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>New features are a regular basis for attacks
+    <ul>
+      <li>PDF contains embedded, malicious Flash movie which exploits Acrobat Reader’s flash interpreter, thus compromising the system.  This can then phone home to controller
+        <ul>
+          <li>Phone home traffic can be observed</li>
+        </ul>
+      </li>
+      <li>Soon after, compromised, legitimate websites found hosting drive-by attacks that use the same flaw to exploit Flash player</li>
+      <li>Vulnerability traded back to bug reported to Adobe eight months prior</li>
+    </ul>
+  </li>
+  <li>Users remain uninformed (vulnerable)</li>
+  <li>Example: Waledac’s email campaigns
+    <ul>
+      <li>Use of geo-location, temporally relevant events (e.g. bomb blast in &lt;your city&gt;, July 4th fireworks videos) to make attacks more compelling</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="malware-evolution">Malware Evolution</h2>
+<ul>
+  <li>Traditional defense-in-depth</li>
+  <li>Network-level protection
+    <ul>
+      <li>Firewall
+        <ul>
+          <li>evaded by C&amp;C protocol congruency</li>
+        </ul>
+      </li>
+      <li>IPS/IDS
+        <ul>
+          <li>Evaded by custom encodings</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Host-level protection
+    <ul>
+      <li>User Access Control
+        <ul>
+          <li>analagous to “informed consent”
+            <ul>
+              <li>users usually don’t really get it, just click “yes” to get on with their job</li>
+            </ul>
+          </li>
+          <li><img src="../assets/content_images/omscs/netsec/L10_img1.png" alt="img" /></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Antivirus
+    <ul>
+      <li>Uses complex, heuristics-based detection along with signature matching</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="malware-obfuscation">Malware Obfuscation</h2>
+<h3 id="malware-obfuscation-quiz">Malware Obfuscation Quiz</h3>
+<ul>
+  <li>Code that reverses the pre-runtime transformation is included in the executable
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>Each instance looks different, but there is a signature or pattern across all instances
+    <ul>
+      <li>False</li>
+    </ul>
+  </li>
+  <li>A signature scanner that tries to identify malware by its unique strings would not be effective
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="packing">Packing</h3>
+<ul>
+  <li><strong>Definition of Packing:</strong> A technique whereby parts or all of an executable file are compressed, encrypted, or transformed in some fashion</li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/netsec/L10_img2.png" alt="img" /></p>
+<ul>
+  <li>Transformed code looks random, because it is encrypted with a randomly generated key.
+    <ul>
+      <li>This happens each time the packing tool is invoked, so even different copies of the same malware look different</li>
+      <li>Transformed machine code looks like data, so network IDS looking for executables will miss it</li>
+    </ul>
+  </li>
+  <li>Server Side Polymorphism
+    <ul>
+      <li>Attacks the heart of the traditional host-based AV model by automating mutations</li>
+    </ul>
+  </li>
+  <li>Eventually researches can deobfuscate any malware and discover its behaviors, but it can be a substantial obstacle and takes time
+    <ul>
+      <li>Attackers can thwart this by sending updates to compromised computers with newly obfuscated malware, with new behaviors.  This effectively resets the research to square one each time</li>
+    </ul>
+  </li>
+  <li>Example: Waledac
+    <ul>
+      <li>Collected on 12/30/2008
+        <ul>
+          <li><img src="../assets/content_images/omscs/netsec/L10_img3.png" alt="img" /></li>
+          <li>By 2/25/2009 90% of AV can detect it</li>
+        </ul>
+      </li>
+      <li>New sample, collected on 2/5/2009
+        <ul>
+          <li><img src="../assets/content_images/omscs/netsec/L10_img4.png" alt="img" /></li>
+          <li>Only about 28% of AV can detect this new version</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Impact on Antivirus Software
+    <ul>
+      <li>Researchers surveyed McAfee AV using 200,000 malware samples collected over 6 months
+        <ul>
+          <li>53% detected on first day</li>
+          <li>32% detected with delay (avg delay was 54 days)</li>
+          <li>15% still not detected 6 months later</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="obfuscation-quiz-2">Obfuscation Quiz 2</h3>
+<p><strong>Given the following obfuscation techniques, who is the software hiding from?</strong></p>
+<ul>
+  <li>Rootkits
+    <ul>
+      <li>Users</li>
+    </ul>
+  </li>
+  <li>Thoroughly mapping security sites and honey pots so as to avoid them
+    <ul>
+      <li>Security</li>
+    </ul>
+  </li>
+  <li>Using nonce-based encryption methods
+    <ul>
+      <li>Researchers</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="malware-analysis">Malware Analysis</h2>
+<ul>
+  <li>Understanding malware behaviors
+    <ul>
+      <li>Network and host level detection/blocking</li>
+      <li>Forensics and asset remedation</li>
+      <li>Threat/trend analysis</li>
+    </ul>
+  </li>
+  <li>Malware authors make analysis very challenging
+    <ul>
+      <li>Increasingly sophisticated techniques</li>
+    </ul>
+  </li>
+  <li>A core challenge is that the sheer volume of malware samples is difficult to keep up with, due to automation
+    <ul>
+      <li>DIY kits, packing tools, server-side polymorphism vastly increase the volume of samples</li>
+      <li>There are hundreds of thousands of new instances each day
+        <ul>
+          <li>Collected from crawlers, mail filters, honeypots, user submissions, and malware exchanges</li>
+        </ul>
+      </li>
+      <li>Given that the enemy is automated, analysis must be as well</li>
+    </ul>
+  </li>
+  <li>The malware uncertainty principle
+    <ul>
+      <li>Observer affecting the observed environment</li>
+      <li>Malware may alter its behavior if observation is detected</li>
+      <li>Robust and detailed analyzers are typically invasive
+        <ul>
+          <li>In-memory presence</li>
+          <li>Hooks</li>
+          <li>CPU Emulation</li>
+        </ul>
+      </li>
+      <li>Malware may refuse to run entirely</li>
+      <li>This is already commercialized
+        <ul>
+          <li>Dynamic analyzer detection is a standard malware feature</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>We need malware analysis to be transparent to the malware.  Malware must not be able to detect that it is being analyzed
+    <ul>
+      <li>Higher privilege for analysis tool than the malware has</li>
+      <li>Must have no non-privileged side effects that might be detected</li>
+      <li>Malware should get the same instruction execution semantics, exception handling, and notion of time as it would if the analyzer were not present</li>
+    </ul>
+  </li>
+  <li>Most existing tools fall short of the above transparency reqquirements
+    <ul>
+      <li>In-guest tools (runs on same machine with same privilege as malware)
+        <ul>
+          <li>No higher privilege</li>
+          <li>Non-privileged side effects</li>
+          <li>Exception handling issues</li>
+        </ul>
+      </li>
+      <li>Reduced Privilege Guests (VMWare, etc)
+        <ul>
+          <li>Non-privileged side effects</li>
+        </ul>
+      </li>
+      <li>Emulation (QEMU, Simics)
+        <ul>
+          <li>No identical instruction execution semantics</li>
+          <li>These are the most widely used by state of the art analyzers but they have major shortcomings
+            <ul>
+              <li>There have been attacks that detect full system emulator approaches by exploiting incomplete emulation</li>
+              <li>There is no way to guarantee the absence of such attacks</li>
+              <li>Determining whether the languages of two Turing machines (L and L’) are equal is known as the undecidable problem EQ<sub>TM</sub></li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Example of same instruction semantics attack
+    <ul>
+      <li><code class="highlighter-rouge">0xf30xf3...0x90</code>
+        <ul>
+          <li>15 <code class="highlighter-rouge">0xf3</code>s before <code class="highlighter-rouge">0x90</code>: execute no-op 15 times</li>
+          <li>But the instruction (16 bytes) is illegal because max x86 instruction length is 15 bytes
+            <ul>
+              <li>In bare metal, “illegal instruction” excetpion</li>
+              <li>Emulator will happily execute this</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Most challenging transparency requirement is the “identical notion of time”
+    <ul>
+      <li>Network-based timing measurements
+        <ul>
+          <li>e.g. Analyzer causes delay in requests, or the website the malware tries to connect to is not the real one</li>
+          <li>Impossible to identify all</li>
+          <li>Equivalent to the problem of detecting and removing all covert channels
+            <ul>
+              <li>This is proved to be an undecidable problem</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="analysis-difficulty-quiz">Analysis Difficulty Quiz</h2>
+<p><strong>Rank the four categories from easiest (1) to hardest (4)</strong></p>
+<ul>
+  <li>Static Properties Analysis: examine the static properties of the malware.  Static properties include: metadata, strings embeddedi n the malware, header details, etc
+    <ul>
+      <li>2</li>
+    </ul>
+  </li>
+  <li>Manual Code  Reversing: use a disassembler and decompiler to recreate the malware code
+    <ul>
+      <li>4</li>
+    </ul>
+  </li>
+  <li>Fully Automated Analysis: use fully automated tools to analyze the malware
+    <ul>
+      <li>1</li>
+    </ul>
+  </li>
+  <li>Interactive Behavior Analysis: running the mlaware in a protected and isolated environment
+    <ul>
+      <li>3</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="analysis-technique-results-quiz">Analysis Technique Results Quiz</h2>
+<p><strong>Rank the four categories from the most information is obtained (1) to least information is obtained (4)</strong></p>
+<ul>
+  <li>Static Properties Analysis: examine the static properties of the malware.  Static properties include: metadata, strings embeddedi n the malware, header details, etc
+    <ul>
+      <li>3</li>
+    </ul>
+  </li>
+  <li>Manual Code  Reversing: use a disassembler and decompiler to recreate the malware code
+  *1</li>
+  <li>Fully Automated Analysis: use fully automated tools to analyze the malware
+    <ul>
+      <li>4</li>
+    </ul>
+  </li>
+  <li>Interactive Behavior Analysis: running the mlaware in a protected and isolated environment
+    <ul>
+      <li>2</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="robust-and-efficient-malware-analysis">Robust and Efficient Malware Analysis</h2>
+<ul>
+  <li>Robust == transparent.  not easily detected or evaded</li>
+  <li>Efficient == automated and fast</li>
+  <li>Focus on host-based analysis.  Run malware on a machine and observe its behaviors and properties
+    <ul>
+      <li>Malware will try to detect the presence of the analyzer, via differences in analysis environment</li>
+      <li>Our goal to achieve identical execution, such that the analyzer cannot be detected</li>
+    </ul>
+  </li>
+  <li>Formal requirements
+    <ul>
+      <li>Higher privilege
+        <ul>
+          <li>Analyzer has to have higher privilege over malware</li>
+        </ul>
+      </li>
+      <li>No non-privileged side-effects
+        <ul>
+          <li>Minimal side-effects should be introduced by the analyzer</li>
+          <li>Analyzer should enforce privileged access to side-effects</li>
+        </ul>
+      </li>
+      <li>Identical basic instruction execution semantics
+        <ul>
+          <li>Hardware semantics and emulation</li>
+        </ul>
+      </li>
+      <li>Transparent exception handling
+        <ul>
+          <li>Exception handling should be transparent or same</li>
+        </ul>
+      </li>
+      <li>Identical measure of time
+        <ul>
+          <li>Timing for each instruction</li>
+          <li>Timing for I/O, exception handling</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="ether-malware-analyzer">Ether Malware Analyzer</h2>
+<ul>
+  <li>Built at Georgia Tech! And it’s open-source!</li>
+  <li>Higher Privilege
+    <ul>
+      <li>Built using Intel VT (Hardware Virtualization)</li>
+      <li>Hypervisor has higher privilege over kernel</li>
+      <li>Several hardware supported traps – VM exits</li>
+    </ul>
+  </li>
+  <li>No non-privileged side-effects
+    <ul>
+      <li>Analyzer is outside environment</li>
+      <li>Minimal side-effects.  Trap flag, system call handling</li>
+    </ul>
+  </li>
+  <li>Identical basic instruction execution semantics
+    <ul>
+      <li>Uses hardware virtualization</li>
+      <li>Instruction execution semantics are the same</li>
+    </ul>
+  </li>
+  <li>Transparent exception handling
+    <ul>
+      <li>Hypervisor pre-empts before OS exception handling</li>
+    </ul>
+  </li>
+  <li>Identical measure of time
+    <ul>
+      <li>RDTSC (RealDateTimeStampCounter instruction)</li>
+      <li>Privileged instruction.  Hypervisor can control responses to malware whenever the malware tries to get a measure of time</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/netsec/L10_img5.png" alt="img" /></p>
+<ul>
+  <li>Ether has a Hypervisor component in Xen, and also runs in a separate VM.</li>
+  <li>Ether provides both a fine-grained instruction-by-instruction examination of the malware, as well as a more coarse-grained systemcall-by-systemcall examination</li>
+  <li>EtherUnpack: extracts hidden code from obfuscated malware
+    <ul>
+      <li>Georgia Tech researchers compared how well current tools extract hidden code by obfuscating a test binary and looking for a known string in the extracted code</li>
+    </ul>
+  </li>
+  <li>EtherTrace: Records system calls executed by obfuscated malware
+    <ul>
+      <li>Georgia Tech researchers obfuscated a test binary which executes a set of known operations, and then observe if they were logged by the tool</li>
+      <li><img src="../assets/content_images/omscs/netsec/L10_img6.png" alt="img" /></li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="analysis-vs-obfuscations">Analysis vs Obfuscations</h3>
+<ul>
+  <li>Analysis: Static Analysis based approaches
+    <ul>
+      <li>Obfuscations: Polymorphism, metamorphism, packing, opaque predicates, anti-disassembly</li>
+    </ul>
+  </li>
+  <li>Analysis: Dynamic malware analysis (running the malware)
+    <ul>
+      <li>Obfuscations: Trigger-based behavior (logic bombs, time bombs, anti-debugging, anti-emulation, etc)</li>
+    </ul>
+  </li>
+  <li>Analysis: Dynamic multipath exploration (Bitscope, EXE, Forced Execution)
+    <ul>
+      <li>Obfuscation: ??
+        <ul>
+          <li>Battle continues</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="malware-emulators">Malware Emulators</h2>
+<ul>
+  <li>Recent move towards emulator-based obfuscation
+    <ul>
+      <li>An instruction-level obfuscation approach</li>
+      <li>Several commercial pakcers support emulator based obfuscation, including Code Virtualizer and VMProtect</li>
+      <li>Emulation techniques maturing, widespread adoption is possible</li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/netsec/L10_img7.png" alt="img" /></p>
+<h3 id="impacts-on-existing-malware-analysis">Impacts on Existing Malware Analysis</h3>
+<ul>
+  <li>Unknown language L
+    <ul>
+      <li>L can be randomly generated</li>
+    </ul>
+  </li>
+  <li>Pure Static Analysis (whitebox)
+    <ul>
+      <li>Completely thwarted</li>
+      <li>Only emulator code is analyzable</li>
+      <li>P<sub>L</sub> is considered as data by the analyzer</li>
+    </ul>
+  </li>
+  <li>Greybox methods (dynamic analysis)
+    <ul>
+      <li>Includes instruction level analyzers, information-flow, dynamic tainting, multi-path exploration, etc</li>
+      <li>Analysis is inaccurate</li>
+      <li>For example, paths may be explored in the emulator, but not on the malware</li>
+    </ul>
+  </li>
+  <li>Manual reverse-engineering methods cannot scale
+    <ul>
+      <li>Manual reverse-engineering takes time</li>
+      <li>Each malware instance can have new bytecode language and emulator, making reverse-engineered information obsolete</li>
+    </ul>
+  </li>
+  <li>Need automated techniques to reverse emulator
+    <ul>
+      <li>Should not require any knowledge about bytecode</li>
+      <li>Should be generic and work for a large class of emulators</li>
+    </ul>
+  </li>
+  <li>Is automated reverse engineering possible?
+    <ul>
+      <li>Theoretically, it is an undecidable problem</li>
+      <li>However, from intuition, the emulator’s fetch-decode-execute behavior can be identified at runtime</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="approaches-of-emulation">Approaches of Emulation</h3>
+<p><img src="../assets/content_images/omscs/netsec/L10_img8.png" alt="img" /></p>
+
+<h3 id="challenges-of-reverse-engineering">Challenges of Reverse Engineering</h3>
+<ul>
+  <li>No knowledge of bytecode program
+    <ul>
+      <li>The location of the bytecode program in the obfuscated program’s memory is not known</li>
+    </ul>
+  </li>
+  <li>No knowledge of emulator’s code
+    <ul>
+      <li>The code that corresponds to decode, dispatch, and execute phases of the emulator is not known</li>
+    </ul>
+  </li>
+  <li>Intentional variations
+    <ul>
+      <li>Context can be maintained in many different ways</li>
+      <li>An attacker may complicate Virtual Program Counter (VPC) identification by maintaining it in different correlated variables</li>
+      <li>Bytecode program may be stored in non-contiguous memory</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="approach-overview">Approach Overview</h3>
+<ul>
+  <li>Abstract Variable Binding
+    <ul>
+      <li>Identify pointer variables within raw memory of emulator using access patterns of memory reads and writes</li>
+      <li>It is a combination and forward and backward data-flow analysis</li>
+    </ul>
+  </li>
+  <li>Identify Candidate VPCs
+    <ul>
+      <li>Cluster memory reads according to their bound variables</li>
+      <li>Each cluster provides a candidate VPC</li>
+    </ul>
+  </li>
+  <li>Identify Emulator Phases
+    <ul>
+      <li>Identify decode-dispatch loop and emulator phases</li>
+    </ul>
+  </li>
+  <li>Extract bytecode Syntax and Semantics
+    <ul>
+      <li>Identify fetched instruction syntax – opcode and operands</li>
+      <li>Identify execute routine related to instruction – this is the semantics of bytecode instruction</li>
+      <li>This information is subsequently used to generate control flow graphs (CFGs)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="experimental-evaluation">Experimental Evaluation</h3>
+<ul>
+  <li>Researchers created a synthetic program, used two emulation obfuscators (VMProtect and CodeVirtualizer) and applied an implementation of the above approach</li>
+  <li>They then compared the CFG of the original program to the CFG of the deobfuscated results</li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/netsec/L10_img9.png" alt="img" />
+<img src="../assets/content_images/omscs/netsec/L10_img10.png" alt="img" /></p>
+<ul>
+  <li>Tool is successful in extracting main properties</li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>AOS Lecture Notes - Lesson 6 - Distributed Objects and Middleware</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>AOS Lecture Notes - Lesson 6 - Distributed Objects and Middleware</h2>
+  <h1 id="distributed-objects-and-middleware">Distributed Objects and Middleware</h1>
+<ul>
+  <li>How should we design for the continuous and incremental evolution of complex distributed software systems, both in terms of functionality and performance?
+    <ul>
+      <li>Distributed objects!</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="spring-operating-system">Spring Operating System</h2>
+<ul>
+  <li>Later marketed as Solaris OS by Sun Microsystems</li>
+  <li>How best to innovate OS?
+    <ul>
+      <li>Brand new OS?  Or better implementation of known OS?</li>
+      <li>Usually constrained by marketplace needs
+        <ul>
+          <li>Large complex server software</li>
+          <li>There are probably legacy programs already running on your existing OS that you really would like to keep</li>
+          <li>So take the “intel inside” approach…. in this case “unix inside” for box makers like Sun</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="object-based-vs-procedural-design">Object-Based vs Procedural Design</h3>
+<ul>
+  <li>Procedural
+    <ul>
+      <li><img src="../assets/content_images/omscs/aos/L06_img1.png" alt="img" /></li>
+      <li>Shared state (often global)</li>
+      <li>code written as one monolithic entity</li>
+    </ul>
+  </li>
+  <li>Objects
+    <ul>
+      <li><img src="../assets/content_images/omscs/aos/L06_img2.png" alt="img" /></li>
+      <li>Objects contain state, not visible outside</li>
+      <li>Methods inside object that manipulate the state that is part of the object.  Only these methods are exposed to the outside world</li>
+    </ul>
+  </li>
+  <li>The above are well understood for writing code.  Spring applied them to the OS itself.  So did Tornado, covered earlier in the class</li>
+</ul>
+
+<h3 id="spring-approach">Spring Approach</h3>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L06_img3.png" alt="img" /></li>
+  <li>Spring was Sun’s answer to building a network operating system, using the Unix interface.  Its design reflects that</li>
+  <li>Strong interfaces for each subsystem</li>
+  <li>Open, flexible, and exentisble
+    <ul>
+      <li>Allows multiple languages to be used for system components</li>
+      <li>Used IDL (interface definition language) to facilitate this</li>
+      <li>This borrows a lot from microkernel design philosophies</li>
+    </ul>
+  </li>
+  <li>Nucleus == the “microkernel” of Spring
+    <ul>
+      <li><img src="../assets/content_images/omscs/aos/L06_img4.png" alt="img" /></li>
+      <li>Abstractions are:
+        <ul>
+          <li>Domain (similar to a UNIX process)
+            <ul>
+              <li>threads execute in a particular domain.  threads are similar to e.g. pthread</li>
+            </ul>
+          </li>
+          <li>Door is a software capability to a domain (opening a door to get into a room == entering target domain)
+  	* Doors function via handles, can interact with e.g. fopen()</li>
+        </ul>
+      </li>
+      <li>Spring kernel is the combination of the nucleus plus the memory management for handling the domain and door objects</li>
+      <li>This structure allows for very performant cross-domain protected procedure calls</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="object-invocation-across-the-network">Object invocation across the network</h3>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L06_img5.png" alt="img" />
+    <ul>
+      <li>Proxy A: Export net handle embedding Door X to Proxy B</li>
+      <li>Proxy B: establishes Door Y locally so client can communicate with it.</li>
+      <li>Proxy B: use net handle to connect nuclei</li>
+      <li>When client accesses Door Y it thinks it is accessing server domain, it has no knowledge of any underlying mechanisms intervening</li>
+      <li>Likewise the Server interacting with door X thinks it’s being talked to directly by the client</li>
+    </ul>
+  </li>
+  <li>Doors are confined to the nucleus on a single node</li>
+  <li>Object invocation is therefore extended using network proxies</li>
+  <li>Proxies can potentially employ different protocols for different connections (e.g. LAN vs WAN nodes)</li>
+  <li>Proxies are invisible to the client and servers.  They are unaware whether they are on same or different machines, and don’t care.</li>
+</ul>
+
+<h3 id="secure-object-invocation">Secure Object Invocation</h3>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L06_img6.png" alt="img" /></li>
+  <li>May be necessary for a server object to provide different privilege levels to different clients</li>
+  <li>Security provided via a “front object” that is outside the Spring semantics for object invokation.</li>
+  <li>The connection between front object and underlying object is entirely in the purview of the creator of the service object.  Not part of Spring door mechanism</li>
+  <li>Underlying object checks access control list, and passes appropriate methods or data back to front object.  ACL checked before the invokation is allowed to proceed at all
+    <ul>
+      <li>Can use one-time references to limit access by preventing re-use of privileged access handles</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="virtual-memory-management-in-spring">Virtual Memory Management in Spring</h3>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L06_img7.png" alt="img" /></li>
+  <li>Memory management is part of the kernel in Spring</li>
+  <li>There is a per-machine virtual memory manager
+    <ul>
+      <li>VMM breaks the linear address space into regions
+        <ul>
+          <li>Regions: set of pages</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Memory Objects
+    <ul>
+      <li>Regions are mapped to different memory objects</li>
+      <li>Different regions of the address space can also be mapped to the same region</li>
+      <li>Abstraction of a “region” may map to files, swap spaces, etc</li>
+    </ul>
+  </li>
+  <li>Memory Object Specific Paging
+    <ul>
+      <li><img src="../assets/content_images/omscs/aos/L06_img8.png" alt="img" /></li>
+      <li>object must be brought into DRAM
+        <ul>
+          <li>pager object does this
+            <ul>
+              <li>makes or establishes relationship between virtual and physical memory</li>
+              <li>pager object creates a cache object in the DRAM</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>There can be multiple managers, memory objects, pager objects, etc.  Only one DRAM though</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="spring-system-summary">Spring System Summary</h3>
+<ul>
+  <li>Oboject-oriented kernel</li>
+  <li>nucleus -&gt; threads and IPC</li>
+  <li>microkernel -&gt; nucleus and address space</li>
+  <li>doors and door tables -&gt; basis for cross domain calls</li>
+  <li>object invocation and cross machine calls</li>
+  <li>Virtual memory management
+    <ul>
+      <li>address space object, memory object, external pagers, cache objects</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="dynamic-client-server-relationship-on-spring">Dynamic Client-Server Relationship on Spring</h3>
+<ul>
+  <li>Client and server can be on the same or different machines, without change to implementation</li>
+  <li>This is done using “subcontracts”
+    <ul>
+      <li><img src="../assets/content_images/omscs/aos/L06_img9.png" alt="img" /></li>
+      <li>The subcontract is the interface provided for realizing the IDL contract between the client and server</li>
+      <li>Hides the runtime behavior of the object from the actual interface</li>
+      <li>Client side stub generation is thus simplified, with the specific subcontract used responsible for the details
+        <ul>
+          <li>Subcontract can be changed at any time as needed</li>
+        </ul>
+      </li>
+      <li>Subcontract interface for stubs
+        <ul>
+          <li><img src="../assets/content_images/omscs/aos/L06_img10.png" alt="img" /></li>
+          <li>First interface is for marshaling/unmarshaling
+            <ul>
+              <li>all details such as server location are buried in the subcontract</li>
+              <li>client stub just calls subcontract
+                <ul>
+                  <li>also true on server side</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>Client and server stubs are thus the same for all instances of client and server.  Only subcontracts differ.
+            <ul>
+              <li>This does seem to me like just shuffling the complexity around.  Presumably does actually reduce overall complexity required, though.</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="java-rmi">Java RMI</h2>
+<ul>
+  <li>This topic is also covered in my <a href="https://andrewrepp.com/gios_lec_P4L1.html">GIOS Notes</a></li>
+</ul>
+
+<h3 id="java-history">Java History</h3>
+<ul>
+  <li>Inveted by James Gosling at Sun</li>
+  <li>Originally called Oak, later Java</li>
+  <li>Originally intended for use with PDAs, then for set-top boxes, and then onto the Internet for e-commerce</li>
+</ul>
+
+<h3 id="java-distributed-object-model">Java Distributed Object Model</h3>
+<ul>
+  <li>Remote Object
+    <ul>
+      <li>Accessible from different address spaces</li>
+    </ul>
+  </li>
+  <li>Remote Interface
+    <ul>
+      <li>Declarations for methods in a remote object</li>
+    </ul>
+  </li>
+  <li>Failure Semantics
+    <ul>
+      <li>Clients deal with RMI exceptions</li>
+    </ul>
+  </li>
+  <li>Similarities/differences to local objects
+    <ul>
+      <li>Similarity: object references can be passed as parameters</li>
+      <li>Difference: parameters only passed as value/result in the distributed object model</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="implementation-in-java-of-distributed-object-model">Implementation in Java of Distributed Object Model</h3>
+
+<h4 id="bank-example-1---reuse-a-local-implementation">Bank Example 1 - Reuse a local implementation</h4>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L06_img11.png" alt="img" /></li>
+  <li>The remote publication of the interface is easy, using Java’s magic “remote” interface. The heavy lifting here is all done by the implementation of the bank account.  Must find a way to make the location of the service visible by the clients on the network.</li>
+</ul>
+
+<h4 id="bank-example-2---reuse-of-remote-better-approach">Bank Example 2 - Reuse of “Remote” (better approach)</h4>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L06_img12.png" alt="img" /></li>
+  <li>As before, publish methods to network using Remote interface</li>
+  <li>When you instantiate the implementation object, it becomes instantly visible because we inherit from the remote object classes.  Heavy lifting is done by the Java runtime with this approach.
+    <ul>
+      <li>This is not overly clear, even in the video.  Review the GIOS notes for more detail.</li>
+      <li>Server Side
+        <ul>
+          <li><img src="../assets/content_images/omscs/aos/L06_img13.png" alt="img" /></li>
+        </ul>
+      </li>
+      <li>Client Side
+        <ul>
+          <li><img src="../assets/content_images/omscs/aos/L06_img14.png" alt="img" /></li>
+          <li>This has one big problem: if the invokation fails, it is not always possible to tell where in the process it failed.  This is a common problem in networked applications</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="rmi-implementation---rrl">RMI Implementation - RRL</h3>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L06_img15.png" alt="img" /></li>
+  <li>Remote Reference Layer (RRL)
+    <ul>
+      <li>Where the magic happens.  All the marshaling/unmarshaling of arguments done here.</li>
+      <li>RRL functions similarly to a subcontract.  All the complexity and detail hidden there, tucked away from the clients and servers.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="rmi-implementation---transport">RMI Implementation - Transport</h3>
+<ul>
+  <li><img src="../assets/content_images/omscs/aos/L06_img16.png" alt="img" /></li>
+  <li>Endpoint
+    <ul>
+      <li>Protection domain (or a JVM)</li>
+      <li>Has a table of remote objects it can access</li>
+    </ul>
+  </li>
+  <li>Connection Management
+    <ul>
+      <li>Responsible for setup, teardown, listen
+        <ul>
+          <li>Responsible for locating correct dispatcher that can handle a given invokation</li>
+        </ul>
+      </li>
+      <li>Liveness monitoring</li>
+      <li>Coice of transport mechanism
+        <ul>
+          <li>e.g. UDP vs TCP</li>
+          <li>Decided by RRL, communicated to connection manager</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="enterprise-java-beans">Enterprise Java Beans</h2>
+<ul>
+  <li>How do we structure the system software for a large-scale distributed system service?</li>
+  <li>Java Bean == reusable software component</li>
+  <li>N-tier applications
+    <ul>
+      <li><img src="../assets/content_images/omscs/aos/L06_img17.png" alt="img" /></li>
+      <li>application comprised of a stack of layers that each perform separate responsibilities</li>
+      <li>Can reuse components for each layer of the stack, as at each layer there are many similarities across applications and across requests for any given application</li>
+      <li>Reduce network communication (latency), security risks, increase concurrency for handling an individual request.
+        <ul>
+          <li>Many such applications are embarassingly parallel, can leverage this for performance</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Example framework
+    <ul>
+      <li>There are four containers (roughly equivalent to protection domains)
+        <ul>
+          <li>Client container</li>
+          <li>Applet container
+            <ul>
+              <li>resides on web server</li>
+              <li>interacts with the browser</li>
+            </ul>
+          </li>
+          <li>Web container
+            <ul>
+              <li>contains presentation logic (e.g. web pages)</li>
+            </ul>
+          </li>
+          <li>EJB container
+            <ul>
+              <li>contains business logic</li>
+              <li>Talks to DB server as needed</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Beans – a unit of reuse
+        <ul>
+          <li>Example – the shopping cart function</li>
+          <li>Containers above host the beans</li>
+          <li>3 types of beans
+            <ul>
+              <li>Entity
+                <ul>
+                  <li>e.g. a row in a database</li>
+                  <li>usually persistent objects with primary keys</li>
+                  <li>persistence may be built into the bean itself or built into the container into which the entity bean is instantiated</li>
+                </ul>
+              </li>
+              <li>Session
+                <ul>
+                  <li>Associated with a particular client and session (temporal window over which a client is interacting with the service)</li>
+                  <li>Can be a stateful session bean or a stateless session bean</li>
+                </ul>
+              </li>
+              <li>Message
+                <ul>
+                  <li>Useful for asynchronous behavior</li>
+                  <li>example: stock ticker, RSS feed</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>Can be more or less granular, which affects reusability
+            <ul>
+              <li>finer grained is better for reusability, but requires more complex business logic</li>
+              <li><img src="../assets/content_images/omscs/aos/L06_img18.png" alt="img" />
+                <ul>
+                  <li>Does not allow appropriate concurrency for this use case</li>
+                </ul>
+              </li>
+              <li><img src="../assets/content_images/omscs/aos/L06_img19.png" alt="img" />
+                <ul>
+                  <li>Entity bean may be responsible for one row of the DB, or a set of rows.  Up to the designer.</li>
+                  <li>CMP == container-managed persistence</li>
+                  <li>BMP == bean-managed persistence</li>
+                </ul>
+              </li>
+              <li><img src="../assets/content_images/omscs/aos/L06_img20.png" alt="img" />
+                <ul>
+                  <li>Associate a session facade with each client session.  This allows you to construct a session and associate it with a particular client</li>
+                  <li>Using RMI allows entity bean to be placed wherever we want in network.  Using local requires colocation with business logic and session facade, but avoids network communication and so improves performance.</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

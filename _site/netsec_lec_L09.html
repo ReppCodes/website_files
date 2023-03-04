@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>NetSec Lecture Notes - Lesson 9 - Domain Name Systems Security</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>NetSec Lecture Notes - Lesson 9 - Domain Name Systems Security</h2>
+  <h1 id="domain-name-systems-security">Domain Name Systems Security</h1>
+<ul>
+  <li>Hierarchical Name Space (hierarchical database)
+<img src="../assets/content_images/omscs/netsec/L09_img1.png" alt="img" /></li>
+  <li>There are 13 root servers
+<img src="../assets/content_images/omscs/netsec/L09_img2.png" alt="img" /></li>
+</ul>
+
+<h2 id="dns-lookup">DNS Lookup</h2>
+<ul>
+  <li>An iterative (recursive) process querying the hierarchical database
+<img src="../assets/content_images/omscs/netsec/L09_img3.png" alt="img" /></li>
+  <li>DNS record types (partial list)
+    <ul>
+      <li>NS: name server (points to other server)</li>
+      <li>A: address record (contains IP address)</li>
+      <li>MX: address in charge of handling email</li>
+      <li>TXT: generic text (e.g. used to distribute site public keys a la DKIM)</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="dns-caching-quiz">DNS Caching Quiz</h2>
+<p>Changing a domain name into an IP address involves a large number of steps.  To save time, the records are <strong>cached</strong> on a local server for reuse later.
+Each record has a <strong>TTL</strong> that states how long a record can be kept for future use.</p>
+
+<h2 id="caching">Caching</h2>
+<ul>
+  <li>DNS responses are cached
+    <ul>
+      <li>Quick response for repeated translations</li>
+      <li>Note: NS records for domains are also caached</li>
+    </ul>
+  </li>
+  <li>DNS negative queries are cached
+    <ul>
+      <li>Save time for nonexistent sites, e.g. misspelling</li>
+    </ul>
+  </li>
+  <li>Cached data periodically times out
+    <ul>
+      <li>Lifetime (TTL) of data controlled by owner of data</li>
+      <li>TTL passed with every record</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="basic-dns-vulnerabilities">Basic DNS Vulnerabilities</h2>
+<ul>
+  <li>Users/hosts trust the host-address mapping provided by DNS
+    <ul>
+      <li>Used as basis for many security policies
+        <ul>
+          <li>Broswer same origin policy, URL address</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Obvious problems
+    <ul>
+      <li>Interception of requests or compomise of DNS servers can result in incorrect or malicious responses
+        <ul>
+          <li>e.g. malicious access point in a cafe</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Solution
+    <ul>
+      <li>Authenticated requests/responses
+        <ul>
+          <li>Provided by DNSsec, but few use DNSsec yet</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="cache-poisoning">Cache Poisoning</h3>
+<ul>
+  <li>Basic idea: give DNS servers false records and get it cached</li>
+  <li>DNS uses a 16-bit request identifier to pair queries with answers</li>
+  <li>Cache may be poisoned when a name server:
+    <ul>
+      <li>Disregards identifiers</li>
+      <li>Has predictable ids</li>
+      <li>Accepts unsolicited DNS records</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="dns-quiz">DNS Quiz</h2>
+<ul>
+  <li>DNS stores the IP address.  For security reasons the domain name is stored somewhere else</li>
+  <li>All domain names and IP addresses are stored at the central Registry
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>It can take several days for information to propagate to all DNS servers
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="dns-packet">DNS Packet</h2>
+<p><img src="../assets/content_images/omscs/netsec/L09_img4.png" alt="img" /></p>
+<ul>
+  <li>Query ID
+    <ul>
+      <li>16bit random value</li>
+      <li>Links response to query</li>
+    </ul>
+  </li>
+  <li>Example Request
+    <ul>
+      <li><img src="../assets/content_images/omscs/netsec/L09_img5.png" alt="img" /></li>
+    </ul>
+  </li>
+  <li>Example Response to Resolver
+    <ul>
+      <li><img src="../assets/content_images/omscs/netsec/L09_img6.png" alt="img" /></li>
+    </ul>
+  </li>
+  <li>Example Authoritative Response
+    <ul>
+      <li><img src="../assets/content_images/omscs/netsec/L09_img7.png" alt="img" /></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="traditional-poisoning-attack">Traditional Poisoning Attack</h2>
+<ul>
+  <li>Attacker sends a normal DNS query to a local resolver, via a compromised machine (call it A1)</li>
+  <li>Eventually this request will recurse down to the authoritative server, which will send a valid response</li>
+  <li>In the meantime, attacker will send a forged response with a malicious IP address from a second comrpomised machine (call it A2), racing the real response from the authoritative server
+    <ul>
+      <li>Attacker does not know the query ID, so must send a flood of responses with guessed query IDs and hope one lands with the right query ID before the official response does</li>
+      <li>If that happens, the poisoned result will be cached, causing all DNS traffic to point to the malicious IP address until TTL expires</li>
+    </ul>
+  </li>
+  <li>If this attempt is not successful, the attacker needs to wait for TTL to expre before retrying</li>
+</ul>
+
+<h2 id="kaminksys-poisoning-attack">Kaminksy’s Poisoning Attack</h2>
+<ul>
+  <li>RIP Dakami</li>
+  <li>General approach is the same as traditional poisoning</li>
+  <li>The difference is in the payload.  Traditional approach tries to poison the cached address record, whereas this goes up one level and hijacks the authority records instead</li>
+  <li>Goal is to have the DNS server cache the wrong IP address for authoritative service for a random domain (e.g. $RAND.www.google.com)</li>
+  <li>Efficiency gain is that attacker doesn’t have to wait for TTL to expire, can just pick a different random domain and try again immediately</li>
+</ul>
+
+<h2 id="dns-defenses">DNS Defenses</h2>
+<ul>
+  <li>Increase Query ID size</li>
+  <li>Randomize source port, additional 11 bits
+    <ul>
+      <li>Now attack takes several hours</li>
+    </ul>
+  </li>
+  <li>Ask every DNS query twice
+    <ul>
+      <li>Attacker has to guess QueryID correctly twice (32 bits)</li>
+      <li>But DNS system cannot handle the load</li>
+    </ul>
+  </li>
+  <li>DNS SEC</li>
+</ul>
+
+<h3 id="dns-sec">DNS SEC</h3>
+<ul>
+  <li>Guarantees
+    <ul>
+      <li>Authenticity of DNS answer origin</li>
+      <li>Integrity of reply</li>
+      <li>Authenticity of denial of existence</li>
+    </ul>
+  </li>
+  <li>Accomplish this guarantee by signing DNS replies at each step of the way</li>
+  <li>Uses public-key cryptography to sign responses</li>
+  <li>Typically use trust anchors, entries in the operating system to bootstrap the process</li>
+  <li>Example
+    <ul>
+      <li><img src="../assets/content_images/omscs/netsec/L09_img8.png" alt="img" /></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="dns-rebinding-attack">DNS Rebinding Attack</h2>
+<ul>
+  <li>Attacker registers a domain name, say <code class="highlighter-rouge">www.evil.com</code></li>
+  <li>Attacker sets extremely short TTL for this record</li>
+  <li>Attacker sets up malicious JS to execute, and when TTL expires rebinds hostname to an address usually reserved for internal networks, e.g. <code class="highlighter-rouge">192.168.0.100</code></li>
+  <li>Victim firewall does not properly guard against this “internal” address and so malicious JS traffic is permitted through</li>
+  <li>Additionally, browser now views these commands as coming from the same origin, so it will allow the script to access resources it should not</li>
+</ul>
+
+<h3 id="defenses">Defenses</h3>
+<ul>
+  <li>Browser mitigation: DNS Pinning
+    <ul>
+      <li>Refuse to switch to a new IP</li>
+      <li>This interacts poorly with proxies, VPN, dynamic DNS, and other common mechanisms</li>
+      <li>Thus, this is not consistently implemented in any browser</li>
+    </ul>
+  </li>
+  <li>Server-side defenses
+    <ul>
+      <li>Check host header for unrecognized domains</li>
+      <li>Authenticate users with something other than IP</li>
+    </ul>
+  </li>
+  <li>Firewall defenses
+    <ul>
+      <li>External names can’t resolve to internal addresses</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="dns-rebinding-quiz">DNS Rebinding Quiz</h2>
+<ul>
+  <li>The attacker needs to register a domain and delegate it to a server  under his control
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>The attacker’s server responds with a short TTL record
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>A short TTL means thee page will be quickly cached</li>
+  <li>The attacker exploits the same origin policy
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

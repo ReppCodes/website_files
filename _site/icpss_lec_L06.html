@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>ICPSS Lecture Notes - Lesson 6 - Introduction To Industrial Control Systems & Operations</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>ICPSS Lecture Notes - Lesson 6 - Introduction To Industrial Control Systems & Operations</h2>
+  <h1 id="intro-to-industrial-control-systems--operations">Intro To Industrial Control Systems &amp; Operations</h1>
+
+<h2 id="system-assets">System Assets</h2>
+<ul>
+  <li>Sensors</li>
+  <li>Actuators</li>
+  <li>Gauges</li>
+  <li>Motor Drives</li>
+  <li>Indicators</li>
+  <li>PLCs</li>
+  <li>RTUs</li>
+  <li>IEDs</li>
+  <li>HMIs</li>
+</ul>
+
+<h3 id="plcs">PLCs</h3>
+<p><img src="../assets/content_images/omscs/icpss/L06_img1.png" alt="img" />
+<img src="../assets/content_images/omscs/icpss/L06_img2.png" alt="img" /></p>
+<ul>
+  <li>Programmable Logic Controller</li>
+  <li>A specialized industrial computer used for automation</li>
+  <li>Unlike desktop computers, PLCs are typically physically hardened and may be specialized for specific industrial uses with multiple specailized inputs and outputs
+    <ul>
+      <li>They do not usually have an OS.  They usually rely on specific application programs that allow the PLC to function automatically, generating output actions</li>
+      <li>They typically control real-time processes</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="plc-operation">PLC Operation</h4>
+<ul>
+  <li>Works by continuously scanning a program in a loop
+    <ol>
+      <li>Check input status</li>
+      <li>Execute program
+        <ul>
+          <li>may be conditioned on inputs</li>
+        </ul>
+      </li>
+      <li>Update output status</li>
+    </ol>
+  </li>
+</ul>
+
+<h4 id="plc-ladder-logic">PLC Ladder Logic</h4>
+<p><img src="../assets/content_images/omscs/icpss/L06_img3.png" alt="img" /></p>
+<ul>
+  <li>PLC’s can use ladder logic, which is a simplistic programming language built into them (included in the relevant standard)</li>
+  <li>LL gets its name from the legacy method of implementing discrete logic from electromechanical relays</li>
+  <li>Can be thought of a series of connections between relay inputs (inputs) and relay coils (outputs)
+    <ul>
+      <li>If output is reached, coil is energized</li>
+    </ul>
+  </li>
+  <li>Switched can be used to compare a continuous digital input to a binary physical input (comparing to setpoints)
+<img src="../assets/content_images/omscs/icpss/L06_img4.png" alt="img" /></li>
+  <li>logic can be more complex, see here an “or” condition</li>
+</ul>
+
+<h4 id="other-languages">Other languages</h4>
+<ul>
+  <li>Standard includes ladder logic as mentioned above.</li>
+  <li>Also includes:
+    <ul>
+      <li>Structured Text (ST)</li>
+      <li>Function Block Diagram (FBD)</li>
+      <li>Instruction Lists (IL)</li>
+      <li>Sequential Function Charts (SFC)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="remote-terminal-unit-rtu">Remote Terminal Unit (RTU)</h3>
+<ul>
+  <li>Often reside in substation or otherwise remote location</li>
+  <li>Monitor field parameters, and transmit back to monitoring station</li>
+  <li>Usually include some way to beacon out, such as modem or radio
+    <ul>
+      <li>Very limited bandwidth</li>
+      <li>Thus, usually use minimalistic protocols such as “report by acception”</li>
+    </ul>
+  </li>
+  <li>Can be powered via solar or electric</li>
+  <li>Often in extreme environmental conditions</li>
+  <li>Modern RTUs overlap largely with PLCs, as tech advances</li>
+</ul>
+
+<h3 id="intelligent-electronic-device-ied">Intelligent Electronic Device (IED)</h3>
+<ul>
+  <li>Each industry has unique requirements, so equipment will vary from one to the next</li>
+  <li>IEDs are used as bridge between analog and digital domains, used widely in power grids</li>
+  <li>As with all tech, growing more sophisticated over time
+    <ul>
+      <li>For this class, we can assume the IED supports a specific function within the overall control system, as opposed to RTU or PLC which are meant to be flexible enough for general use</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="human-machine-interface-hmi">Human-Machine Interface (HMI)</h3>
+<p><img src="../assets/content_images/omscs/icpss/L06_img5.png" alt="img" /></p>
+<ul>
+  <li>Replace manual switches and dials with digital equivalents</li>
+  <li>Much easier to adapt and adjust</li>
+  <li>Can be run on either commodity hardware, or on industrial hardened machines with a touch panel</li>
+  <li>Usually runs on Windows Embedded</li>
+  <li>Allows “single pane of glass” control over complex processes</li>
+  <li>Interesting note, usually no authentication to avoid password lockouts in emergencies</li>
+  <li>Security is usually done at local workstation by restricting application execution, and also leans on physical security</li>
+</ul>
+
+<h3 id="supervisory-workstations">Supervisory Workstations</h3>
+<ul>
+  <li>Read-only, strictly for monitoring use
+    <ul>
+      <li>Can, however change parameters such as alarm limits or process setpoints</li>
+    </ul>
+  </li>
+  <li>HMI system or dashboard/workbook from data historian</li>
+</ul>
+
+<h3 id="data-historian">Data Historian</h3>
+<ul>
+  <li>specialized software system that collects point values, alarm events, batch records, and other information from industrial devices or systems, and stores them in a purpose-built database</li>
+  <li>There are some third-party vendors, but often these come from first party ICS vendors</li>
+  <li>Data points referred to as ‘tags’ and can generally refer to anything</li>
+  <li>Data often replicated across business and industrial networks
+    <ul>
+      <li>This is a huge security concern, so historians must be hardened, and strict access controls put in place</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="business-information-console">Business Information Console</h3>
+<ul>
+  <li>Extensions of supervisory workstations</li>
+  <li>Designed to deliver business intelligence to upper management</li>
+  <li>Consist of same data obtained from HMI or data historian systems</li>
+  <li>May be a physical console, or a historian with an ICS DMZ located elsewhere</li>
+</ul>
+
+<h3 id="other-assets">Other Assets</h3>
+<ul>
+  <li>Printers</li>
+  <li>Badge readers</li>
+  <li>IP Telephones</li>
+  <li>IP Cameras</li>
+  <li>AD</li>
+  <li>Time servers</li>
+  <li>All of the above present attack surface and must be assessed</li>
+</ul>
+
+<h2 id="control-loop">Control Loop</h2>
+<ol>
+  <li>Read data from sensors</li>
+  <li>Execute logic against the data</li>
+  <li>Write data to automation devices</li>
+  <li>Go to 1</li>
+</ol>
+
+<h3 id="closed-vs-open-loops">Closed vs Open Loops</h3>
+<ul>
+  <li>In closed loops, output of one iteration affects input of the next, while in open loop it does not</li>
+  <li>Slides talk through example of ladder logic for cycling level in a water tank</li>
+  <li>Slides talk through several examples around more complex control loops</li>
+</ul>
+
+<h2 id="production-information-management">Production Information Management</h2>
+<ul>
+  <li>All such processes and loops above must be managed from a central location, usually a data historian</li>
+  <li>“Historizing” the data is the process of capturing and organizing the myriad data the control system generates</li>
+  <li>From the historian, analytics are generated and used to inform the management of the system
+    <ul>
+      <li>can be used to spot trend and anomalies, and optimize the process</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="business-information-management">Business Information Management</h2>
+<ul>
+  <li>Used to optimize for business KPIs</li>
+  <li>Operational data in business network
+    <ul>
+      <li>This reduces the strength of the security perimiter</li>
+    </ul>
+  </li>
+  <li>Each data access mechanism has security challenges</li>
+  <li>Appropriate security mechanisms must be put in place</li>
+</ul>
+
+<h2 id="process-management">Process Management</h2>
+<ul>
+  <li>Driven by HMI</li>
+  <li>HMI can be used to monitor output and adjust inputs or process setpoints</li>
+  <li>HMI translates system functions to human-readable controls
+    <ul>
+      <li>e.g. write single coil -&gt; turn on water pump</li>
+    </ul>
+  </li>
+  <li>This means that compromising an HMI is a huge risk, as they functionally run the system
+    <ul>
+      <li>e.g. Stuxnet</li>
+      <li>However, attacker must have specific knowledge of the process in question to know which changes would actually have an impact
+        <ul>
+          <li>This makes casual attacks harder, but is not a defense against targeted attacks</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="safety-instrumented-systems-sis">Safety-Instrumented Systems (SIS)</h2>
+<p><img src="../assets/content_images/omscs/icpss/L06_img6.png" alt="img" /></p>
+<ul>
+  <li>Part of a layered stack of protections</li>
+  <li>Helps as an automated safeguard before things become “incidents”</li>
+  <li>If compromised, this safety is removed.
+    <ul>
+      <li>Key part of a DoS attack</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="the-smart-grid">The Smart Grid</h2>
+<p><img src="../assets/content_images/omscs/icpss/L06_img7.png" alt="img" /></p>
+<ul>
+  <li>An amalgamation of many industrial networks</li>
+  <li>Built using the assets, processes, and controls discussed so far</li>
+  <li>Because it’s such an amalgamation, attack surface is huge</li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

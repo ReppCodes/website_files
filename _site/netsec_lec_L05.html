@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>NetSec Lecture Notes - Lesson 5 - Browser Security Models</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>NetSec Lecture Notes - Lesson 5 - Browser Security Models</h2>
+  <h1 id="browser-security-models">Browser Security Models</h1>
+
+<h2 id="common-application-attacks-quiz">Common Application Attacks Quiz</h2>
+<ol>
+  <li>Modifies back-end statement through user input
+    <ul>
+      <li>Injection</li>
+    </ul>
+  </li>
+  <li>Inserts Javascript into trusted sites
+    <ul>
+      <li>Cross site scripting</li>
+    </ul>
+  </li>
+  <li>Program flaws allow bypass of authentication methods
+    <ul>
+      <li>Broken Authentication and Session</li>
+    </ul>
+  </li>
+  <li>Attackers modify file names
+    <ul>
+      <li>Insecure Direct Object References</li>
+    </ul>
+  </li>
+  <li>Abuses lack of data encryption
+    <ul>
+      <li>Sensitive data exposure</li>
+    </ul>
+  </li>
+  <li>Exploits misconfigured servers
+    <ul>
+      <li>Security misconfiguration</li>
+    </ul>
+  </li>
+  <li>Privilege functionality is hidden rather than enforced through access controls
+    <ul>
+      <li>Missing Function Level Acces Control</li>
+    </ul>
+  </li>
+  <li>Uses unpatched third-party components
+    <ul>
+      <li>Using components with known vulnerabilities</li>
+    </ul>
+  </li>
+</ol>
+
+<h2 id="goals-of-web-security">Goals of Web Security</h2>
+<ul>
+  <li>Browse the web safely
+    <ul>
+      <li>No stolen information</li>
+      <li>Site A cannot compromise session at Site B</li>
+    </ul>
+  </li>
+  <li>Support secure web applications
+    <ul>
+      <li>Applications delivered over the web should be able to achieve the same security properties as standalone applications</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="web-security-threat-model-vs-network-security-threat-model">Web Security Threat Model vs Network Security Threat Model</h2>
+<ul>
+  <li>Web security threat model:
+    <ul>
+      <li>Attacker sets up a malicious site</li>
+      <li>Attacker does not control the network</li>
+    </ul>
+  </li>
+  <li>Network security threat model:
+    <ul>
+      <li>Attacker intercepts and controls network</li>
+      <li>Can be much more active</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="attack-top-10-quiz">Attack Top 10 Quiz</h2>
+<ol>
+  <li>Injection</li>
+  <li>Broken Authentication and Session</li>
+  <li>Cross Site Scripting</li>
+  <li>Insecure Direct Object References</li>
+  <li>Security MIsconfiguration</li>
+  <li>Sensitive Data Exposure</li>
+  <li>Missing Function Level Access Control</li>
+  <li>Cross Site Request Forgery</li>
+  <li>Using Components with Known Vulnerabilities</li>
+  <li>Unvalidated Redirects and Forwards</li>
+</ol>
+
+<h2 id="web-threat-models">Web Threat Models</h2>
+<ul>
+  <li>Web Attacker
+    <ul>
+      <li>Control attacker.com</li>
+      <li>Can obtain SSL/TLS certificate for attacker.com</li>
+      <li>User visits attacker.com
+  	* Or: runs attacker’s app, etc.</li>
+      <li>Typically passive.  Set up infra and wait for users</li>
+    </ul>
+  </li>
+  <li>Network Attacker
+    <ul>
+      <li>More powerful</li>
+      <li>Can perform passive actions, such as wireless eavesdropping</li>
+      <li>Or active actions, such as an “evil” router, or DNS poisoning
+        <ul>
+          <li>Attacker changes the DNS entries for legimitate sites to redirect to malicious servers</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Malware Attacker
+    <ul>
+      <li>Most general and powerful attack</li>
+      <li>Attacker escapes browser isolation mechanisms and runs separately under control of OS</li>
+      <li>Browsers may contain exploitable bugs
+        <ul>
+          <li>Often enable remote code execution by web sites</li>
+        </ul>
+      </li>
+      <li>Even if browsers were bug-free, still lots of vulnerabilities on the web
+        <ul>
+          <li>XSS, SQLi, CSRF, etc.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="modern-websites">Modern websites</h2>
+<ul>
+  <li>Typical website contains both static and active contents</li>
+  <li>Active contents can be from many sources and combined in many ways</li>
+  <li>Acting parties on a website can include:
+    <ul>
+      <li>Page developers</li>
+      <li>Library developers</li>
+      <li>Service providers</li>
+      <li>Data providers</li>
+      <li>Ad providers</li>
+      <li>Other users</li>
+      <li>Extension developers</li>
+      <li>CDN</li>
+    </ul>
+  </li>
+  <li>Basic security questions:
+    <ul>
+      <li>Protecting sensitive informataion in browser</li>
+      <li>Ensuring some form of integrity</li>
+      <li>How do we protect page from ads/services?</li>
+      <li>How to share data with cross-origin pages?</li>
+      <li>How to protect one user from another’s content?</li>
+      <li>How do we protect the page from a library?</li>
+      <li>How do we protect page from CDN?</li>
+      <li>How do we protect extension from page?</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="website-quiz">Website Quiz</h2>
+<ul>
+  <li>In 2015 how many active websites were on the internet?
+    <ul>
+      <li>1 billion</li>
+    </ul>
+  </li>
+  <li>How many websites does Google quarantine each day?
+    <ul>
+      <li>10,000</li>
+    </ul>
+  </li>
+  <li>How many malicious websites are identified each day?
+    <ul>
+      <li>30,000</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="browsers">Browsers</h2>
+<h3 id="browsers-vs-operating-systems">Browsers vs Operating Systems</h3>
+<ul>
+  <li>Primitives
+    <ul>
+      <li>Operating System
+        <ul>
+          <li>System calls</li>
+          <li>Processes</li>
+          <li>Disk</li>
+        </ul>
+      </li>
+      <li>Web Browser
+        <ul>
+          <li>Document Object model</li>
+          <li>Frames</li>
+          <li>Cookie/local storage</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Principles
+    <ul>
+      <li>Operating System
+        <ul>
+          <li>Users</li>
+          <li>Discretionary Access Control</li>
+        </ul>
+      </li>
+      <li>Web Browser
+        <ul>
+          <li>Origins</li>
+          <li>Mandatory Access Control</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Vulnerabilities
+    <ul>
+      <li>Operating System
+        <ul>
+          <li>Buffer Overflow</li>
+          <li>Root Exploit</li>
+        </ul>
+      </li>
+      <li>Web Browser
+        <ul>
+          <li>Cross-site scripting</li>
+          <li>Cross-site request forgery</li>
+          <li>Cache history attacks</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="basic-execution-model">Basic Execution Model</h3>
+<ul>
+  <li>Each browser window or frame:
+    <ol>
+      <li>Loads Content</li>
+      <li>Renders
+        <ul>
+          <li>Processes HTML and scripts to display the page.  May involve images, subframes, etc</li>
+        </ul>
+      </li>
+      <li>Responds to events
+        <ul>
+          <li>User actions: onClick, onMouseover</li>
+          <li>Rendering: onLoad, onUnload</li>
+          <li>Timing: setTimeout, clearTimeout</li>
+        </ul>
+      </li>
+    </ol>
+  </li>
+  <li>Browser content comes from many sources and these can interact with each other</li>
+</ul>
+
+<h3 id="sandbox">Sandbox</h3>
+<ul>
+  <li>Goal: safely execute JavaScript code provided by a remote website.  No direct file access, limited access to OS, network, browser data, content that came from other websites</li>
+  <li>Same Origin Policy (SOP): Can only read properties of documents and windows from the same protocol, domain, and port</li>
+  <li>User can grant privileges to signed scripts:
+    <ul>
+      <li>UniversalBrowserRead/Write, UniversalFileRead, UniversalSendMail</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="sandbox-quiz">Sandbox Quiz</h2>
+<ul>
+  <li><strong>For each characteristic, put an S for Sandbox, V for virtual machine, or B for both</strong></li>
+  <li>Anything changed or created is not visible beyond its boundaries
+    <ul>
+      <li>B</li>
+    </ul>
+  </li>
+  <li>If data is not saved, it is lost when the application closes
+    <ul>
+      <li>S</li>
+    </ul>
+  </li>
+  <li>It is a machine within a machine
+    <ul>
+      <li>V</li>
+    </ul>
+  </li>
+  <li>Lightweight and easy to set up
+    <ul>
+      <li>S</li>
+    </ul>
+  </li>
+  <li>Disk space must be allocated to the application
+    <ul>
+      <li>V</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="browser-same-origin-policy">Browser Same Origin Policy</h2>
+<ul>
+  <li>URL: <code class="highlighter-rouge">protocol://domain:port/path?params</code></li>
+  <li>Origin is defined as protocol, domain, and port</li>
+  <li>Same Origin Policy (SOP) for DOM:
+    <ul>
+      <li>Origin A can access origin B’s DOM if A and B have same protocol+domain+port</li>
+    </ul>
+  </li>
+  <li>Same Origin Policy for cookies:
+    <ul>
+      <li>Generally, based on protocol+domain+path</li>
+      <li>protocol is optional</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="frame-security">Frame Security</h2>
+<ul>
+  <li>Windows may contain frames from different sources</li>
+  <li>Frame and iFrame are like “mini browser windows”</li>
+  <li>Frame: rigid division as part of frameset</li>
+  <li>iFrame: floating inline frame</li>
+  <li>Why use frames?
+    <ul>
+      <li>Can display webpage within a frame</li>
+      <li>Frames provide a natural separation of different web contents</li>
+      <li>Delegate scren area to content from another source</li>
+      <li>Browser provides isolation based on frames</li>
+      <li>Parent window may work even if frame is broken</li>
+    </ul>
+  </li>
+  <li>Should be able to achieve the same level of isolation whether we use two separate browser windows, or a frame within a window</li>
+  <li>Apply the Same Origin Policy to achieve frame security
+    <ul>
+      <li>Each frame of a page has an origin (<code class="highlighter-rouge">protocol://host:port</code>)</li>
+      <li>Frame can access its own origin
+        <ul>
+          <li>Network access</li>
+          <li>Read/write DOM</li>
+          <li>Storage (cookies)</li>
+        </ul>
+      </li>
+      <li>Frame cannot access data associated with a different origin</li>
+    </ul>
+  </li>
+  <li>Frame-Frame Relationships
+    <ul>
+      <li><code class="highlighter-rouge">canScript(A,B)</code>
+        <ul>
+          <li>Can Frame A execute a script that manipulates arbitrary/nontrivial DOM elements of Frame B?</li>
+        </ul>
+      </li>
+      <li><code class="highlighter-rouge">canNavigate(A,B)</code>
+        <ul>
+          <li>Can Frame A change the origin of content for Frame B?</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Frame-Principal Relationships
+    <ul>
+      <li><code class="highlighter-rouge">readCookie(A,S)</code> and <code class="highlighter-rouge">writeCookie(A,S)</code>
+        <ul>
+          <li>Can Frame A read/write cookies from site S?</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="browsing-context">Browsing Context</h2>
+<ul>
+  <li>A frame with its DOM</li>
+  <li>A web worker (thread), which does not have a DOM
+    <ul>
+      <li>Javascript executed from an HTML page that runs in the background independently of other user interface scripts that may also have been executed from the same HTML page</li>
+    </ul>
+  </li>
+  <li>Every browsing context:
+    <ul>
+      <li>Has an origin, determined by protocol, host, port</li>
+      <li>Is isolated from others by same-origin policy</li>
+      <li>May communicate to others using postMessage</li>
+      <li>Can make network requests using XHR or tags
+        <ul>
+          <li>XHR is used for sending http/s requests and load the results from a web server</li>
+        </ul>
+      </li>
+      <li>Many similarities between a browsing context and an OS process</li>
+    </ul>
+  </li>
+  <li>Modern Structuring Mechanisms
+    <ul>
+      <li>HTML5 iframe Sandbox: Load with unique origin, limited privileges
+        <ul>
+          <li>Directives
+            <ul>
+              <li>Sandbox
+                <ul>
+                  <li>Ensures iframe has unique origin and cannot execute JavaScript, no form submission, disable API’s, prevent content from using plugins, etc</li>
+                </ul>
+              </li>
+              <li>allow-scripts
+                <ul>
+                  <li>Ensures iframe has unique origin</li>
+                </ul>
+              </li>
+              <li>allow-forms
+                <ul>
+                  <li>allows form submission</li>
+                </ul>
+              </li>
+              <li>allow-popups
+                <ul>
+                  <li>allows popups</li>
+                </ul>
+              </li>
+              <li>allow-pointer-lock
+                <ul>
+                  <li>allows pointer lock (mouse moves)</li>
+                </ul>
+              </li>
+              <li>allow-same-origin
+                <ul>
+                  <li>allows the document to maintain its origin.  pages loaded from origin will retain access to that origin’s data</li>
+                </ul>
+              </li>
+              <li>allow-scripts
+                <ul>
+                  <li>allows JavaScript execution, and also allows features to trigger automatically (as they’d be trivial to imiplement via JavaScript)</li>
+                </ul>
+              </li>
+              <li>allow-top-navigation
+                <ul>
+                  <li>allows the document to break out of the frame by navigating the top-level window</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Content Security Policy (CSP): Whitelist instructing browser to only execute or render resources crom specific sources
+        <ul>
+          <li>Goal: Prevent andl imit damage of XSS
+            <ul>
+              <li>XSS attacks bypass the same origin policy by tricking a site into delivering malicious code along with intended content</li>
+            </ul>
+          </li>
+          <li>Approach: restrict resource loading to a whitelist
+            <ul>
+              <li>Prohibits inline scripts embedded in script tags, inline event handlers and javascript, URLs</li>
+              <li>Disable JavaScript eval(), new Function (), etc.</li>
+              <li>Content-Security-Policy HTTP header allows site to create whitelist, instructs the browser to only execute or render resources from those sources</li>
+            </ul>
+          </li>
+          <li>Directives
+            <ul>
+              <li>script-src
+                <ul>
+                  <li>limits the origins for loading scripts</li>
+                </ul>
+              </li>
+              <li>connect-src
+                <ul>
+                  <li>limits the origins to which you can connect (via XHR, WebSockets, and EventSource)</li>
+                </ul>
+              </li>
+              <li>font-src
+                <ul>
+                  <li>specifies the origins that can serve web fonts</li>
+                </ul>
+              </li>
+              <li>frame-src
+                <ul>
+                  <li>lists origins that can be embedded as frames</li>
+                </ul>
+              </li>
+              <li>img-src
+                <ul>
+                  <li>lists origins from which images can beloaded</li>
+                </ul>
+              </li>
+              <li>media-src
+                <ul>
+                  <li>restricts the origins for audio and video</li>
+                </ul>
+              </li>
+              <li>object-src
+                <ul>
+                  <li>allows control over Flash, other plugins</li>
+                </ul>
+              </li>
+              <li>style-src
+                <ul>
+                  <li>is script-src counterpart for style sheets</li>
+                </ul>
+              </li>
+              <li>default-src
+                <ul>
+                  <li>define the defaults for any directive not specified</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li>Source Lists
+            <ul>
+              <li>Specify by scheme, e.g. https</li>
+              <li>Specify by host name, matching any origin on that host</li>
+              <li>Specify by Fully qualified URI</li>
+              <li>Wildcards accepted, only as scheme, port, or in the leftmost position of the hostname</li>
+              <li>‘none’ matches nothing</li>
+              <li>‘self’ matches the current origin, but not subdomains</li>
+              <li>‘unsafe-inline’ allows inline JavaScript and CSS</li>
+              <li>‘unsafe-eval’ allows text-to-JavaScript mechanisms like eval()</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Cross-Origin Resource Sharing (CORS) Relax same-origin restrictions</li>
+      <li>HTML5 Web Workers: Separate thread; isolated but same origin.  Not originally intended for security, but helps</li>
+      <li>SubResource integrity (SRI)</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="csp-quiz">CSP Quiz</h2>
+<ul>
+  <li>If you have third party forum software that has inline script, CSP cannot be used
+    <ul>
+      <li>False</li>
+    </ul>
+  </li>
+  <li>CSP will allow third party widgets (e.g. Google +1 button) to be embedded on your site
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>For a really secure site, start with allowing everything, then restrict once you know which sources will be used on your site
+    <ul>
+      <li>False</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="web-worker">Web Worker</h2>
+<ul>
+  <li>Not originally intended for security, but help security a good deal</li>
+  <li>Run in an isolated thread, loaded from a separate file</li>
+  <li>Example
+    <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">var</span> <span class="nx">worker</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Worker</span><span class="p">(</span><span class="dl">'</span><span class="s1">task.js</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">worker</span><span class="p">.</span><span class="nx">postMessage</span><span class="p">();</span> <span class="c1">// start the worker</span>
+</code></pre></div>    </div>
+  </li>
+  <li>Has the same origin as the frame that creates it, but no DOM</li>
+  <li>Communicate using postMessage</li>
+</ul>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// main thread</span>
+<span class="kd">var</span> <span class="nx">worker</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Worker</span><span class="p">(</span><span class="dl">'</span><span class="s1">doWork.js</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">worker</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">message</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Worker said: </span><span class="dl">'</span><span class="p">,</span> <span class="nx">e</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+<span class="p">},</span> <span class="kc">false</span><span class="p">);</span>
+<span class="nx">worker</span><span class="p">.</span><span class="nx">postMessage</span><span class="p">(</span><span class="dl">'</span><span class="s1">Hello World</span><span class="dl">'</span><span class="p">);</span> <span class="c1">// Send data to worker</span>
+
+<span class="c1">// doWork</span>
+<span class="nb">self</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">message</span><span class="dl">'</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+	<span class="nb">self</span><span class="p">.</span><span class="nx">postMessage</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span> <span class="c1">// Return message it is sent</span>
+<span class="p">},</span> <span class="kc">false</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h2 id="subresource-integrity-sri">SubResource Integrity (SRI)</h2>
+<ul>
+  <li>Many pages pull scripts and styles from a wide variety of service and content delivery networks</li>
+  <li>How can we protect against:
+    <ul>
+      <li>downloading content from a hostile server (via DNS poisoning, or other such means)</li>
+      <li>Modified file on the Content Delivery Network (CDN)</li>
+    </ul>
+  </li>
+  <li>Idea: page author specifies hash of (sub) resource they are loading; browser checks integrity
+    <ul>
+      <li>examples shown in script tag with integrity=SHAHASH</li>
+    </ul>
+  </li>
+  <li>What happens if the integrity check fails?
+    <ul>
+      <li>Case 1 (default)
+        <ul>
+          <li>Browser reports violation and does not render/execute resource</li>
+        </ul>
+      </li>
+      <li>Case 2
+        <ul>
+          <li>CSP directive with integrity-policy directive set to report</li>
+          <li>Browser reports violation, but may render/execute resource</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="cross-origin-resource-sharing-cors">Cross Origin Resource Sharing (CORS)</h2>
+<ul>
+  <li>Example given of AWS.com and Amazon.com wanting to share resources, as both are owned by Amazon</li>
+  <li>We want the same origin policy still, prevent other sites from corrupting our interactions</li>
+  <li>CORS is a techniqque for relaxing the same-origin policy, allowing JavaScript on a web page to consume content from a different origin</li>
+  <li>A website whitelists all domains</li>
+</ul>
+
+<h3 id="how-cors-works">How CORS Works</h3>
+<ul>
+  <li>Browser sends Origin header with XmlHttpRequest request
+    <ul>
+      <li>This origin is the parent page, e.g. https://amazon.com</li>
+    </ul>
+  </li>
+  <li>Server can inspect Origin header and respond with Access-Control-Allow-Origin header</li>
+</ul>
+
+<h2 id="cors--quiz">CORS  Quiz</h2>
+<ul>
+  <li>CORS allows cross-domain communication from the browser
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>CORS requires coordination between the server and client
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>CORS is not widely supported by browsers
+    <ul>
+      <li>False</li>
+    </ul>
+  </li>
+  <li>The CORS header can be used to secure resources on a website
+    <ul>
+      <li>False</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="sop-quiz">SOP Quiz</h2>
+<ul>
+  <li>Recall that a same-origin policy requires requests to access data must be from the same origin.  What is the definition of an origin?
+    <ul>
+      <li>A combination of URI (Uniform Resource Identifier) scheme, hostname, and port nubmer</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="sop-and-cookies">SOP and Cookies</h2>
+<ul>
+  <li>When a browser visits a website, the server sets a cookie for that client</li>
+  <li>There are a number of attributes that can be set via cookie
+    <ul>
+      <li><img src="../assets/content_images/omscs/netsec/L05_img1.png" alt="img" /></li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="scope-setting-rules">Scope Setting Rules</h3>
+<ul>
+  <li>Domain: any domain-suffix of URL-hostname, except TLD
+    <ul>
+      <li>login.site.com can set cookies for all of site.com, but not for another site or TLD
+        <ul>
+          <li>Allowed Domains:
+            <ul>
+              <li>login.site.com</li>
+              <li>site.com</li>
+            </ul>
+          </li>
+          <li>Disallowed Domains:
+            <ul>
+              <li>other.site.com</li>
+              <li>othersite.com</li>
+              <li>.com</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Path can be set to anything within allowed domains</li>
+</ul>
+
+<h3 id="settingand-deletingcookies-by-server">Settingand DeletingCookies by Server</h3>
+<ul>
+  <li>Cookies are identified by (name, domain, path)</li>
+  <li>Cookie1
+    <ul>
+      <li>name = userid</li>
+      <li>value = test</li>
+      <li>domain = login.site.com</li>
+      <li>path = /</li>
+      <li>secure (means it must be https)</li>
+    </ul>
+  </li>
+  <li>Cookie2
+    <ul>
+      <li>name = userid</li>
+      <li>value = test123</li>
+      <li>domain = .site.com</li>
+      <li>path = /</li>
+      <li>non-secure</li>
+    </ul>
+  </li>
+  <li>Goal is that server only sees cookies in its own scope</li>
+</ul>
+
+<h3 id="client-side-readwrite-documentcookie">Client-side read/write: document.cookie</h3>
+<ul>
+  <li>Setting a cookie in Javascript:
+    <ul>
+      <li>document.cookie = “name=value; expires…;”</li>
+    </ul>
+  </li>
+  <li>Reading a cookie:
+    <ul>
+      <li>alert(document.cookie) -&gt; prints string containing all ocokies available for document (based on protocol, domain, path)</li>
+    </ul>
+  </li>
+  <li>HttpOnly cookies: not included in document.cookie and cannot be accessed by client-side scripts</li>
+</ul>
+
+<h2 id="sop-security-quiz">SOP Security Quiz</h2>
+<ul>
+  <li>given this website: “http://www.example.com/dir/page.html”, determine the outcome (success or failure) for each compared URL.  Check each URL that has the same origin as the given site</li>
+  <li>http://www.example.com/dir2/other.html
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>http://www.example.com/dir/page2.html
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>http://username:password@www.example.com/dir2/other.html
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>http://www.example.com:81/dir/other.html
+    <ul>
+      <li>False</li>
+    </ul>
+  </li>
+  <li>http://example.com/dir/other.html
+    <ul>
+      <li>False</li>
+    </ul>
+  </li>
+  <li>https://www.example.com/dir/other.html
+    <ul>
+      <li>False</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="cookie-quiz">Cookie Quiz</h2>
+<ul>
+  <li>A cookie with an origin of a top-level domain
+    <ul>
+      <li>Super</li>
+    </ul>
+  </li>
+  <li>A cookie that is regenerated after it is deleted
+    <ul>
+      <li>Zombie</li>
+    </ul>
+  </li>
+  <li>A cookie that can only be sent in request originating from the same origin as the target domain
+    <ul>
+      <li>SameSite</li>
+    </ul>
+  </li>
+  <li>A cookie that cannot be accessed by client-side APIs
+    <ul>
+      <li>HttpOnly</li>
+    </ul>
+  </li>
+  <li>A cookie that belongs to a domain that is different than the one shown in the address bar
+    <ul>
+      <li>Third-party</li>
+    </ul>
+  </li>
+  <li>An in-memory cookie.  It does not have an expiration date.  It is deleted when the browser is closed
+    <ul>
+      <li>Session</li>
+    </ul>
+  </li>
+  <li>A cookie that has an expiration date or time.  Also called tracking cookies
+    <ul>
+      <li>Persistent</li>
+    </ul>
+  </li>
+  <li>A cookie that can only be transmitted over an encrypted connection
+    <ul>
+      <li>Secure</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="cookie-protocol-problems">Cookie Protocol Problems</h2>
+<ul>
+  <li>The server is blind
+    <ul>
+      <li>Does not see cookie attributes (e.g. secure, HttpOnly)</li>
+      <li>Does not see which domain set the cookie</li>
+      <li>Server only sees:
+        <ul>
+          <li>Cookie: NAME=VALUE</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="example-1">Example 1</h3>
+<ul>
+  <li>Alice logs in at login.site.com, generating a session-id of Alice’s session</li>
+  <li>Alice visits evil.site.com, overwriting the .site.com cookie with session-id of user Badguy</li>
+  <li>Alice visits course.site.com, course.site.com thinks it’s interacting with Badguy</li>
+  <li>Problem is that course.site.com expects session-id from login.site.com; cannot tell that session-id cookie was overwritten</li>
+</ul>
+
+<h3 id="example-2">Example 2</h3>
+<ul>
+  <li>Alice logs in at https://accounts.google.com</li>
+  <li>That site sets the cookie, with secure flag</li>
+  <li>Alice visits http://www.google.com (cleartext)</li>
+  <li>Network attacker can inject into response:
+    <ul>
+      <li><code class="highlighter-rouge">Set-Cookie: SSID=badguy; secure</code></li>
+      <li>Which will secure and overwrite secure code</li>
+    </ul>
+  </li>
+  <li>Problem is that a network attacker can intercept and re-write HTTPS cookies!  HTTTPS cookie value cannot be trusted</li>
+</ul>
+
+<h3 id="interaction-with-the-dom-sop">Interaction with the DOM SOP</h3>
+<ul>
+  <li>Path separation is done for efficiency not security
+    <ul>
+      <li>x.com/A is only sent the cookies it needs</li>
+    </ul>
+  </li>
+  <li>Cookie SOP path separation:
+    <ul>
+      <li>x.com/A does not see cookies of x.com/B</li>
+    </ul>
+  </li>
+  <li>Not a security measure because x.com/A still has access to DOM of x.com/B</li>
+</ul>
+
+<h3 id="cookies-have-no-integrity">Cookies have no integrity</h3>
+<ul>
+  <li>User can change and delete cookie values
+    <ul>
+      <li>Edit cookie database (FireFox: cookies.sqlite)</li>
+      <li>Modify cookie header (FireFox: TamperData extension)</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="cryptographic-checksums">Cryptographic Checksums</h2>
+<ul>
+  <li>Goal: data integrity</li>
+  <li>Requqires server-side secret key k unknown to browser 
+<img src="../assets/content_images/omscs/netsec/L05_img2.png" alt="img" /></li>
+</ul>
+
+<h3 id="example-aspnet">Example: ASP.NET</h3>
+<ul>
+  <li><code class="highlighter-rouge">System.Web.Configuration.MachineKey</code>
+    <ul>
+      <li>Secret web server key intended for cookie protection</li>
+    </ul>
+  </li>
+  <li>Creating an encrypted cookie with integrity
+    <ul>
+      <li><code class="highlighter-rouge">HttpCookie cookie = new HttpCookie(name, val)</code></li>
+      <li><code class="highlighter-rouge">HttpCookie encodedCookie = HttpSecureCookie.Encode(cookie)</code></li>
+    </ul>
+  </li>
+  <li>Decrypting an validating an encrypted cookie
+    <ul>
+      <li><code class="highlighter-rouge">HttpSecureCookie.Decode(cookie)</code></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="checksum-quiz">Checksum Quiz</h2>
+<ul>
+  <li>Cryptographic hash functions that are not one-way are vulnerable to preimage attacks
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>A difficult hash function is one that takes a long time to calculate
+    <ul>
+      <li>False</li>
+      <li>Should be hard to analyze, but not to calculate</li>
+    </ul>
+  </li>
+  <li>A good cryptographic hash function should employ an avalanche effect
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

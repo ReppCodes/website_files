@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>GIOS Lecture Notes - Part 2 Lesson 3 - PThreads Case Study</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>GIOS Lecture Notes - Part 2 Lesson 3 - PThreads Case Study</h2>
+  <hr />
+<h2 id="pthreads-references">PThreads References</h2>
+<ul>
+  <li><a href="https://s3.amazonaws.com/content.udacity-data.com/courses/ud923/references/ud923-birrell-paper.pdf">An Introduction to Programming with Threads</a></li>
+  <li><a href="https://computing.llnl.gov/tutorials/pthreads/">PThreads Programming Resource</a></li>
+  <li><a href="https://s3.amazonaws.com/content.udacity-data.com/courses/ud923/resources/ud923-p2l3-pthreads.zip">PThread Coding Examples</a></li>
+</ul>
+
+<h2 id="pthread-creation">PThread Creation</h2>
+<p><img src="../assets/content_images/omscs/gios/p2l3_img1.png" alt="" /></p>
+<ul>
+  <li>pthread_attr_t
+    <ul>
+      <li>specified in pthread_create</li>
+      <li>defines featuress of nrew thread
+        <ul>
+          <li>stack size</li>
+          <li>joinable</li>
+          <li>priority</li>
+          <li>inheritance</li>
+          <li>scheduling policy</li>
+          <li>system/process scope</li>
+        </ul>
+      </li>
+      <li>has default behavior with NULL in pthread_create
+<img src="../assets/content_images/omscs/gios/p2l3_img2.png" alt="" /></li>
+    </ul>
+  </li>
+  <li>detaching pthreads
+    <ul>
+      <li>default: joinable thread</li>
+      <li>parent thread should not exit until children threads have joined back</li>
+      <li>if parent exits early you get zombies</li>
+      <li>in pthreads you can detach children such that they cannot be joined, and can continue on after parent is killed</li>
+      <li>int pthread_detach() - takes thread as argument</li>
+      <li>for detached threads, must be killed off using void pthread_exit()
+example: 
+<img src="../assets/content_images/omscs/gios/p2l3_img3.png" alt="" />
+There is a typo @4:58 with the code example. The pthread_create() function should be passed the following parameters:
+<code class="highlighter-rouge">pthread_create(&amp;tid, &amp;attr, foo, NULL)</code></li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="compiling-pthreads">Compiling Pthreads</h4>
+<ul>
+  <li>need <code class="highlighter-rouge">#include &lt;pthread.h&gt;</code> for library</li>
+  <li>need to link at compile time.  which flag depends on platform.
+    <ul>
+      <li><code class="highlighter-rouge">gcc -o main main.c -lpthread</code></li>
+      <li><code class="highlighter-rouge">gcc -o main main.c -pthread</code></li>
+    </ul>
+  </li>
+  <li>check return values of common functions!  always good, but extra needed here</li>
+</ul>
+
+<h4 id="example-1">Example 1</h4>
+<p><img src="../assets/content_images/omscs/gios/p2l3_img4.png" alt="" /></p>
+<ul>
+  <li>Create threads with default attributes (first NULL in pthread create)</li>
+  <li>Pass no arguments to threads (second NULL in pthread create)</li>
+  <li>Default configuration of pthread is joinable, so can pass to pthread_join() without issue</li>
+</ul>
+
+<h4 id="example-2">Example 2</h4>
+<p><img src="../assets/content_images/omscs/gios/p2l3_img5.png" alt="" /></p>
+<ul>
+  <li>Threads each execute a function that takes an argument, *pArg, so we pass &amp;i as the argument to each pthread_create call</li>
+</ul>
+
+<h4 id="example-3">Example 3</h4>
+<p><img src="../assets/content_images/omscs/gios/p2l3_img6.png" alt="" /></p>
+<ul>
+  <li>passing global variables to pthread_create arg is dangerous.  May not pass what you expect, as the variable may be updated globally before thread can execute whatever they use it for</li>
+  <li>This is called a data race, or race condition.  This is when a thread tries to read a value while another thread modifies it</li>
+  <li>Fix:
+<img src="../assets/content_images/omscs/gios/p2l3_img7.png" alt="" />
+    <ul>
+      <li>create static copy of argument that isn’t modified so it will always be passed and consumed correctly by appropriate thread</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="pthread-mutexes">PThread Mutexes</h2>
+<ul>
+  <li>Mutexes provide the mechanism to solve mutual exclusion problems among concurrent threads
+<img src="../assets/content_images/omscs/gios/p2l3_img8.png" alt="" />
+<img src="../assets/content_images/omscs/gios/p2l3_img9.png" alt="" />
+<img src="../assets/content_images/omscs/gios/p2l3_img10.png" alt="" /></li>
+  <li>Mutex safety tips
+    <ul>
+      <li>each piece shared data should always be accessed through a single mutex</li>
+      <li>mutex scope must be visible to all</li>
+      <li>globally order locks/unlocks
+        <ul>
+          <li>for all threads, lock mutexes in order</li>
+        </ul>
+      </li>
+      <li>always unlock a mutex
+        <ul>
+          <li>always unlock the <em>correct</em> mutex</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="pthread-condition-variables">PThread Condition Variables</h2>
+<p><img src="../assets/content_images/omscs/gios/p2l3_img11.png" alt="" />
+<img src="../assets/content_images/omscs/gios/p2l3_img12.png" alt="" /></p>
+<ul>
+  <li>Condition variable safety tips
+    <ul>
+      <li>do not forget to notify waiting threads
+        <ul>
+          <li>predicate change =&gt; signal/broadcast <em>correct</em> condition variable</li>
+        </ul>
+      </li>
+      <li>when in doubt which to use, use broadcast instead of signal
+        <ul>
+          <li>safer, but will cause performance loss</li>
+        </ul>
+      </li>
+      <li>You do not need a mutex to signal/broadcast
+        <ul>
+          <li>may be better to move signal/broadcast out of mutex block sometimes.  See example from P2L2</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="produce-and-consumer-example-in-pthreads">Produce and Consumer Example in PThreads</h2>
+<ul>
+  <li>All source code provided in reference links at top of notes
+<img src="../assets/content_images/omscs/gios/p2l3_img13.png" alt="" />
+<img src="../assets/content_images/omscs/gios/p2l3_img14.png" alt="" />
+<img src="../assets/content_images/omscs/gios/p2l3_img15.png" alt="" />
+<img src="../assets/content_images/omscs/gios/p2l3_img16.png" alt="" /></li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

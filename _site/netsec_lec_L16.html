@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>NetSec Lecture Notes - Lesson 16 - Domain and Network Reputation</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>NetSec Lecture Notes - Lesson 16 - Domain and Network Reputation</h2>
+  <h1 id="domain-and-network-reputation">Domain and Network Reputation</h1>
+
+<h2 id="dnsbl-quiz">DNSBL Quiz</h2>
+<p><strong>Match the DNSBL level with its description</strong></p>
+<ul>
+  <li>This IP address does not send spam, and should not be blacklisted.  But it is not fully trustworthy
+    <ul>
+      <li>NoBL</li>
+    </ul>
+  </li>
+  <li>This IP address is not directly involved in spamming but is associated with spam-like behaviors
+    <ul>
+      <li>Grey</li>
+    </ul>
+  </li>
+  <li>No trust in this IP address
+    <ul>
+      <li>Black</li>
+    </ul>
+  </li>
+  <li>This IP address is known toproduce spam and non-spam email
+    <ul>
+      <li>Yellow</li>
+    </ul>
+  </li>
+  <li>Complete trust in this IP address
+    <ul>
+      <li>White</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="motivation-for-reputation">Motivation for Reputation</h2>
+<ul>
+  <li>Traditionally, if an IP address was discovered to  have sent spam, it was added to a blocklist.  This is known as a “static” blocklist</li>
+  <li>Problem with that is that new IP address are trusted, and spammers know to get new addresses periodically</li>
+  <li>Instead of innocent until proven guilty, the reality of the situation demands a “suspect until proven innocent” model</li>
+</ul>
+
+<h2 id="new-blocklist-model-criteria">New Blocklist Model Criteria</h2>
+<ul>
+  <li>Motivation
+    <ul>
+      <li>Static DNSBL increasingly ineffective</li>
+      <li>Need a dynamic, comprehensive reputation system that outputs reputations scores for domains</li>
+    </ul>
+  </li>
+  <li>Intuitions
+    <ul>
+      <li>Legitimate uses of domains/sites are different from malicious uses, and the differences can be observed in DNS query traffic</li>
+      <li>Patterns/reputation of Requesters, Resolved IPs, Network providers</li>
+    </ul>
+  </li>
+  <li>Approach
+    <ul>
+      <li>Extract temporal and statistical features from DNS traffic, compute/learn models</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="dns-quiz">DNS Quiz</h2>
+<p><strong>Match the malicious application with its DNS characteristic</strong></p>
+<ul>
+  <li>Anonymously registered domains
+    <ul>
+      <li>Spyware</li>
+    </ul>
+  </li>
+  <li>Disposable domains
+    <ul>
+      <li>Adware</li>
+    </ul>
+  </li>
+  <li>Short lived domains
+    <ul>
+      <li>Botnets</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="malicious-domain-names-quiz">Malicious Domain Names Quiz</h2>
+<p><strong>List the types of characters a malicious domain name detection program should look for in a domain name</strong></p>
+<ul>
+  <li>Number of characters</li>
+  <li>Number of hyphens</li>
+  <li>Number of digits</li>
+  <li>Number of numbers</li>
+</ul>
+
+<h2 id="notation-and-terminology">Notation and Terminology</h2>
+<p><img src="../assets/content_images/omscs/netsec/L16_img1.png" alt="img" /></p>
+<ul>
+  <li>Passive DNS (pDNS) data collection is the harvesting of successful DNS resolutions that can be observed in a given network</li>
+  <li>Passive DNS database contains traffic from several ISP sensors and data repositories
+    <ul>
+      <li>Observed that different classes of zones demonstrate different passive DNS behaviors</li>
+    </ul>
+  </li>
+  <li>Kopis obtained authoritative DNS traffic from 2 large authoritative DNS servers (AuthNS) and the Canadian TLD</li>
+</ul>
+
+<h2 id="notos">NOTOS</h2>
+<ul>
+  <li>A system that dynamically assigns reputation scores to domain names</li>
+  <li>Network and zone based features capture the characteristics of resource provisioning, usages, and management of DNS domains</li>
+  <li>Models of legitimate and malicious domains for computing reputation scores for new domains</li>
+  <li>Accuracy - can correctly classify new domains with very low false positive rate (0.3846%) and high true positive rate (96.8%)</li>
+  <li>Predictive power - able to detect and assign a low reputation score to fraudulent domain names, several days or even weeks before they appear on static blocklists</li>
+</ul>
+
+<h3 id="statistical-features-of-notos">Statistical Features of NOTOS</h3>
+<p><img src="../assets/content_images/omscs/netsec/L16_img2.png" alt="img" /></p>
+<ul>
+  <li>Network-based features
+    <ul>
+      <li>Extracted from the set of RHIPs</li>
+      <li>e.g. the total number of IPs historically associated with a domain, the diversity of their geographical locations, the number of distinct autonomous systems in which they reside, etc.</li>
+    </ul>
+  </li>
+  <li>Zone-based features
+    <ul>
+      <li>Extracted from the set of RHDNs</li>
+      <li>e.g. te average length of domain names in RHDNs,  the number of distinct TLDs, the occurrence frequency of different characters, etc</li>
+    </ul>
+  </li>
+  <li>Evidence-based features
+    <ul>
+      <li>e.g. the number of distinct malware samples that contacted the domain, and the same for any of the resolved IPs, etc</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="notos-reputation-function">NOTOS Reputation Function</h3>
+<ul>
+  <li>Given domains known to be legitimate and malicous
+    <ul>
+      <li>Gather NOTOS features for each domain</li>
+      <li>Malicious domain label: 1</li>
+      <li>Legitimate domain label: 0</li>
+      <li>Learn a function that, given the NOTOS feature vector for a domain, outputs a label (0, or 1)</li>
+      <li>Reputation socre is the confidence of the label (or, the probability that the domain is malicious)</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="dns-database-quiz">DNS Database Quiz</h3>
+<p><strong>The information extracted from the pDNS database can be grouped into three categories.  Match the category to its definition</strong></p>
+<ul>
+  <li>The number of distinct malware samples that connected to any of the IPs
+    <ul>
+      <li>Evidence-based features</li>
+    </ul>
+  </li>
+  <li>The average length of domain names, the occurrence frequency of different characters, etc
+    <ul>
+      <li>Zone-based features</li>
+    </ul>
+  </li>
+  <li>Quantities such as the total number of IPs historically associated with the diversity of their geographical locations, the number of distinct autonomous systems, etc
+    <ul>
+      <li>Network-based features</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="kopis">Kopis</h2>
+<ul>
+  <li>Passive monitoring in the upper levels of the DNS hierarchy; Internet-wide visibility</li>
+  <li>Analyze streams of DNS queries and responses at AuthDNS or TLD servers, and extracts a set of statistical features and trains a model</li>
+  <li>Accuracy - high true positive rate (98.4%) and low false positive rate (0.3%)</li>
+  <li>Predictive power - able to identify newly created and previously unclassified malicious domain names weeks before they were listed in any blocklist</li>
+  <li>Detected a DDoS botnet rising in networks within China almost one month before it propagated within other countries</li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/netsec/L16_img3.png" alt="img" /></p>
+
+<h3 id="kopis-statistical-features">Kopis Statistical Features</h3>
+<ul>
+  <li>Requester Diversity (RDI)
+    <ul>
+      <li>Characterize if the machines (e.g. RDNS servers) that query a given domain name are localized or are globally distributed (based on BGP prefixes, AS numbers, country codes, etc.)</li>
+    </ul>
+  </li>
+  <li>Requester Profile (RP)
+    <ul>
+      <li>Distinguish between requesters located in ISP/small business and home networks</li>
+      <li>Assign a higher weight to RDNS servers that serve a large client population because a larger network would have a larger number of infected machines</li>
+    </ul>
+  </li>
+  <li>Resolved-IPS Reputation (IPR)
+    <ul>
+      <li>Whether, and to what extent, the IP address space pointed to by a given domain has been historically linked with known malicious activities, or known legitimate services</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="dynamic-detection-quiz">Dynamic Detection Quiz</h3>
+<p><strong>A dynamic malware-related domain detection system should:</strong></p>
+<ul>
+  <li>Have global visibility into DNS request and response messages
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>Not be able to detect malware domains before the infection reaches a local network
+    <ul>
+      <li>False</li>
+    </ul>
+  </li>
+  <li>Not require data from other networks
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>Be able to detect malware-related domains even if there is no reputation data
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="study-of-mobile-malware-prevalence">Study of Mobile Malware Prevalence</h2>
+<ul>
+  <li>Motivation
+    <ul>
+      <li>Much work on mobile malware has been on analysis of (malicious) mobile apps</li>
+      <li>But, how prevalent are infections on mobile devices?</li>
+    </ul>
+  </li>
+  <li>Intuitions
+    <ul>
+      <li>The malicious mobile web is a part of the malicious web</li>
+      <li>Mobile malware uses similar infrastructure (C&amp;C) techniques as non-mobile/Internet malware</li>
+    </ul>
+  </li>
+  <li>Approach
+    <ul>
+      <li>Obtain DNS traffic in cellular network and identify domains looked up by mobile apps</li>
+      <li>Analyze information related to the Internet hosts pointed to by these domains</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="key-data-and-findings">Key Data and Findings</h3>
+<ul>
+  <li>Three months of data from a major US cellular provider and a major US non-cellular ISP</li>
+  <li>Known mobile malware samples remain rare in US
+    <ul>
+      <li>Only 6,858 out of 380,537,128 devices, or 0.002%
+        <ul>
+          <li>This seems like a dated statistic</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>iOS vs Android and other devices
+    <ul>
+      <li>equally likely to connect to suspicious domains</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="methodology">Methodology</h3>
+<ul>
+  <li>First identify mobile devices, then attribute each DNS query to a device.  Then analyze reputation of RRs associated with DNS query
+    <ul>
+      <li>Use NOTOS features to analyze the hosting infrastructures of the mobile domains.  Just using different features.</li>
+      <li>Obtain the host IPs pointed to by the mobile domains. For each IP, extract statistical features of:
+        <ul>
+          <li>Related historic non-cellular domains</li>
+          <li>Related historic mobile domains</li>
+          <li>Malware association</li>
+          <li>URLs for phishing and drive-by download</li>
+          <li>Blacklisting incidents</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p><img src="../assets/content_images/omscs/netsec/L16_img4.png" alt="img" />
+<img src="../assets/content_images/omscs/netsec/L16_img5.png" alt="img" /></p>
+
+<h2 id="botnet-takedown-quiz">Botnet Takedown Quiz</h2>
+<ul>
+  <li>One of the more successful methods to taking down a botnet requires investigators to find and target each bot in the net
+    <ul>
+      <li>False</li>
+    </ul>
+  </li>
+  <li>A proven method to stop botnets requires isolating the C&amp;C domain from the botnet
+    <ul>
+      <li>True</li>
+    </ul>
+  </li>
+  <li>With regards to takedowns, P2P-based networks are much easier than C&amp;C networks
+    <ul>
+      <li>False</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="botnet-takedowns">Botnet Takedowns</h2>
+<ul>
+  <li>Takedowns are ad-hoc, of arguable success, are performed without oversight</li>
+  <li>System goal: add rhyme+reason to takedowns
+    <ul>
+      <li>evaluate previous takedown attempts</li>
+      <li>recommend and inform on future takedowns</li>
+    </ul>
+  </li>
+  <li>High-level idea: push our knowledge of infrastructure towards completeness
+    <ul>
+      <li>Network-side: passive DNS</li>
+      <li>Malware-side: malware backup infrastructure</li>
+    </ul>
+  </li>
+  <li>Overview of RZA system for assessing botnet takedown:
+    <ul>
+      <li><img src="../assets/content_images/omscs/netsec/L16_img6.png" alt="img" /></li>
+    </ul>
+  </li>
+  <li>RZA interrogates malware by catching domain requests and returning “no such domain” responses, prompting malware to try backup domains if it has them.  This populates the list of malware domains for the model
+    <ul>
+      <li>This may also prompt malware to switch to P2P behavior, if it is able, which is valuable to know about</li>
+      <li>In general, if malware is presented with unavailable infrastructure:
+        <ul>
+          <li>Retries hardcoded IPs/domains</li>
+          <li>Tries to reach a finite set of IPs/domains OR</li>
+          <li>Tres to reach an increasing number of IPs/domains (DGA/P2P)
+            <ul>
+              <li>DGA == Domain Generation Algorithm</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Manipulate fundamental protocol packets to convince malware its primary network asset is unavailable
+        <ul>
+          <li>DNS and TCP</li>
+          <li>Easy to add additional protocols</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Ideal takedown flow:
+    <ul>
+      <li><img src="../assets/content_images/omscs/netsec/L16_img7.png" alt="img" /></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="rza-takedown-study">RZA Takedown Study</h2>
+<ul>
+  <li>Of the 45 active botnets reviewed:
+    <ul>
+      <li>2 had DGA-based backup mechanisms</li>
+      <li>1 had P2P -based backup mechanisms</li>
+      <li>42 were susceptible to DNS-only takedown</li>
+    </ul>
+  </li>
+  <li>Conclusion drawn by researchers is to advocate for a central authority to coordinate and oversee takedowns
+    <ul>
+      <li>ICANN’s UDRP/URS as example frameworks
+        <ul>
+          <li>Criteria for takedowns</li>
+          <li>More eyes == more successes</li>
+          <li>Test with new TLDs (much like with URS)</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

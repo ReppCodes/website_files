@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>NetSec Lecture Notes - Lesson 4 - Penetration Testing</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>NetSec Lecture Notes - Lesson 4 - Penetration Testing</h2>
+  <h1 id="penetration-testing">Penetration Testing</h1>
+
+<ul>
+  <li>First line of network defense</li>
+</ul>
+
+<h2 id="overview">Overview</h2>
+
+<ul>
+  <li>Test to evaluate strengths of all security controls
+    <ul>
+      <li>Procedural</li>
+      <li>Operational</li>
+      <li>Technological</li>
+    </ul>
+  </li>
+  <li>Benefits
+    <ul>
+      <li>Security of network</li>
+      <li>Discovery of vulnerabilities</li>
+      <li>Demonstration of threats</li>
+    </ul>
+  </li>
+  <li>Scope
+    <ul>
+      <li>Can include social engineering, physical access (in addition to traditional cyber)</li>
+    </ul>
+  </li>
+  <li>Scale
+    <ul>
+      <li>Security of entire network</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="methodology">Methodology</h2>
+
+<ul>
+  <li>Footprinting
+    <ul>
+      <li>whois, nslookup</li>
+    </ul>
+  </li>
+  <li>Scanning
+    <ul>
+      <li>nmap, fping</li>
+    </ul>
+  </li>
+  <li>Enumeration
+    <ul>
+      <li>dumpACL, showmount legion, rpcinfo</li>
+    </ul>
+  </li>
+  <li>Gaining access
+    <ul>
+      <li>tcpdump, Lophtcrack NAT</li>
+    </ul>
+  </li>
+  <li>Excalating privilege
+    <ul>
+      <li>Johntheripper, getadmin</li>
+    </ul>
+  </li>
+  <li>Pilfering (exfiltration)
+    <ul>
+      <li>rhosts, user data, config files, registry</li>
+    </ul>
+  </li>
+  <li>Covering tracks
+    <ul>
+      <li>zap, rootkits</li>
+    </ul>
+  </li>
+  <li>Creating back doors (persistence)
+    <ul>
+      <li>cron, at, startup folder netcat, keystroke logger, remote desktop</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="footprinting">Footprinting</h2>
+
+<ul>
+  <li>Reconnaissance and information gathering</li>
+  <li>Find out target IP address/phone number range</li>
+  <li>Namespace acquisition</li>
+  <li>Network Topology (visualRoute)</li>
+  <li>Essential to a “surgical” attack</li>
+  <li>Techniques – Tools
+    <ul>
+      <li>Open Source search – Google, search engine, Edgar</li>
+      <li>Find domain name, admin, IP addresses, name servers – whois (network solution; arin)</li>
+      <li>DNS zone transfer – nslookup (ls -d), dig, Sam Spade</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="scanning">Scanning</h2>
+
+<ul>
+  <li>Which machine is upand what ports are open</li>
+  <li>Which services are running</li>
+  <li>Their versions and configurations</li>
+  <li>Look up corresponding vulnerability info on the web</li>
+  <li>Focus on most promising avenues of entry</li>
+  <li>Reduce frequency of scanning and randomize the ports or IP addresses to be scanned in the sequence</li>
+  <li>Techniques – Tools
+    <ul>
+      <li>Ping sweep – Fping, icmpenum, WS_Ping Propack, nmap</li>
+      <li>TCP/UDP port scan – nmap, superscan, fscan</li>
+      <li>OS detection – nmap, queso, siphon</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="enumeration">Enumeration</h2>
+
+<ul>
+  <li>Identify valid user accounts or poorly protected resource shares</li>
+  <li>More intrusive probing than scanning step</li>
+  <li>Techniques – Tools
+    <ul>
+      <li>List user accounts – Null sessions, dumpACL, sid2usre, onSiteAdmin</li>
+      <li>List file shares – showmount, NAT, legion</li>
+      <li>Identify applications – banner grabbing with telnet or netcat, rpcinfo</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="gaining-access">Gaining Access</h2>
+
+<ul>
+  <li>Identify a vulnerability of the target from scanning</li>
+  <li>Exploit it
+    <ul>
+      <li>often with existing tool/script. may need modifications</li>
+    </ul>
+  </li>
+  <li>In general, automatically generating a working exploit from a new vulnerability is still an open problem</li>
+  <li>Techniques – tools
+    <ul>
+      <li>Password eavesdropping – tcpdump/ssldump, L0phtcrack, readsmb</li>
+      <li>File share brute forcing – NAT, legion</li>
+      <li>Password file grap – tftp, pweddump2</li>
+      <li>Buffer overflow – ttdb, bind, IIS, .HTR/ISM.DLL</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="escalating-privilege">Escalating Privilege</h2>
+
+<ul>
+  <li>If only user-level access was obtained in the last step, seek to gain complete control of the system</li>
+  <li>Techniques – tools
+    <ul>
+      <li>Password cracking – John the ripper, L0phtcrack</li>
+      <li>Known Exploits – Lc_messages, getadmin, sechole</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="pilfering-exfiltration">Pilfering (Exfiltration)</h2>
+
+<ul>
+  <li>Gather info to allow access of trusted systems</li>
+  <li>Techniques – tools
+    <ul>
+      <li>Evaluate trusts – rhosts, LSA secrets</li>
+      <li>Search for cleartext passwords – User data, Configuration files, registry</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="covering-tracks">Covering Tracks</h2>
+
+<ul>
+  <li>Once total ownership of the target is secured, hiding this fact from system administrators become paramount, lest they quickly end the romp</li>
+  <li>Techniques – tools
+    <ul>
+      <li>Clear logs – Zap, Event Log GUI</li>
+      <li>Hide tools – Rootkits, file streaming</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="creating-back-doors-persistence">Creating Back Doors (Persistence)</h2>
+
+<ul>
+  <li>Trap doors will be laid in various parts of the system to ensure that privilege access is easily regained wheneve the intruder decides</li>
+  <li>Techniques – tools
+    <ul>
+      <li>Create rogue user accounts – Members of wheel, admin</li>
+      <li>Schedule batch jobs – cron, at</li>
+      <li>Infect startup files – rc, startup folder, registry keys</li>
+      <li>Plant remote control services – netcat, remote.exe, VNC, B02K, remote desktop</li>
+      <li>Install monitoring mechanisms – Keystroke loggers, add acct. to secadmin mail aliases</li>
+      <li>Replace apps with Trojans – Login, fpnwcint.dll</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="penetration-testing-quiz">Penetration Testing Quiz</h2>
+
+<ul>
+  <li>Which events should trigger a penetration test?
+    <ul>
+      <li>Infrastructure is added or modified</li>
+      <li>Applications are added or modified</li>
+      <li>End user policies are changed</li>
+      <li>Security patches are installed</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="persistence-and-stealth">Persistence and Stealth</h2>
+
+<ul>
+  <li>To simulate an APT, the above attributes are needed</li>
+  <li>Installation of backdoor or malware
+    <ul>
+      <li>A permanent foothold</li>
+    </ul>
+  </li>
+  <li>Insertion of proxies or man-in-the-middle systems, or simply “listening/recording”</li>
+  <li>Capture credentials and identify valuable target
+    <ul>
+      <li>Impersonation and data thefts</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="social-engineering">Social Engineering</h2>
+
+<ul>
+  <li>Users are the weakest link in security</li>
+  <li>Use “social engineering” attack techniques to evaluate user population
+    <ul>
+      <li>Identify vulnerable user groups</li>
+      <li>Identify policy gaps</li>
+      <li>Fix policies and mechanisms, including user education and training</li>
+    </ul>
+  </li>
+  <li>Why is social engineering effective?
+    <ul>
+      <li>Manipulates legitimate users into undermining their own security system</li>
+      <li>Abuses trusted relationships between employees</li>
+      <li>Very cheap for the attacker</li>
+      <li>Attacker does not need specialized equipment or skills</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="rsa-breach-quiz">RSA Breach Quiz</h2>
+
+<ul>
+  <li>List the steps attackers used to access RSA’s Adobe Flash software:
+    <ul>
+      <li>Identify employees that are vulnerable</li>
+      <li>Craft an email subject line that entices an employee to open it</li>
+      <li>Hide an executable file in the email that will install onto the victim’s computer when the email is opened</li>
+    </ul>
+  </li>
+  <li>In 2011, RSA was compromised
+    <ul>
+      <li>Social engineering was used to penetrate the company’s defenses</li>
+      <li>Once in, the attackers installed a backdoor using an Adobe Flash vulnerability</li>
+      <li>Total damage estimated at $66million</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="common-social-engineering-techniques">Common Social Engineering Techniques</h2>
+
+<ul>
+  <li>Impersonation
+    <ul>
+      <li>Help Desk
+        <ul>
+          <li>The attack
+            <ul>
+              <li>An attacker pretends to be an employee</li>
+              <li>Recovers “forgotten” password</li>
+            </ul>
+          </li>
+          <li>The exploit
+            <ul>
+              <li>Help desks often do not require adequate authentication</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Third-party Authorization
+        <ul>
+          <li>The attack
+            <ul>
+              <li>Access to assets</li>
+              <li>Verification codes</li>
+            </ul>
+          </li>
+          <li>The exploit
+            <ul>
+              <li>Claim that a third party has authorized the target to divulge sensitive information</li>
+              <li>More effective if the third party is out of town</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Tech Support
+        <ul>
+          <li>The attack
+            <ul>
+              <li>Attacker pretends to be tech support for the company and obtains user credentials for troubleshooting purposes</li>
+            </ul>
+          </li>
+          <li>The exploit
+            <ul>
+              <li>Users must be trained to guard credentials</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Roaming the halls or Tailgating
+        <ul>
+          <li>The attack
+            <ul>
+              <li>Attacker dresses to blend in with the environment</li>
+            </ul>
+          </li>
+          <li>The exploit
+            <ul>
+              <li>Looks for sensitive information that has been left unattended
+                <ul>
+                  <li>Passwords written down</li>
+                  <li>Important papers</li>
+                  <li>Confidential conversations</li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Trusted Authority/Repairman Figure
+        <ul>
+          <li>The attack (repairman)
+            <ul>
+              <li>Attacker wears the appropriate uniform</li>
+              <li>Often allowed into sensitive environments</li>
+              <li>May plant surveillance equipment</li>
+              <li>Could find sensitive information</li>
+            </ul>
+          </li>
+          <li>The exploit (repairman)
+            <ul>
+              <li>People rarely question someone in a uniform</li>
+            </ul>
+          </li>
+          <li>The attack (trusted authority figure)
+            <ul>
+              <li>Attacker pretends to be someon in charge of a company or department</li>
+              <li>Similar to “third-party authorization” attack</li>
+              <li>Impersonation in-person or via telephone</li>
+              <li>Examples of authority figures – Medical personnel, Home inspector, School superintendent</li>
+            </ul>
+          </li>
+          <li>The exploit (trusted authority figure)
+            <ul>
+              <li>Trust in perceived authority</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Snail Mail
+        <ul>
+          <li>The attack
+            <ul>
+              <li>Attacker sends mail that asks for personal information</li>
+            </ul>
+          </li>
+          <li>The exploit
+            <ul>
+              <li>People are more trusting of printed words than webpages</li>
+            </ul>
+          </li>
+          <li>Examples
+            <ul>
+              <li>Fake sweepstakes</li>
+              <li>Free offers</li>
+              <li>Rewards programs</li>
+            </ul>
+          </li>
+          <li>More effective on older generations</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Computer-based Techniques
+    <ul>
+      <li>Pop-up windows
+        <ul>
+          <li>The attack
+            <ul>
+              <li>Window prompts user for login credentials</li>
+              <li>Imitates the securen etwork login</li>
+            </ul>
+          </li>
+          <li>The defense
+            <ul>
+              <li>Users can check for visual indicators to verify safety</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Instant Messaging and IRC
+        <ul>
+          <li>The attack
+            <ul>
+              <li>Attacker uses IM or IRC to imitate technical support desk</li>
+              <li>Redirects users to malicious sites</li>
+              <li>Trojan horse downloads install surveillance programs</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Email Attachments
+        <ul>
+          <li>Attacker tricks user into downloading malicious software</li>
+          <li>Programs can be hidden in downloads that appear legitimate</li>
+          <li>Examples:
+            <ul>
+              <li>Executable macros embedded in PDF files</li>
+              <li>Camouflaged extension: “NormalFile.doc” vs “NormalFile.doc.exe”</li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>Email Scams
+        <ul>
+          <li>More prevalent over time</li>
+          <li>Begins by requesting basic information</li>
+          <li>Leads to financial scams</li>
+        </ul>
+      </li>
+      <li>Chain Letters and Hoaxes
+        <ul>
+          <li>More of a nuisance than a threat</li>
+          <li>Spread using social engineering techniques</li>
+          <li>Productivity and resource cost</li>
+        </ul>
+      </li>
+      <li>Websites
+        <ul>
+          <li>Offer prized but require a created login</li>
+          <li>Attacker capitalizes on users reusing login credentials</li>
+          <li>Website credentials can then be used for illegitimate access to assets</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="impersonation-quiz">Impersonation Quiz</h2>
+
+<ul>
+  <li>Used to determine which users click on links in emails
+    <ul>
+      <li>Click logger</li>
+    </ul>
+  </li>
+  <li>A signed Java applet is sent to the user, if they accept it a shell is sent back to the exploit server
+    <ul>
+      <li>Reverse shell applet</li>
+    </ul>
+  </li>
+  <li>A flash is created that has a program that creats a connection to the exploit server
+    <ul>
+      <li>Flash or CD Autoplay</li>
+    </ul>
+  </li>
+  <li>An email contains an attachment. When the attachment is downloaded an connection is made to the exploit server
+    <ul>
+      <li>Download connection</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="computer-attacks-quiz">Computer Attacks Quiz</h2>
+
+<ul>
+  <li>What are the top three industries that were targets of cyber attacks in 2016?
+    <ul>
+      <li>Defense contractor (11.1%)</li>
+      <li>Restaurant (16.7%)</li>
+      <li>Software (16.7%)</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="countering-social-engineering-attacks">Countering Social Engineering Attacks</h2>
+
+<ul>
+  <li>Never disclose passwords</li>
+  <li>Limit IT Information disclosed</li>
+  <li>Limit information in auto-reply emails</li>
+  <li>Escort guests in sensitive areas</li>
+  <li>Question people you don’t know</li>
+  <li>Talk to employees about security</li>
+  <li>Centralize reporting of suspicious behavior</li>
+</ul>
+
+<h2 id="motivator-quiz">Motivator Quiz</h2>
+
+<ul>
+  <li>A desire to pursue a limited or exclusive item or service
+    <ul>
+      <li>Scarcity</li>
+    </ul>
+  </li>
+  <li>A desire to fit in and to be more easily influenced by someone you like
+    <ul>
+      <li>Liking</li>
+    </ul>
+  </li>
+  <li>A desire to act in a consistent manner
+    <ul>
+      <li>Commitment</li>
+    </ul>
+  </li>
+  <li>Looking to others for clues on how to behave
+    <ul>
+      <li>Social Proof</li>
+    </ul>
+  </li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>
