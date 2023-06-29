@@ -58,12 +58,12 @@ The TAM API has a several callback functions that must have an implementation pr
 * parallelscan_reinitialize
 * index_fetch_begin 
 * index_fetch_reset 
-* index_fetch_end = blackhole_index_fetch_end,
+* index_fetch_end
 * index_fetch_tuple
 * tuple_insert 
 * tuple_insert_speculative
 * tuple_complete_speculative
-* multi_insert =
+* multi_insert
 * tuple_delete
 * tuple_update
 * tuple_lock
@@ -98,3 +98,4 @@ material also.
 * [Fujitsu TAM Blog](https://www.postgresql.fastware.com/blog/postgresql-table-access-methods)
 * [Table Access Methods and blackholes by Michael Paquier](https://paquier.xyz/postgresql-2/postgres-12-table-am-blackhole/)
 * [Blackhole AM Template by Michael Paquier](https://github.com/michaelpq/pg_plugins/blob/main/blackhole_am/blackhole_am.c)
+* [Andres Freund presentation on pluggable AM](https://anarazel.de/talks/2019-05-30-pgcon-pluggable-table-storage/pluggable.pdf)
