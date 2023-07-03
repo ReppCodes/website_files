@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>PostgreSQL and Custom Table Access Methods</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <!-- <a href="/about.html"><h2 class="header-link">About Me</h2></a> -->
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/CTF.html"><h2 class="header-link">CTFs</h2></a>
+<a href="/Misc.html"><h2 class="header-link">Misc</h2></a>
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>PostgreSQL and Custom Table Access Methods</h2>
+  <hr />
+<h2 id="postgresql-table-access-methods-tams">PostgreSQL Table Access Methods (TAMs)</h2>
+
+<h3 id="why-postgresql">Why PostgreSQL?</h3>
+<p>PostgreSQL is the most popular open source database, the only one that has a positive trend in usage, and the backbone of a large number of commercial products.  I’m not going to go spend much time talking about why digging into PostgreSQL is worthwhile, that is already well-trodden ground.</p>
+
+<h3 id="pluggable-table-storage">Pluggable Table Storage</h3>
+<p>In PostgreSQL 12, a new API was added to allow for implementing custom storage methods. Prior to this, data was only ever stored in “heap” tables, which are a well understood format.  The goal of this was to support new implementations, such as columnar or in-memory tables, that server different use cases than the heap table format is able to.</p>
+
+<p>Implementing custom behavior for stored data is also possible using Foreign Data Wrappers and
+Extensions. In comparison to those approaches, there are some strengths and weaknesses to using the
+Table AM API.</p>
+
+<h3 id="pros">Pros</h3>
+<ul>
+  <li>Much tighter integration with all the core server mechanisms
+    <ul>
+      <li>query planning</li>
+      <li>autovacuum</li>
+      <li>autoanalyze</li>
+    </ul>
+  </li>
+  <li>Better performance when interacting with the rest the server</li>
+</ul>
+
+<h3 id="cons">Cons</h3>
+<ul>
+  <li>Must be compiled into the PostgreSQL binary, cannot be added at runtime</li>
+  <li>Some limitations on the functionality available (e.g. must be tuple-based).</li>
+</ul>
+
+<p>For this article, we’ll be implementing a simple storage method of our own to demonstrate how to use this API.</p>
+
+<h2 id="user-interface">User Interface</h2>
+<p>To create a new access method, a user invokes the correct <code class="highlighter-rouge">CREATE</code> call, and indicates the desired
+handler from those available in <code class="highlighter-rouge">pg_am</code>.</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">ACCESS</span> <span class="k">METHOD</span> <span class="n">my_heap</span> <span class="k">TYPE</span> <span class="k">TABLE</span> <span class="k">HANDLER</span> <span class="n">heap_tableam_handler</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>To use this newly created access method when creating a table, the <code class="highlighter-rouge">USING</code> clause is provided.</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">foo_table</span><span class="p">(</span><span class="n">client_id</span> <span class="nb">int</span><span class="p">,</span> <span class="k">desc</span> <span class="nb">text</span><span class="p">)</span> <span class="k">USING</span> <span class="n">my_heap</span> <span class="p">...;</span> 
+</code></pre></div></div>
+
+<h2 id="implementation">Implementation</h2>
+<p>The TAM API has a several callback functions that must have an implementation provided</p>
+
+<h3 id="core-api-callbacks">Core API Callbacks</h3>
+<ul>
+  <li>slot_callbacks</li>
+  <li>scan_begin</li>
+  <li>scan_end</li>
+  <li>scan_rescan</li>
+  <li>scan_getnextslot</li>
+</ul>
+
+<h3 id="these-are-common-helper-functions">these are common helper functions</h3>
+<ul>
+  <li>parallelscan_estimate</li>
+  <li>parallelscan_initialize</li>
+  <li>parallelscan_reinitialize</li>
+  <li>index_fetch_begin</li>
+  <li>index_fetch_reset</li>
+  <li>index_fetch_end</li>
+  <li>index_fetch_tuple</li>
+  <li>tuple_insert</li>
+  <li>tuple_insert_speculative</li>
+  <li>tuple_complete_speculative</li>
+  <li>multi_insert</li>
+  <li>tuple_delete</li>
+  <li>tuple_update</li>
+  <li>tuple_lock</li>
+  <li>finish_bulk_insert</li>
+  <li>tuple_fetch_row_version</li>
+  <li>tuple_get_latest_tid</li>
+  <li>tuple_tid_valid</li>
+  <li>tuple_satisfies_snapshot</li>
+  <li>index_delete_tuples</li>
+  <li>relation_set_new_filelocator</li>
+  <li>relation_nontransactional_truncate</li>
+  <li>relation_copy_data</li>
+  <li>relation_copy_for_cluster</li>
+  <li>relation_vacuum</li>
+  <li>scan_analyze_next_block</li>
+  <li>scan_analyze_next_tuple</li>
+  <li>index_build_range_scan</li>
+  <li>index_validate_scan</li>
+  <li>relation_size</li>
+  <li>relation_needs_toast_table</li>
+  <li>relation_estimate_size</li>
+  <li>scan_bitmap_next_block</li>
+  <li>scan_bitmap_next_tuple</li>
+  <li>scan_sample_next_block</li>
+  <li>scan_sample_next_tuple</li>
+</ul>
+
+<h2 id="part-1-a-black-hole">Part 1: A Black Hole</h2>
+<p>Michael Paqiuer has graciously provided a template for implementing this API that we will be using for our experiments here. It is called <code class="highlighter-rouge">blackhole_am</code>, and it’s basically <code class="highlighter-rouge">/dev/null</code> for PostgreSQL.  Our first step here is going to be just getting it installed in a local build of PostgreSQL and demosntrating its use.</p>
+
+<h3 id="go-get-postgresql">Go get PostgreSQL</h3>
+<p>We’ll be installing PostgreSQL from source, to give us the flexibility to tweak things or attach a debugger as needed.  A <a href="https://github.com/postgres/postgres">GitHub mirror</a> is available, so we’ll be using that.</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># these are the dependencies I had to install on a stock WSL Ubuntu.  You may already have them.</span>
+<span class="nb">sudo </span>apt <span class="nb">install </span>libicu-dev libreadline-dev libipc-run-perl flex bison
+
+
+git clone git@github.com:postgres/postgres.git
+<span class="nb">cd </span>postgres
+<span class="nb">export </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/usr/local/pgsql/
+./configure <span class="nt">-enable-cassert</span> <span class="nt">--enable-debug</span> <span class="nt">--enable-depend</span> <span class="nt">--enable-tap-tests</span> <span class="nv">CFLAGS</span><span class="o">=</span><span class="s1">'-ggdb3 -O0 -fno-omit-frame-pointer'</span>
+bear <span class="nt">--</span> make <span class="nt">-j8</span> <span class="nt">-s</span> 
+make <span class="nb">install</span> <span class="nt">-s</span> 
+<span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span>/usr/local/pgsql/bin:<span class="nv">$PATH</span> 
+<span class="c"># this is for removing data from prior test clusters</span>
+<span class="nb">rm</span> <span class="nt">-rf</span> /usr/local/pgsql/data 
+
+initdb <span class="nt">-D</span> /usr/local/pgsql/data 
+pg_ctl <span class="nt">-D</span> /usr/local/pgsql/data <span class="nt">-l</span> /tmp/logfile start
+</code></pre></div></div>
+
+<p>You should now have a functioning cluster that you can connect to with <code class="highlighter-rouge">psql</code>.</p>
+
+<h2 id="resources-reference">Resources Reference</h2>
+<p>In building this project out, I had to read and learn quite a lot.  Here is a lit of the resources
+I found helpful, both to give credit and in case they’re helpful for you in working with this
+material also.</p>
+<ul>
+  <li><a href="https://www.postgresql.fastware.com/blog/postgresql-table-access-methods">Fujitsu TAM Blog</a></li>
+  <li><a href="https://paquier.xyz/postgresql-2/postgres-12-table-am-blackhole/">Table Access Methods and blackholes by Michael Paquier</a></li>
+  <li><a href="https://github.com/michaelpq/pg_plugins/blob/main/blackhole_am/blackhole_am.c">Blackhole AM Template by Michael Paquier</a></li>
+  <li><a href="https://anarazel.de/talks/2019-05-30-pgcon-pluggable-table-storage/pluggable.pdf">Andres Freund presentation on pluggable AM</a></li>
+</ul>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

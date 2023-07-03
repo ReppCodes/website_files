@@ -90,6 +90,32 @@ The TAM API has a several callback functions that must have an implementation pr
 * scan_sample_next_block
 * scan_sample_next_tuple
 
+## Part 1: A Black Hole
+Michael Paqiuer has graciously provided a template for implementing this API that we will be using for our experiments here. It is called `blackhole_am`, and it's basically `/dev/null` for PostgreSQL.  Our first step here is going to be just getting it installed in a local build of PostgreSQL and demosntrating its use.
+
+### Go get PostgreSQL
+We'll be installing PostgreSQL from source, to give us the flexibility to tweak things or attach a debugger as needed.  A [GitHub mirror](https://github.com/postgres/postgres) is available, so we'll be using that.
+```sh
+# these are the dependencies I had to install on a stock WSL Ubuntu.  You may already have them.
+sudo apt install libicu-dev libreadline-dev libipc-run-perl flex bison
+
+
+git clone git@github.com:postgres/postgres.git
+cd postgres
+export LD_LIBRARY_PATH=/usr/local/pgsql/
+./configure -enable-cassert --enable-debug --enable-depend --enable-tap-tests CFLAGS='-ggdb3 -O0 -fno-omit-frame-pointer'
+bear -- make -j8 -s 
+make install -s 
+export PATH=/usr/local/pgsql/bin:$PATH 
+# this is for removing data from prior test clusters
+rm -rf /usr/local/pgsql/data 
+
+initdb -D /usr/local/pgsql/data 
+pg_ctl -D /usr/local/pgsql/data -l /tmp/logfile start
+```
+
+You should now have a functioning cluster that you can connect to with `psql`.
+
 
 ## Resources Reference
 In building this project out, I had to read and learn quite a lot.  Here is a lit of the resources
