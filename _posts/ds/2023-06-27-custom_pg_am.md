@@ -23,9 +23,9 @@ Table AM API.
     * autovacuum
     * autoanalyze
 * Better performance when interacting with the rest the server
+* Can be added to a cluster at runtime using `CREATE EXTENSION` 
 
 ### Cons
-* Must be compiled into the PostgreSQL binary, cannot be added at runtime
 * Some limitations on the functionality available (e.g. must be tuple-based).
 
 For this article, we'll be implementing a simple storage method of our own to demonstrate how to use this API.
@@ -99,9 +99,12 @@ We'll be installing PostgreSQL from source, to give us the flexibility to tweak 
 # these are the dependencies I had to install on a stock WSL Ubuntu.  You may already have them.
 sudo apt install libicu-dev libreadline-dev libipc-run-perl flex bison
 
-
+mkdir workspace
+cd workspace
 git clone git@github.com:postgres/postgres.git
 cd postgres
+git fetch
+git switch REL_16_STABLE
 export LD_LIBRARY_PATH=/usr/local/pgsql/
 ./configure -enable-cassert --enable-debug --enable-depend --enable-tap-tests CFLAGS='-ggdb3 -O0 -fno-omit-frame-pointer'
 bear -- make -j8 -s 
@@ -116,9 +119,64 @@ pg_ctl -D /usr/local/pgsql/data -l /tmp/logfile start
 
 You should now have a functioning cluster that you can connect to with `psql`.
 
+### Go get the template and install it
+We need to install the template for `blackhole_am` into our running postgres cluster, to give us access to the TAM it represents.
+```sh
+cd workspace
+git clone git@github.com:michaelpq/pg_plugins.git
+cp -r pg_plugins/blackhole_am postgres/contrib
+cd cd postgres/contrib
+make
+make install
+
+# create a demo db and load our new access method onto it via extension
+createdb am_demo
+psql -d am_demo -c 'CREATE EXTENSION blackhole_am;'
+```
+
+### Let's test drive a black hole
+Hop into your database with `psql -d am_demo` and let's try this out.
+```sql
+-- heap table, with expected behavior
+CREATE TABLE showme (i int) USING heap;
+-- CREATE TABLE
+INSERT INTO showme SELECT * FROM generate_series(1,10);
+-- INSERT 0 10
+SELECT * FROM showme; 
+--   i
+-- -----
+--    1
+--    2
+--    3
+--    4
+--    5
+--    6
+--    7
+--    8
+--    9
+--   10
+-- (10 rows)
+
+-- blackhole table, nothing comes back from here
+CREATE TABLE nada (i int) USING blackhole_am;
+-- CREATE TABLE
+INSERT INTO nada SELECT * FROM generate_series(1,10);
+-- INSERT 0 10
+SELECT * FROM nada;
+--  i
+-- ---
+-- (0 rows)
+```
+
+Ok, so we have an installed access method that neatly destroys everything we throw at it.  That's cool, and a great starting point.  Thanks Mr. Paquier!
+
+## Part 2: Roll your own
+Now that we have a skeleton in place, let's try to edit the provided template to give the most basic possible functionality. We'll start with CREATE, INSERT, and SELECT. This will allow us to persist our own data.
+
+All code discussed in this article is available [here](https://github.com/ReppCodes/postgres_am_demo).
 
 ## Resources Reference
-In building this project out, I had to read and learn quite a lot.  Here is a lit of the resources
+In building this project out, I had to read and learn quite a lot.  Here is a list of the resources
 I found helpful, both to give credit and in case they're helpful for you in working with this
 material also.
 * [Fujitsu TAM Blog](https://www.postgresql.fastware.com/blog/postgresql-table-access-methods)
