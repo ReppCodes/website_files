@@ -55,11 +55,11 @@ Table AM API.</p>
     </ul>
   </li>
   <li>Better performance when interacting with the rest the server</li>
+  <li>Can be added to a cluster at runtime using <code class="highlighter-rouge">CREATE EXTENSION</code></li>
 </ul>
 
 <h3 id="cons">Cons</h3>
 <ul>
-  <li>Must be compiled into the PostgreSQL binary, cannot be added at runtime</li>
   <li>Some limitations on the functionality available (e.g. must be tuple-based).</li>
 </ul>
 
@@ -135,9 +135,12 @@ handler from those available in <code class="highlighter-rouge">pg_am</code>.</p
 <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># these are the dependencies I had to install on a stock WSL Ubuntu.  You may already have them.</span>
 <span class="nb">sudo </span>apt <span class="nb">install </span>libicu-dev libreadline-dev libipc-run-perl flex bison
 
-
+<span class="nb">mkdir </span>workspace
+<span class="nb">cd </span>workspace
 git clone git@github.com:postgres/postgres.git
 <span class="nb">cd </span>postgres
+git fetch
+git switch REL_16_STABLE
 <span class="nb">export </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/usr/local/pgsql/
 ./configure <span class="nt">-enable-cassert</span> <span class="nt">--enable-debug</span> <span class="nt">--enable-depend</span> <span class="nt">--enable-tap-tests</span> <span class="nv">CFLAGS</span><span class="o">=</span><span class="s1">'-ggdb3 -O0 -fno-omit-frame-pointer'</span>
 bear <span class="nt">--</span> make <span class="nt">-j8</span> <span class="nt">-s</span> 
@@ -152,8 +155,62 @@ pg_ctl <span class="nt">-D</span> /usr/local/pgsql/data <span class="nt">-l</spa
 
 <p>You should now have a functioning cluster that you can connect to with <code class="highlighter-rouge">psql</code>.</p>
 
+<h3 id="go-get-the-template-and-install-it">Go get the template and install it</h3>
+<p>We need to install the template for <code class="highlighter-rouge">blackhole_am</code> into our running postgres cluster, to give us access to the TAM it represents.</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd </span>workspace
+git clone git@github.com:michaelpq/pg_plugins.git
+<span class="nb">cp</span> <span class="nt">-r</span> pg_plugins/blackhole_am postgres/contrib
+<span class="nb">cd cd </span>postgres/contrib
+make
+make <span class="nb">install</span>
+
+<span class="c"># create a demo db and load our new access method onto it via extension</span>
+createdb am_demo
+psql <span class="nt">-d</span> am_demo <span class="nt">-c</span> <span class="s1">'CREATE EXTENSION blackhole_am;'</span>
+</code></pre></div></div>
+
+<h3 id="lets-test-drive-a-black-hole">Let’s test drive a black hole</h3>
+<p>Hop into your database with <code class="highlighter-rouge">psql -d am_demo</code> and let’s try this out.</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- heap table, with expected behavior</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">showme</span> <span class="p">(</span><span class="n">i</span> <span class="nb">int</span><span class="p">)</span> <span class="k">USING</span> <span class="n">heap</span><span class="p">;</span>
+<span class="c1">-- CREATE TABLE</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">showme</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">generate_series</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">);</span>
+<span class="c1">-- INSERT 0 10</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">showme</span><span class="p">;</span> 
+<span class="c1">--   i</span>
+<span class="c1">-- -----</span>
+<span class="c1">--    1</span>
+<span class="c1">--    2</span>
+<span class="c1">--    3</span>
+<span class="c1">--    4</span>
+<span class="c1">--    5</span>
+<span class="c1">--    6</span>
+<span class="c1">--    7</span>
+<span class="c1">--    8</span>
+<span class="c1">--    9</span>
+<span class="c1">--   10</span>
+<span class="c1">-- (10 rows)</span>
+
+<span class="c1">-- blackhole table, nothing comes back from here</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">nada</span> <span class="p">(</span><span class="n">i</span> <span class="nb">int</span><span class="p">)</span> <span class="k">USING</span> <span class="n">blackhole_am</span><span class="p">;</span>
+<span class="c1">-- CREATE TABLE</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">nada</span> <span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">generate_series</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">);</span>
+<span class="c1">-- INSERT 0 10</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">nada</span><span class="p">;</span>
+<span class="c1">--  i</span>
+<span class="c1">-- ---</span>
+<span class="c1">-- (0 rows)</span>
+</code></pre></div></div>
+
+<p>Ok, so we have an installed access method that neatly destroys everything we throw at it.  That’s cool, and a great starting point.  Thanks Mr. Paquier!</p>
+
+<h2 id="part-2-roll-your-own">Part 2: Roll your own</h2>
+<p>Now that we have a skeleton in place, let’s try to edit the provided template to give the most basic possible functionality. We’ll start with CREATE, INSERT, and SELECT. This will allow us to persist our own data.</p>
+
+<p>All code discussed in this article is available <a href="https://github.com/ReppCodes/postgres_am_demo">here</a>.</p>
+
 <h2 id="resources-reference">Resources Reference</h2>
-<p>In building this project out, I had to read and learn quite a lot.  Here is a lit of the resources
+<p>In building this project out, I had to read and learn quite a lot.  Here is a list of the resources
 I found helpful, both to give credit and in case they’re helpful for you in working with this
 material also.</p>
 <ul>

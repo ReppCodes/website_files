@@ -1,5 +1,6 @@
 /*
    original: https://github.com/pages-themes/hacker 
+    customized by AJR
 */
 
 @import "rouge-base16-dark";
@@ -11,6 +12,23 @@ $header: $conifer !default;
 $blockquote-color: $silver-chalice !default;
 $blockquote-border: $dove-grey !default;
 
+@font-face {
+  font-family: "BerkeleyMono-Regular";
+  src: url("../assets/fonts/berkely_mono/BerkeleyMono-Regular.ttf");
+}
+@font-face {
+  font-family: "BerkeleyMono-Bold";
+  src: url("../assets/fonts/berkely_mono/BerkeleyMono-Bold.ttf");
+}
+@font-face {
+  font-family: "BerkeleyMono-Italic";
+  src: url("../assets/fonts/berkely_mono/BerkeleyMono-Italic.ttf");
+}
+@font-face {
+  font-family: "BerkeleyMono-BoldItalic";
+  src: url("../assets/fonts/berkely_mono/BerkeleyMono-BoldItalic.ttf");
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -18,7 +36,7 @@ body {
   color: $body-foreground;
   font-size: 16px;
   line-height: 1.5;
-  font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+  font-family: BerkeleyMono-Regular;
 }
 
 /* General & 'Reset' Stuff */
@@ -70,7 +88,7 @@ header h1 {
   margin: 0;
   text-align: center;
   font-weight: bold;
-  font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+  font-family: BerkeleyMono-Bold;
   color: $conifer;//$header;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1),
                0 0 5px rgba(181, 232, 83, 0.1),
@@ -98,7 +116,7 @@ section img {
 
 h1, h2, h3, h4, h5, h6 {
   font-weight: normal;
-  font-family: Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace;
+  font-family: BerkeleyMono-Regular;
   color: $header;
   letter-spacing: -0.03em;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1),
@@ -205,7 +223,7 @@ hr {
   border-bottom: 2px solid rgba(0, 0, 0, 0.7);
   border-top: 2px solid rgba(0, 0, 0, 1);
   color: rgba(255, 255, 255, 0.8);
-  font-family: Helvetica, Arial, sans-serif;
+  font-family: BerkeleyMono-Bold;
   font-weight: bold;
   font-size: 13px;
   text-decoration: none;
