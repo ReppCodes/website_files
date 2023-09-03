@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>The Magic of Git Bisect Run</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <a href="/SWE.html"><h2 class="header-link">Software Engineering</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>The Magic of Git Bisect Run</h2>
+  <hr />
+<h2 id="git">Git</h2>
+<p>I think of myself as pretty good at git.  I bisect, I cherry-pick, I have even been known to poke my nose into the reflog from time to time. So when I read about <a href="https://git-scm.com/docs/git-bisect">git bisect</a> for the first time, I was pretty interested. Despite pretty heavy usage, it had never even occurred to me that git could automatically run down bugs for me. At its core, all it does is hold your hand through a binary search of the commits between <code class="highlighter-rouge">start</code> and <code class="highlighter-rouge">stop</code>, and lets you mark each commit <code class="highlighter-rouge">good</code> or <code class="highlighter-rouge">bad</code>. Each step shrinks the problem space, and you’ve got your commit in <code class="highlighter-rouge">O(log n)</code> time! I just recently found an opportunity to use it in anger, and it’s backwards enough (and useful enough) that I wanted to write it up and share it.</p>
+
+<p>As part of my day job I often have to go to our product’s <a href="https://github.com/postgres/postgres">upstream</a> and backport in a fix or feature that we want to have. This often involves a <em>lot</em> of archaeology, to understand what exactly the goals and design were, and to fit it into and around the various conflicts with our codebase.  In this particular case, however, all I knew was that the current <code class="highlighter-rouge">main</code> branch of upstream had fixed a bug I was seeing, but the current version we were on had not. The usual approach of trawling mailing lists was not coming up with much, and a review showed me about 4500 commits between <code class="highlighter-rouge">HEAD</code> and where we sat. This was not getting done the hard way. In this hour of need, I remembered git bisect. It turns out that 4500 commits can be handled in about 12 rounds of bisection. Sounds like a plan, let’s do that.</p>
+
+<h2 id="uphill-both-ways">Uphill Both Ways</h2>
+<p>There were a couple of issues with applying git bisect to my problem though. The first of which is that the bug I was hunting was only observable from within a SQL repl, after having loaded specific objects into the database in a specific order.  This would be a huge pain to do any kind of manually, even leaving out the compilation and init steps to get a working postgres cluster stood up.  So clearly we needed to automate this somehow. Manually doing steps 12 times is <em>not</em> why we all took up programming. Makes for way worse blog posts too.</p>
+
+<p>Luckily, git bisect takes a subcommand <code class="highlighter-rouge">run</code>, which will execute any shell command you care to, with arguments. Naturally, this mostly means <code class="highlighter-rouge">git bisect run bash /path/to/script.bash</code>, because what else would you do? So now I could script up calls to <code class="highlighter-rouge">make</code>, <code class="highlighter-rouge">psql</code>, and whatever else I needed. Presto, automatic testing for whether a commit exhibits my bug.</p>
+
+<h2 id="and-backwards">And backwards</h2>
+<p>The second issue I ran into was that git bisect was really designed with the paradigm that you used to have a working build, and someone came a long and broke it. They really, really want you to be looking for errors, not the lack of them. So with <code class="highlighter-rouge">git bisect run</code>, your newer commit is always the “good” one, and the older commit is always the “bad” one. And the really frustrating one, your <code class="highlighter-rouge">run</code> command returning 0 will always mean that the commit being tested is <strong>before</strong> the one you want.  So if I ran my script and it threw the error I was running down the patch for, git bisect would punt me in the wrong direction.  This means that I had to catch the errors in my script, replace them with an <code class="highlighter-rouge">exit 0</code>, and then slap an <code class="highlighter-rouge">exit 1</code> at the end to mean “success”.  It got confusing quick, but ultimately it’s manageable enough.</p>
+
+<h2 id="in-the-snow">In the snow</h2>
+<p>The final hurdle I ran into is that, because my script included a pile of compile, init, and other steps, any of which could fail if the commit happened to be bad, I had to ignore any errors from those, but  without ruining the binary search we were conducting. Luckily, <code class="highlighter-rouge">git bisect run</code> has a special error code, <code class="highlighter-rouge">125</code>, that means exactly that. It’s like they knew what they were doing or something.</p>
+
+<p>So, back to my script and wrapping every other command that could fail in error checking and <code class="highlighter-rouge">exit 125</code> statements. Not too bad, and I was getting practice writing square brackets, so whatever.  We got there.</p>
+
+<h2 id="but-we-made-it">But We Made It</h2>
+<p>When it was all said and done, I got the script put together, made the holy invocations, and in about 25 minutes I had the SHA for the exact commit that had fixed my bug in upstream. Beats the hell out of reading 4500 commit messages, doesn’t it? Let’s take a look at the actual spot we landed, to make it happen.</p>
+
+<ul>
+  <li>We type our pleas into the terminal
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git bisect start <span class="nt">--term-new</span> fixed <span class="nt">--term-old</span> broken
+git checkout master
+git bisect fixed
+git checkout 07b39083c2aca003c4b1f289d7dc2368b5e2297a
+git bisect broken
+git bisect run bash /home/ajr/bisect_part_test.bash
+</code></pre></div>    </div>
+  </li>
+  <li>With the supporting texts</li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span>/usr/local/pgsql/
+<span class="nv">PATH</span><span class="o">=</span>/usr/local/pgsql/bin:<span class="nv">$PATH</span>
+./configure <span class="nt">-enable-cassert</span> <span class="nt">--enable-debug</span> <span class="nt">--enable-depend</span> <span class="nt">--enable-tap-tests</span> <span class="nv">CFLAGS</span><span class="o">=</span><span class="s1">'-ggdb3 -O0 -fno-omit-frame-pointer'</span> <span class="o">&gt;</span>/dev/null 2&gt;&amp;1
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$?</span> <span class="nt">-ne</span> 0 <span class="o">]</span><span class="p">;</span> <span class="k">then
+  </span><span class="nb">echo</span> <span class="s2">"unrelated nope"</span>
+  <span class="nb">exit </span>125
+<span class="k">fi
+</span><span class="nb">echo</span> <span class="s2">"configured"</span>
+
+bear <span class="nt">--</span> make <span class="nt">-j8</span> <span class="nt">-s</span>
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$?</span> <span class="nt">-ne</span> 0 <span class="o">]</span><span class="p">;</span> <span class="k">then
+  </span><span class="nb">echo</span> <span class="s2">"unrelated nope"</span>
+  <span class="nb">exit </span>125
+<span class="k">fi
+</span><span class="nb">echo</span> <span class="s2">"compiled"</span>
+
+make <span class="nb">install</span> <span class="nt">-s</span>
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$?</span> <span class="nt">-ne</span> 0 <span class="o">]</span><span class="p">;</span> <span class="k">then
+  </span><span class="nb">echo</span> <span class="s2">"unrelated nope"</span>
+  <span class="nb">exit </span>125
+<span class="k">fi
+</span><span class="nb">echo</span> <span class="s2">"installed"</span>
+
+<span class="nb">rm</span> <span class="nt">-rf</span> /usr/local/pgsql/data
+initdb <span class="nt">-D</span> /usr/local/pgsql/data <span class="o">&gt;</span>/dev/null 2&gt;&amp;1
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$?</span> <span class="nt">-ne</span> 0 <span class="o">]</span><span class="p">;</span> <span class="k">then
+  </span><span class="nb">echo</span> <span class="s2">"unrelated nope"</span>
+  <span class="nb">exit </span>125
+<span class="k">fi
+</span><span class="nb">echo</span> <span class="s2">"cluster initialized"</span>
+
+pg_ctl <span class="nt">-D</span> /usr/local/pgsql/data <span class="nt">-l</span> /tmp/logfile start <span class="o">&gt;</span>/dev/null 2&gt;&amp;1
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$?</span> <span class="nt">-ne</span> 0 <span class="o">]</span><span class="p">;</span> <span class="k">then
+  </span><span class="nb">echo</span> <span class="s2">"unrelated nope"</span>
+  <span class="nb">exit </span>125
+<span class="k">fi
+</span><span class="nb">echo</span> <span class="s2">"cluster started"</span>
+
+createdb ajr <span class="o">&gt;</span>/dev/null 2&gt;&amp;1
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$?</span> <span class="nt">-ne</span> 0 <span class="o">]</span><span class="p">;</span> <span class="k">then
+  </span><span class="nb">echo</span> <span class="s2">"unrelated nope"</span>
+  <span class="nb">exit </span>125
+<span class="k">fi
+</span><span class="nb">echo</span> <span class="s2">"db created"</span>
+
+<span class="c"># this is the exit code we care about. flip error code because git bisect has opinions...</span>
+psql <span class="nt">-d</span> ajr <span class="nt">-v</span> <span class="nv">ON_ERROR_STOP</span><span class="o">=</span>1 <span class="nt">-f</span> /home/ajr/minimal_repro.sql
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$?</span> <span class="nt">-ne</span> 0 <span class="o">]</span><span class="p">;</span> <span class="k">then
+  </span><span class="nb">exit </span>0
+<span class="k">fi
+</span><span class="nb">echo</span> <span class="s2">"query ran"</span>
+
+pg_ctl <span class="nt">-D</span> /usr/local/pgsql/data <span class="nt">-l</span> /tmp/logfile stop <span class="o">&gt;</span>/dev/null 2&gt;&amp;1
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$?</span> <span class="nt">-ne</span> 0 <span class="o">]</span><span class="p">;</span> <span class="k">then
+  </span><span class="nb">echo</span> <span class="s2">"unrelated nope"</span>
+  <span class="nb">exit </span>125
+<span class="k">fi
+</span><span class="nb">echo</span> <span class="s2">"cluster stopped"</span>
+
+<span class="nb">exit </span>1
+</code></pre></div></div>
+
+<p>About 20 minutes later, git bisect run had recompiled Postgres 12 times, and informed me that one of two possible commits had fixed my bug in upstream.  Sure enough, I found some interesting lazy-loading of relcache partition statistics that would <strong>definitely</strong> address the behavior I was seeing.  Et voila, we get to skip straight to backporting and propagating the upstream changes to all the Greenplum-only code.  Thanks git!</p>
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

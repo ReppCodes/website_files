@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+  <meta name="generator" content="Jekyll">
+
+  <title>Parallel Restore and Partitioned Tables in Greenplum Database</title>
+
+  <link rel="stylesheet" href="/css/main.css">
+  
+</head>
+
+
+<body>
+  <div id="wrapper">
+    <header>
+  <div>
+    <a href="/">
+    
+    <h1>andrew@theinternet</h1>
+    </a>
+    <div class="header-links">
+      <a href="/SWE.html"><h2 class="header-link">Software Engineering</h2></a>
+<a href="/OMSCS.html"><h2 class="header-link">OMSCS</h2></a>
+<a href="/DS.html"><h2 class="header-link">Data Science</h2></a>
+
+    </div>
+  </div>
+</header>
+    <div class="container">
+      <section id="main_content">
+        <article>
+  <h2>Parallel Restore and Partitioned Tables in Greenplum Database</h2>
+  <h3 id="note">NOTE:</h3>
+<p>This is a crosspost of a blog article I wrote for the greenplum.org website.
+***</p>
+
+<p>The release of Greenplum Database 7 (GPDB7) brings with it many new features, and each of them
+requires some thought to make sure we get the most out of them. Today, I want to talk about the
+tweaks we on the Greenplum Kernel team have made to get the most out of the <a href="https://greenplum.org/partition-in-greenplum-7-whats-new/">new partitioning
+syntax</a>. Hopefully this will be both
+interesting, and useful for any other applications that are looking to interact with partitioned
+tables in large numbers.</p>
+
+<h2 id="background">Background</h2>
+<p>GPDB7 introduces a new syntax for creating and managing partitioned tables, that we are calling
+Modern syntax. This should be very familiar to anyone who’s worked with PostgreSQL, as it is
+identical to theirs. While Greenplum has had its own unique partitioning syntax for quite a while
+now (that is now going by the name Classic syntax), we believe that aligning with our upstream will
+be very valuable for our users. Additionally Modern syntax is very flexible, and allows a much
+clearer way to express variety across leaf tables. This does, however, come at the cost of being
+substantially more verbose, which means it requires a bit more finesse to scale up efficiently. In
+our tests, this verbosity showed up as substantial performance regressions when restoring large
+amounts of metadata using either <code class="highlighter-rouge">gprestore</code> and <code class="highlighter-rouge">pg_dump</code>. Obviously, we do not want our shiny new
+features to cause performance regressions, so the Kernel team dug in to figure out a way to have
+our cake and eat it too.</p>
+
+<h2 id="baseline-measurements">Baseline Measurements</h2>
+<p>I put together an adversarial schema to test this problem, using tables from TPC-DS as a base. It
+uses Classic syntax to cause heavy partitioning, with 28 root tables and ~164,000 tables overall.</p>
+
+<p>Here’s an example of one of the tables:</p>
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">wide</span><span class="p">.</span><span class="n">orders</span>
+<span class="p">(</span><span class="n">O_ORDERKEY</span> <span class="nb">INT</span><span class="p">,</span>
+<span class="n">O_CUSTKEY</span> <span class="nb">INT</span><span class="p">,</span>
+<span class="n">O_ORDERSTATUS</span> <span class="nb">CHAR</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+<span class="n">O_TOTALPRICE</span> <span class="nb">DECIMAL</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span>
+<span class="n">O_ORDERDATE</span> <span class="nb">DATE</span><span class="p">,</span>
+<span class="n">O_ORDERPRIORITY</span> <span class="nb">CHAR</span><span class="p">(</span><span class="mi">15</span><span class="p">),</span> 
+<span class="n">O_CLERK</span>  <span class="nb">CHAR</span><span class="p">(</span><span class="mi">15</span><span class="p">),</span> 
+<span class="n">O_SHIPPRIORITY</span> <span class="nb">INTEGER</span><span class="p">,</span>
+<span class="n">O_COMMENT</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mi">79</span><span class="p">))</span>
+<span class="n">DISTRIBUTED</span> <span class="k">BY</span> <span class="p">(</span><span class="n">O_ORDERKEY</span><span class="p">)</span>
+<span class="n">PARTITION</span> <span class="k">BY</span> <span class="n">RANGE</span> <span class="p">(</span><span class="n">O_ORDERDATE</span><span class="p">)</span>
+<span class="p">(</span><span class="k">start</span><span class="p">(</span><span class="s1">'1982-01-01'</span><span class="p">)</span> <span class="n">INCLUSIVE</span> <span class="k">end</span> <span class="p">(</span><span class="s1">'2015-12-31'</span><span class="p">)</span> <span class="n">INCLUSIVE</span> <span class="k">every</span> <span class="p">(</span><span class="mi">5</span><span class="p">),</span>
+<span class="k">default</span> <span class="n">partition</span> <span class="n">others</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>This schema is represented in Classic syntax as 28 <code class="highlighter-rouge">CREATE TABLE</code> statements and 28 <code class="highlighter-rouge">ALTER OWNER</code>
+statements. In (one possible) implementation of Modern syntax this will need ~164k each of <code class="highlighter-rouge">CREATE
+TABLE</code>, <code class="highlighter-rouge">ALTER OWNER</code>, and <code class="highlighter-rouge">ATTACH PARTITION</code> statements. While those initial 28 statements are way
+bigger, there’s overhead in each statement and it hurts performance. This overhead is what we’re
+trying to address.</p>
+
+<p>Before diving in to performance work, we need data! We ran the schema into a 3-segment GPDB7
+cluster on a developer workstation, backed it up with <code class="highlighter-rouge">gpbackup</code>, and then restored it with
+<code class="highlighter-rouge">gprestore</code>. Below are time measurements for where we started out with Classic and Modern syntax,
+and as you can see we’re looking at about a 6.8x slowdown in the simple implementation. More
+importantly, this ratio is generally where any other application with a simple implementation will
+land, as we were firing off individual statements on a persistent connection.</p>
+
+<h3 id="classic-syntax--14-minutes">Classic Syntax – 14 minutes</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">time </span>gpbackup <span class="nt">--dbname</span><span class="o">=</span>ajr <span class="nt">--metadata-only</span> <span class="nt">--backup-dir</span> perf_backups
+real	0m22.737s
+user	0m0.754s
+sys	0m0.154s
+
+<span class="nb">time </span>gprestore <span class="nt">--create-db</span> <span class="nt">--redirect-db</span><span class="o">=</span>ajr_rest <span class="nt">--backup-dir</span> perf_backups <span class="nt">--timestamp</span><span class="o">=</span>20230817153445
+real	13m43.712s
+user	0m0.672s
+sys	0m0.388s
+</code></pre></div></div>
+
+<h3 id="modern-syntax--96-minutes">Modern Syntax – 96 minutes</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">time </span>gpbackup <span class="nt">--dbname</span><span class="o">=</span>ajr <span class="nt">--metadata-only</span> <span class="nt">--backup-dir</span> perf_backups
+real	0m48.048s
+user	0m7.622s
+sys	0m2.635s
+
+<span class="nb">time </span>gprestore <span class="nt">--create-db</span> <span class="nt">--redirect-db</span><span class="o">=</span>ajr_rest <span class="nt">--backup-dir</span> perf_backups <span class="nt">--timestamp</span><span class="o">=</span>20230817112323
+real	96m1.435s
+user	0m13.270s
+sys	0m8.043s
+</code></pre></div></div>
+
+<h2 id="so-what-do-we-do-about-it">So what do we do about it?</h2>
+<p>In <code class="highlighter-rouge">gprestore</code>, these tables fall into what we call <code class="highlighter-rouge">pre-data metadata</code> (or just <code class="highlighter-rouge">predata</code>) which
+is all the metadata that we need to restore before we can pull data in. The way we handle predata
+had some room for optimization to address these performance regressions.</p>
+
+<h3 id="solution-1-slap-a-transaction-on-it">Solution 1: Slap a transaction on it</h3>
+<p>Historically, we have not wrapped predata restore in transactions. However, each of these <code class="highlighter-rouge">ATTACH
+PARTITION</code> statements has the overhead of a two-phase commit, and those can add up quite a bit.
+Wrapping each batch of the DDL in explicit <code class="highlighter-rouge">BEGIN</code> and <code class="highlighter-rouge">END</code> statements brings that down to just a
+handful of commits. This gets us a lot of the way back to a good place.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">time </span>gprestore <span class="nt">--create-db</span> <span class="nt">--redirect-db</span><span class="o">=</span>ajr_rest <span class="nt">--backup-dir</span> perf_backups <span class="nt">--timestamp</span><span class="o">=</span>20230817112323
+real	31m51.755s
+user	0m8.116s
+sys	0m8.322s
+</code></pre></div></div>
+
+<h3 id="solution-2-parallelize-all-the-things">Solution 2: Parallelize all the things</h3>
+<p>There is already support in <code class="highlighter-rouge">gprestore</code> for restoring data in parallel across a configurable number
+of connections (the <code class="highlighter-rouge">--jobs</code> flag), because the data in one table is generally independent from the
+data in others, and this usually represents the bulk of the runtime for a restore so there was lots
+of incentive to cut it down. Thus far, <code class="highlighter-rouge">gprestore</code> has run all predata statements in a single
+linear fashion. However, there isn’t really a reason it couldn’t be run in parallel, as many DDL
+statements are independent of each other.</p>
+
+<p>To organize how metadata is restored, <code class="highlighter-rouge">gpbackup</code> already relies on <code class="highlighter-rouge">pg_depend</code>. This table tracks
+every object, and each object it depends on. We use this information to ensure that no object is
+restored before its dependencies are available. We accomplish this by using a depth-first search
+(DFS) topological sort to walk through the dependencies and get them into a workable order. During
+backup we record the intended order of execution for all <code class="highlighter-rouge">predata</code> statements, and on restore these
+are simply executed in the noted order.</p>
+
+<p>To take this approach and enhance it to support parallel restores requires some changes. During
+backup, in addition to noting order of execution, we must also preassign the objects to groups in
+some way so that the parallel connections don’t contend or deadlock each other. We do this in two
+parts.</p>
+
+<p>First we record the steps of the DFS, using the depth as a “tier” value. This means that objects
+with no dependents will go into the first tier, and each subsequent level of the tree will be in a
+subsequent tier. Our metadata restore will then begin and commit a separate transaction for each
+tier. This allows us to keep the transactions a bit shorter for better stability in case of errors,
+and gives us some room to push things upstream or downstream if we find that the information from
+<code class="highlighter-rouge">pg_depend</code> isn’t sufficient for keeping things in the correct order.  However, this does not
+actually facilitate parallelism by itself, as the tiers must still go in order. So we want to be
+able to split up each tier to be run across multiple connections.</p>
+
+<p>Within each tier, we also assign every object to a “cohort”.  This is done by examining the
+dependencies of each object, and assigning the whole tree to a specific cohort. Then, if any
+subsequent objects have any of their tree already mapped, throwing that object’s whole tree in the
+same group. Once this is done, we can safely say that within each tier, no object can depend on
+anything from any other cohort, and thus each cohort is safe to restore completely independently of
+the others.</p>
+
+<p>Pictures being worth many words, Figure 1 is a diagram of how this might look for a simple schema.
+Each rectangle formed by a tier+cohort is a single transaction. Each leaf table can be created
+independently, but the <code class="highlighter-rouge">ATTACH PARTITION</code> statements in tier 2 take a <code class="highlighter-rouge">SHARE UPDATE EXCLUSIVE</code> lock
+on the parents from tier 1 and the leaves from tier 2, so they have a shared dependency and must go
+in the same cohort or the transactions would deadlock each other trying to get locks already held
+elsewhere. Obviously the relationships between objects in a SQL database system can get incredibly
+complex, and we won’t go into the full details, but you can imagine how easy it would be to wind up
+with a deadlock in a schema of production-grade complexity if we had a less conservative approach.</p>
+
+<p><img src="../../assets/content_images/swe/tier_cohort_diagram.png" alt="Tier Cohort Diagram" /></p>
+
+<p>One of the particularly neat things about this is that it provides our Table of
+Contents (toc) files a convenient way of seeing exactly how much parallelism is available for any
+given backup. The highest observed cohort value for any given tier is the theoretical maximum
+number of jobs that metadata restore could put to use.  Here’s an example toc entry from our test
+backups, showing that we could, in theory, see performance improvements all the way up to 28 jobs.
+Don’t try that in prod, though…</p>
+
+<div class="language-yml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="pi">-</span> <span class="na">schema</span><span class="pi">:</span> <span class="s">wide</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">supplier</span>
+  <span class="na">objecttype</span><span class="pi">:</span> <span class="s">TABLE</span>
+  <span class="na">referenceobject</span><span class="pi">:</span> <span class="s2">"</span><span class="s">"</span>
+  <span class="na">startbyte</span><span class="pi">:</span> <span class="m">13512</span>
+  <span class="na">endbyte</span><span class="pi">:</span> <span class="m">13554</span>
+  <span class="na">tier</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="m">1</span>
+  <span class="pi">-</span> <span class="m">28</span>
+</code></pre></div></div>
+
+<p>On the restore side, then, all we have to do is hand out cohorts to each connection. We do this by
+iterating through each object’s restore statement, and assigning it to whichever connection its
+cohort belongs to. Each time a new cohort is seen, it gets assigned to the connection that
+currently has the fewest statements. Once all assignments are made, each connection opens a
+transaction and just executes its statements in order, no further logic needed.</p>
+
+<p>Testing with a fairly modest 3 jobs (too many connections will swamp a system in the data restore,
+so we need to be cautious) we see that we’ve gotten the run time almost back to where we were, but
+now with the power of our new partitioning approach! Do note that this is in combination with the
+transaction improvements discussed above.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">time </span>gprestore <span class="nt">--create-db</span> <span class="nt">--redirect-db</span><span class="o">=</span>ajr_rest <span class="nt">--backup-dir</span> perf_backups <span class="nt">--jobs</span><span class="o">=</span>3 <span class="nt">--timestamp</span><span class="o">=</span>20230830163152
+real	14m15.468s
+user	0m7.006s
+sys	0m5.994s
+</code></pre></div></div>
+
+<p>Now, you can’t get a new toy like this and <strong>not</strong> give it a proper test drive, right? So we did
+exactly what I said not to above, and tried it out with 28 jobs.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">time </span>gprestore <span class="nt">--create-db</span> <span class="nt">--redirect-db</span><span class="o">=</span>ajr_rest <span class="nt">--backup-dir</span> perf_backups <span class="nt">--jobs</span><span class="o">=</span>28 <span class="nt">--timestamp</span><span class="o">=</span>20230830163152
+real	6m44.285s
+user	0m6.964s
+sys	0m5.717s
+</code></pre></div></div>
+
+<p>From 96 minutes down to under 7. Not too bad!</p>
+
+<h2 id="results">Results</h2>
+<p>So there we have it. With a combination of two different approaches we were able to restore 164,074
+tables in just 32 seconds more than we were originally taking, while still supporting the
+flexibility and expressiveness of Modern syntax!</p>
+
+<h2 id="future-work">Future work</h2>
+<p>To be honest, there’s still some performance on the table. It’s just a question of triaging the
+effort, as there is always a lot to do.</p>
+
+<p>Modern syntax allows leaf tables to have different owners than their root tables, so we can’t just
+blindly swap over to applying the ownership changes at the root level.  However, we could, on the
+backup side, check for ownership heterogeneity and conditionally print only the root table <code class="highlighter-rouge">ALTER
+OWNER</code> statement if it’s safe.  That’d be another 164k statements cut out in our test example.</p>
+
+<p>Modern syntax also supports a <code class="highlighter-rouge">CREATE TABLE PARTITION OF</code> style, which attaches the partition
+automatically. This is able to express everything that the <code class="highlighter-rouge">ATTACH PARTITION</code> version can, but
+requires some significant processing logic to get there.  We could rework how <code class="highlighter-rouge">gpbackup</code> dumps
+modern syntax partition tables to use this approach, and cut yet another 164k statements out of our
+test example. We’re planning to experiment with that, so keep an eye out for a future post, maybe!</p>
+
+
+</article>
+      </section>
+    </div>
+  </div>
+
+   
+  
+  <footer>
+  <a href="https://creativecommons.org/licenses/by-nc/3.0/deed.en_US">
+    <span>
+        <b>Andrew Repp</b>
+    </span>
+    
+    <span>© 2023</span>
+  </a>
+</footer>
+
+</body>
+
+</html>

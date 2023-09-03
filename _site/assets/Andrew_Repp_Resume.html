@@ -1,0 +1,257 @@
+<!-- generate with: weasyprint Andrew_Repp_Resume.html Andrew_Repp_Resume.pdf; -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <style type="text/css">
+        @font-face {
+            font-family: "BerkeleyMono-Regular";
+            src: url("./fonts/berkely_mono/BerkeleyMono-Regular.ttf"); }
+        @font-face {
+            font-family: "BerkeleyMono-Bold";
+            src: url("./fonts/berkely_mono/BerkeleyMono-Bold.ttf"); }
+        @page {
+            margin: 0mm;
+        }
+        /* Whole document */
+        body {
+            font-family: "BerkeleyMono-Regular";
+            /* margin: auto; */
+            background: #FFFFFF;
+            font-size: 11px;
+            padding: 10px 10px 10px 10px;
+        }
+
+        /* Titles of categories */
+        h2 {
+            font-size: 15px;
+            color: #757575;
+        }
+
+        /* Definitions */
+        dt {
+            float: left;
+            clear: left;
+            width: 17%;
+            font-weight: bold;
+        }
+
+        dd {
+            margin-left: 17%;
+        }
+
+        p {
+            margin-top: 0;
+            margin-bottom: 7px;
+        }
+
+        /* Horizontal separators */
+        hr {
+            color: #757575;
+        }
+
+        table {
+            width: 100%;
+            border-top: solid;
+            border-bottom: solid;
+            border-color: #999999;
+        }
+
+        .alnright { 
+            text-align: right; 
+            margin-right: 1em; 
+        }
+
+        .alnleft { 
+            text-align: left; 
+            margin-left: 1em; 
+        }
+
+        .alncenter {
+            font-family: "BerkeleyMono-Bold";
+            text-align: center;
+            vertical-align: middle;
+            font-size: 25px;
+            color: #757575;
+        }
+    </style>
+</head>
+
+<body>
+    <table>
+        <tbody>
+            <tr>
+                <td class="alnleft">1430 Deerfield Rd</td>
+                <td class="alncenter">Andrew Repp</td>
+                <td class="alnright">andrew@andrewrepp.com</td>
+            </tr>
+            <tr>
+                <td class="alnleft">Deerfield, IL 60015</td>
+                <td align="center"></td>
+                <td class="alnright">(708) 476-3829</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 id="experience">Employment</h2>
+    <table>
+        <tbody>
+            <tr class="job">
+                    <td class="alnleft">Software Engineer at VMware</td>
+                <td class="alnright">June 2022 - Present</td>
+            </tr>
+        </tbody>
+    </table>
+    <ul>
+        <li>
+            <p>Implemented key features within backup and restore utilities for Greenplum database.
+                    Notably includes parallel metadata restore, improving restore of schema DDL by
+                    up to 2,000% in more complex customer systems. <a
+                        href="https://www.youtube.com/watch?v=k5cJqqyf8HI">See article.</a>
+                    (Go)</p>
+        </li>
+        <li>
+            <p>Architected and implemented from-scratch rewrite of backup manager utilities,
+                    reducing runtime latency by approximately 8,000% on very large customer
+                    deployments. (Go, sqlite)</p>
+        </li>
+        <li>
+            <p>Implemented new SQL command (ALTER TABLE REPACK) to improve compression and scan
+                    performance on very large customer datasets. Observed 50% reduction in disk
+                    space usage on tests of large customer installs. (C)</p>
+        </li>
+        <li>
+            <p>Implemented several key features in core Greenplum server codebase, to help drive to
+                    release of GPDB7. Examples include autovacuum implementation and parallelized
+                    system monitoring views. <a href="https://www.youtube.com/watch?v=k5cJqqyf8HI">See video
+                        tutorial.</a> (C)</p>
+        </li>
+        <li>
+            <p><a href="https://github.com/AJR-VMware">Dedicated GitHub profile for my
+                    contributions at VMware</a></p>
+        </li>
+    </ul>
+    <table>
+        <tbody>
+            <tr class="job">
+                <td class="alnleft">Software Engineer at Network Perception</td>
+                <td class="alnright">April 2021 - June 2022</td>
+            </tr>
+        </tbody>
+    </table>
+    <ul>
+        <li>
+            <p>Profiled and improved performance of core backend, inference, and parser code.
+                    Resulted in approximately 10,000% improvement in runtime performance. (Python,
+                    Redis)</p>
+        </li>
+        <li>
+            <p>Re-architected and implemented system parallelization, leveraging kernel APIs and
+                    python wrapper APIs, to dramatically improve both backend runtime performance
+                    and frontend responsiveness. (Python, Linux)</p>
+        </li>
+        <li>
+            <p>Designed and implemented a full rebuild of the product’s integrated analytics
+                    engine. (Python, JavaScript)</p>
+        </li>
+        <li>
+            <p>Developed parser and inference integration for various networking software output
+                    formats, including Cisco ASA firewalls, Fortilink Fortiguard firewalls, Google
+                    Cloud Platform, AWS Networking, Nessus, nmap, and libpcap.  (Python)</p>
+        </li>
+    </ul>
+    <table>
+        <tbody>
+            <tr class="job">
+                <td class="alnleft">Senior Data Scientist & Team Lead at OptionCare Health</td>
+                <td class="alnright">July 2019 - April 2021</td>
+            </tr>
+        </tbody>
+    </table>
+    <ul>
+        <li>
+            <p>Developed software package for analysis of patient medication adherence.  Authored
+                    internal whitepaper showing company excellence relative to industry standards,
+                submitted to conference. (Python, SQL)</p>
+        </li>
+        <li>
+            <p>Developed schema and ETL queries for analytic data mart, leveraging existing primary
+                    data sources into an enriched platform for rapid analysis, centralizing the
+                    business on aligned methodologies and definitions for all metrics. (SQL)</p>
+        </li>
+    </ul>
+    <table>
+        <tbody>
+            <tr class="job">
+                <td class="alnleft">Senior Analyst & Manager at OptumRx</td>
+                <td class="alnright">January 2017 - June 2019</td>
+            </tr>
+        </tbody>
+    </table>
+    <ul>
+        <li>
+            <p>Developed statistical programs deployed to visualization layer hosted on department
+                    website. Owned every step of multiple projects using this workflow, from
+                    requirements to deployment. (SAS, Tableau, Azure)</p>
+        </li>
+        <li>
+            <p>Scoped, architected, developed, and deployed a new algorithmic approach to optimally
+                    categorize products by price to minimize cost to the company and maximize
+                    patient satisfaction (SAS, SQL).</p>
+        </li>
+        <li>
+            <p>Refactored company reporting suite into a highly performant parallel
+                    architecture, reducing runtime by 400%.</p>
+        </li>
+    </ul>
+
+    <h2 id="projects">Notable Technical Projects</h2>
+    <hr />
+    <ul>
+        <li>
+                    <p><strong>OSS Medication Adherence Package</strong> (2020). Developed and published package for
+                        calculating medication adherence.  Used pandas, NumPy, and
+                        multiprocessing. Contracted as a consultant on its use and validation for
+                        multiple private healthcare entities.  Ported to rust with clap and rayon.
+                        Discussed <a href="https://andrewrepp.com/multipr_pdc_python">here</a>.
+                        (Python, Rust)</p>
+        </li>
+        <li>
+                    <p><strong>Formulary Optimization System</strong> (2019). Developed and deployed
+                        a program to analyze medication usage across 65 million patients using
+                        customized algorithm and grid search.  Productized by employer. (SAS,
+                        SQL)</p>
+        </li>
+    </ul>
+    <hr />
+
+    <h2 id="education">Education</h2>
+    <table>
+        <tbody>
+            <tr class="school">
+                <td align="alnleft">Georgia Institute of Technology</td>
+                <td class="alnright">Master of Science - Computer Science</td>
+            </tr>
+            <tr class="school">
+                <td align="alnleft">University of Wisconsin (Stevens Point)</td>
+                <td class="alnright">Master of Science - Fisheries Science</td>
+            </tr>
+            <tr class="school">
+                <td align="alnleft">University of Illinois (Champaign-Urbana)</td>
+                <td class="alnright">Bachelor of Science - Natural Resources</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 id="tech">Languages and Technologies</h2>
+    <ul>
+        <li>
+            <p>Go (2 years); Python (5 years); SQL (10 years); SAS (7 years, Base SAS Certified);
+                        Bash (4 years); C/C++ (3 years).</p>
+        </li>
+        <li>
+            <p>Git (8 years); Linux (6 years); Redis (2 years); Agile Process (4 years).</p>
+        </li>
+    </ul>
+</body>
