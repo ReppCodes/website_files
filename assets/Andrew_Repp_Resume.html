@@ -105,14 +105,18 @@
     </table>
     <ul>
         <li>
+            <p>Re-architected Hyperdrive's core query processing and caching logic to facilitate
+                    local-first caching, reducing cache hit latency by 95%. (Rust)</p>
+        </li>
+        <li>
+            <p>Developed placement subsystem that optimally located Cloudflare resources near
+                    customer origin databases, reducing query latency by up to 80%. (Go, Rust)</p>
+        </li>
+        <li>
             <p>Designed and implemented support for Postgres prepared statements in distributed
                     connection pooler, unblocking key driver in the JavaScript ecosystem. <a
                         href="https://blog.cloudflare.com/postgres-named-prepared-statements-supported-hyperdrive/">See
                         article.</a> (Rust)</p>
-        </li>
-        <li>
-            <p>Architected, developed, and deployed always-on global monitoring of database traffic across
-                    Cloudflare's edge network. (Rust, TypeScript)</p>
         </li>
         <li>
             <p>Developed integration with Cloudflare Tunnels to enable full product compatibility
@@ -174,11 +178,6 @@
             <p>Profiled and improved performance of core backend, inference, and parser code.
                     Resulted in approximately 10,000% improvement in runtime performance. (Python,
                     Redis)</p>
-        </li>
-        <li>
-            <p>Re-architected and implemented system parallelization, leveraging kernel APIs and
-                    python wrapper APIs, to dramatically improve both backend runtime performance
-                    and frontend responsiveness. (Python, Linux)</p>
         </li>
         <li>
             <p>Designed and implemented a full rebuild of the product’s integrated analytics
