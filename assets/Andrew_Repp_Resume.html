@@ -105,12 +105,20 @@
     </table>
     <ul>
         <li>
+            <p>Implemented full product functionality for MySQL, supporting entirely new user
+                    base and substantially growing TAM for the product. <a
+                        href="https://blog.cloudflare.com/building-global-mysql-apps-with-cloudflare-workers-and-hyperdrive/">See
+                        article.</a> (Rust, Go, TypeScript)</p>
+        </li>
+        <li>
             <p>Re-architected Hyperdrive's core query processing and caching logic to facilitate
                     local-first caching, reducing cache hit latency by 95%. (Rust)</p>
         </li>
         <li>
             <p>Developed placement subsystem that optimally located Cloudflare resources near
-                    customer origin databases, reducing query latency by up to 80%. (Go, Rust)</p>
+                    customer origin databases, reducing query latency by up to 80%. <a
+                        href="https://blog.cloudflare.com/how-hyperdrive-speeds-up-database-access/">See
+                        article.</a> (Rust, Go, TypeScript)</p>
         </li>
         <li>
             <p>Designed and implemented support for Postgres prepared statements in distributed
@@ -140,13 +148,13 @@
     <ul>
         <li>
             <p>Developed key features within backup and restore utilities for Greenplum database.
-                    Notably includes parallel metadata restore, improving schema restore of by up
-                    to 2,000% in customer systems. <a
+                    Notably includes parallel metadata restore, reducing latency of schema restore
+                    by up to 200x in customer systems. <a
                         href="https://andrewrepp.com/parallel_restore">See article.</a> (Go)</p>
         </li>
         <li>
             <p>Architected and implemented from-scratch rewrite of backup manager utilities,
-                    reducing runtime latency by approximately 8,000% on very large customer
+                    reducing runtime latency by approximately 800x on very large customer
                     deployments. (Go, sqlite)</p>
         </li>
         <li>
@@ -176,7 +184,7 @@
     <ul>
         <li>
             <p>Profiled and improved performance of core backend, inference, and parser code.
-                    Resulted in approximately 10,000% improvement in runtime performance. (Python,
+                    Resulted in approximately 100x reduction in operation latency (hours to seconds). (Python,
                     Redis)</p>
         </li>
         <li>
@@ -226,10 +234,6 @@
             <p>Scoped, architected, developed, and deployed a new algorithmic approach to optimally
                     categorize products by price to minimize cost to the company and maximize
                     patient satisfaction. This was successfully productized by the company. (SAS, SQL).</p>
-        </li>
-        <li>
-            <p>Refactored company reporting suite into a parallel architecture, reducing runtime by
-                    400%. (SAS)</p>
         </li>
     </ul>
 
